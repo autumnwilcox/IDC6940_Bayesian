@@ -28,6 +28,8 @@ communicate the value of your data science project.
 
 Carefully read this template since it has instructions and tips to
 writing!
+
+Nice report!
 :::
 
 ## Introduction
