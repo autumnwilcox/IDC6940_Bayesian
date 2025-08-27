@@ -1,5 +1,5 @@
 ---
-title: "Writing a great story for data science projects - Summer 2025 "
+title: "Writing a great story for data science projects - Fall 2025 "
 subtitle: "This is a Report Template Quarto"
 author: "Student Name (Advisor: Dr. Cohen)"
 date: '`r Sys.Date()`'
@@ -58,10 +58,11 @@ non-linear relationship, kernel estimator or kernel smoothing is the
 main method to estimate the curve for non-parametric statistics. In
 kernel estimator, weight function is known as kernel function
 [@efr2008]. Cite this paper [@bro2014principal]. The GEE [@wang2014].
-The PCA [@daffertshofer2004pca]*. Topology can be used in machine learning [@adams2021topology]
+The PCA [@daffertshofer2004pca]*. Topology can be used in machine
+learning [@adams2021topology]
 
-For Symbolic Regression [@wang2019symbolic]
-*This is my work and I want to add more work...*
+For Symbolic Regression [@wang2019symbolic] *This is my work and I want
+to add more work...*
 
 Cite new paper [@su2012linear]
 
@@ -85,7 +86,6 @@ $$
 M_n(x) = \sum_{i=1}^{n} W_n (X_i) Y_i  \tag{1}
 $$$W_n(x)$ *is the sum of weights that belongs to all real numbers.
 Weights are positive numbers and small if* $X_i$ *is far from* $x$*.*
-
 
 *Another equation:*
 
@@ -112,6 +112,10 @@ library(knitr)
 library(ggthemes)
 library(ggrepel)
 library(dslabs)
+```
+
+```{python}
+import pandas as pd
 ```
 
 ```{r, warning=FALSE, echo=TRUE}
