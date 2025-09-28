@@ -1,4 +1,10 @@
-.Rproj.user
+# RStudio temp files
 .Rhistory
 .RData
-.Ruserdata
+.Rproj.user/
+
+# OS files
+.DS_Store
+
+# Data artifacts (we recreate these with R/data_prep.R)
+data/*.rds
