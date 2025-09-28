@@ -1,166 +1,153 @@
 ---
-
 title: "Bayesian Logistic Regression Application in Diabetes Probability Prediction"
 subtitle: "IDC6940 Fall 2025 Capstone Project Presentation"
 author: "Namita Mishra, Autumn Wilcox (Advisor: Dr. Cohen)"
 date: '`r Sys.Date()`'
 format:
-revealjs
+  revealjs:
+    theme: simple
+    slide-number: true
+    chalkboard: false
+    transition: slide
 course: Capstone Projects in Data Science
-bibliography: references.bib # file contains bibtex for references
-#always_allow_html: true # this allows to get PDF with HTML features
+bibliography: references.bib
 self-contained: true
 execute:
-warning: false
-message: false
+  warning: false
+  message: false
+  echo: false
 editor:
-markdown:
-wrap: 72
---------
+  markdown:
+    wrap: 72
+---
 
-## Introduction  {.smaller}
+## Our Question
 
-* Develop a storyline that captures attention and maintains interest.
-* Your audience is your peers.
-* Clearly state the problem or question you're addressing.
-* Introduce why it is relevant.
-* Provide an overview of your approach.
+- Can Bayesian logistic regression provide **more stable** and **transparent** inference than classical MLE for diabetes-related outcomes in **NHANES 2013–2014**?
+- Focus predictors: **BMI category (BMDBMIC)**, **Age (RIDAGEYR)**, **Sex (RIAGENDR)**, **Race/Ethnicity (RIDRETH1)**  
+- Outcome (for now): **DIQ240** (usual diabetes doctor) — diabetes-related; we may swap to **DIQ010** (diagnosis) in the next iteration and keep DIQ240 as a covariate.
 
-**Our framing (for this project):**
+---
 
-* T2D is a major public health burden. Early identification of risk factors (age, BMI, race/ethnicity, sex) can guide prevention.
-* Traditional logistic regression can suffer from separation and unstable estimates with small effective samples and missingness.
-* We compare frequentist vs Bayesian logistic regression on **NHANES 2013–2014** to predict diabetes-related outcomes.
+## Data Pipeline (Reproducible)
 
-In kernel estimator, weight function is known as kernel function [@efr2008].
-Cite this paper [@bro2014principal]. The GEE [@wang2014]. The PCA [@daffertshofer2004pca].
+- Source: NHANES 2013–2014  
+- Files: **BMX_H**, **DEMO_H**, **DIQ_H**  
+- Preprocessing is in **`R/data_prep.R`** (team runs once)
+- Analysis slides **load** prebuilt data:
 
-## Methods
-
-* Detail the models or algorithms used.
-* Justify your choices based on the problem and data.
-
-**Planned approach:**
-
-* Baseline: classical logistic regression (MLE).
-* Main: Bayesian logistic regression (e.g., `rstanarm`/`brms`) with weakly-informative priors.
-* Address missingness via multiple imputation if needed; pool results.
-* Use NHANES complex survey design (`WTMEC2YR`, `SDMVPSU`, `SDMVSTRA`).
-
-## Data Exploration and Visualization
-
-* Describe your data sources and collection process.
-* Present initial findings and insights through visualizations.
-* Highlight unexpected patterns or anomalies.
-
-**Data source & variables (kept to match teammate’s script):**
-
-* **DEMO_H (2013–2014)**: `SEQN`, `RIDAGEYR`, `RIAGENDR`, `RIDRETH1`, `SDMVPSU`, `SDMVSTRA`, `WTMEC2YR`.
-* **BMX_H (2013–2014)**: `SEQN`, `BMDBMIC` (BMI category; often NA for adults).
-* **DIQ_H (2013–2014)**: `SEQN`, `DIQ240` (usual doctor for diabetes care; a feature, not diagnosis).
-
-```{r, warning=FALSE, echo=FALSE, message=FALSE}
-# loading packages 
-options(repos = c(CRAN = "https://cloud.r-project.org"))
-need <- c("tidyverse","nhanesA","survey","ggrepel","ggthemes","dslabs")
-inst <- rownames(installed.packages())
-miss <- setdiff(need, inst)
-if (length(miss) > 0) install.packages(miss)
-
-library(tidyverse)
-library(nhanesA)
-library(survey)
-library(ggrepel)
-library(ggthemes)
-library(dslabs)
+```{r}
+# Build if missing, then load
+if (!file.exists("data/merged_2013_2014.rds")) {
+  source("R/data_prep.R")
+}
+merged_data <- readRDS("data/merged_2013_2014.rds")
 ```
 
-```{r, warning=FALSE, echo=FALSE}
-# Load NHANES data (2013–2014)
-bmx_h  <- nhanes("BMX_H")
-demo_h <- nhanes("DEMO_H")
-diq_h  <- nhanes("DIQ_H")
+---
 
-stopifnot(all(c("SEQN","BMDBMIC") %in% names(bmx_h)))
-stopifnot(all(c("SEQN","RIDAGEYR","RIAGENDR","RIDRETH1","SDMVPSU","SDMVSTRA","WTMEC2YR") %in% names(demo_h)))
-stopifnot(all(c("SEQN","DIQ240") %in% names(diq_h)))
+## Variables (Kept to Match Team Script)
 
-exam_sub <- bmx_h  %>% select(SEQN, BMDBMIC)
-demo_sub <- demo_h %>% select(SEQN, RIDAGEYR, RIAGENDR, RIDRETH1, SDMVPSU, SDMVSTRA, WTMEC2YR)
-diq_sub  <- diq_h  %>% select(SEQN, DIQ240)
+**Predictors/Covariates:**
+- BMDBMIC (BMI category), RIDAGEYR (Age), RIAGENDR (Sex), RIDRETH1 (Race/Ethnicity)
 
-merged_data <- exam_sub %>%
-  left_join(demo_sub, by = "SEQN") %>%
-  left_join(diq_sub,  by = "SEQN")
+**Survey Design:**
+- WTMEC2YR (weights), SDMVPSU (PSU), SDMVSTRA (strata)
 
-# Quick EDA
-data.frame(
-  BMDBMIC = as.integer(names(table(merged_data$BMDBMIC, useNA="ifany"))),
-  n = as.integer(table(merged_data$BMDBMIC, useNA="ifany"))
-) -> bmdbmic_tab
+**Outcome (current placeholder):**
+- DIQ240 — not a diagnosis; proxy for diabetes care.
+- **Plan:** consider DIQ010 as outcome; keep DIQ240 as access/behavior covariate.
 
-bmdbmic_tab %>% ggplot(aes(x = factor(BMDBMIC, exclude=NULL), y = n)) +
-  geom_col() +
-  labs(x = "BMDBMIC (BMI category code)", y = "Count",
-       title = "Unweighted counts by BMDBMIC (NHANES 2013–2014)") +
+---
+
+## Quick EDA: Age Distribution 
+
+```{r}
+library(tidyverse)
+library(knitr)
+
+# Peek
+knitr::kable(head(merged_data))
+
+# Plot
+ggplot(merged_data, aes(x = RIDAGEYR)) +
+  geom_histogram(binwidth = 5, boundary = 0, closed = "left") +
+  labs(title = "Age Distribution (NHANES 2013–2014)",
+       x = "Age (years)", y = "Count") +
   theme_minimal()
 ```
 
-## Data Exploration and Visualization {.smaller}
-
-A study was conducted to determine how… (Replace with your narrative.)
-
-```{r, warning=FALSE, echo=F, message=FALSE}
-# Example from template left here (not evaluated against NHANES)
-# ggplot on murders dataset (dslabs) for slide layout reference
-# ggplot1 = murders %>% ggplot(mapping = aes(x=population/10^6, y=total))
-# ggplot1 + geom_point(aes(col=region), size = 4) +
-#   geom_text_repel(aes(label=abb)) +
-#   scale_x_log10() +
-#   scale_y_log10() +
-#   geom_smooth(formula = "y~x", method=lm,se = F)+
-#   xlab("Populations in millions (log10 scale)") + 
-#   ylab("Total number of murders (log10 scale)") +
-#   ggtitle("US Gun Murders in 2010") +
-#   scale_color_discrete(name = "Region")+
-#   theme_bw()
-```
-
-## Modeling and Results
-
-* Explain your data preprocessing and cleaning steps.
-* Present your key findings in a clear and concise manner.
-* Use visuals to support your claims.
-* **Tell a story about what the data reveals.**
+## Quick EDA: BMI Category Codes
 
 ```{r}
-# Placeholders to be replaced with actual modeling as the team proceeds
-# library(rstanarm) # or library(brms)
-# analysis_df <- merged_data %>% mutate(
-#   # recodes / outcome construction (if adding DIQ010 later)
-# )
-# fit_mle <- glm(outcome ~ BMDBMIC + RIDAGEYR + RIAGENDR + RIDRETH1 + DIQ240,
-#                data = analysis_df, family = binomial())
-# summary(fit_mle)
-#
-# fit_bayes <- rstanarm::stan_glm(
-#   outcome ~ BMDBMIC + RIDAGEYR + RIAGENDR + RIDRETH1 + DIQ240,
-#   data = analysis_df, family = binomial(),
-#   prior = rstanarm::normal(0, 2.5), prior_intercept = rstanarm::normal(0, 5),
-#   chains = 4, iter = 2000, seed = 42
-# )
-# summary(fit_bayes)
+merged_data %>%
+  mutate(BMDBMIC = factor(BMDBMIC, exclude = NULL)) %>%
+  count(BMDBMIC) %>%
+  ggplot(aes(x = BMDBMIC, y = n)) +
+  geom_col() +
+  labs(title = "Counts by BMDBMIC (BMI Category Code)",
+       x = "BMDBMIC (code; NA common for adults)", y = "Count") +
+  theme_minimal()
 ```
 
-## Conclusion
+## Survey Design
 
-* Summarize your key findings.
-* Discuss the implications of your results.
+```{r}
+library(survey)
+nhanes_design <- svydesign(
+  id = ~SDMVPSU,
+  strata = ~SDMVSTRA,
+  weights = ~WTMEC2YR,
+  nest = TRUE,
+  data = merged_data
+)
+svymean(~RIDAGEYR, nhanes_design, na.rm = TRUE)
+```
 
-**Next steps**
+## Methods (Plan)
 
-* Confirm outcome label (consider adding `DIQ010` while keeping `DIQ240` as a covariate).
-* Implement imputation and document MAR/MNAR assumptions.
-* Compare MLE vs Bayesian results; include survey-weighted estimates.
+- **Baseline:** Logistic regression (MLE)
+- **Main:** Bayesian logistic regression with weakly-informative priors
+- **Missingness:** Prefer multiple imputation (or Bayesian missing-data modeling) over listwise deletion to avoid instability/separation
+- **Compare:** effect estimates (ORs / posteriors), uncertainty (CIs vs credible intervals), calibration and discrimination
+
+---
+
+## Modeling
+
+```{r}
+# library(rstanarm)  # or library(brms)
+
+# Example formulas (uncomment after outcome finalized):
+# fit_mle <- glm(outcome ~ BMDBMIC + RIDAGEYR + RIAGENDR + RIDRETH1 + DIQ240,
+#                data = merged_data, family = binomial())
+
+# fit_bayes <- rstanarm::stan_glm(
+#   outcome ~ BMDBMIC + RIDAGEYR + RIAGENDR + RIDRETH1 + DIQ240,
+#   data = merged_data, family = binomial(),
+#   prior = rstanarm::normal(0, 2.5),
+#   prior_intercept = rstanarm::normal(0, 5),
+#   chains = 4, iter = 2000, seed = 123
+# )
+```
+
+## What to Expect in Results
+
+- **Stability:** Priors shrink unstable MLE estimates under separation
+- **Uncertainty:** Posteriors provide full credible intervals
+- **Practicality:** Survey-aware modeling reflects population inference
+- **Sensitivity:** Check priors; compare MI vs. deletion
+
+---
+
+## Next Steps
+
+- Finalize outcome (DIQ010 likely) and keep DIQ240 as covariate
+- Implement MI (document MAR/MNAR assumptions)
+- Fit MLE and Bayesian models; add survey-weighted variants
+- Report effects, uncertainty, and predictive performance
+
+---
 
 ## References
+See references.bib. (Key: survey methods, Bayesian GLMs, imputation.)
