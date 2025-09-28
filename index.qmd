@@ -105,36 +105,36 @@ $$
 
 A study was conducted to determine how...
 
-```{r, warning=FALSE, echo=T, message=FALSE}
-# loading packages 
+```{r}
+
+# Load required packages
 library(tidyverse)
 library(knitr)
-library(ggthemes)
 library(ggrepel)
-library(dslabs)
-```
 
-```{python}
-import pandas as pd
-```
+# Build merged NHANES dataset if missing
+if (!file.exists("data/merged_2013_2014.rds")) {
+  source("R/data_prep.R")
+}
 
-```{r, warning=FALSE, echo=TRUE}
-# Load Data
-kable(head(murders))
+# Load merged data
+merged_data <- readRDS("data/merged_2013_2014.rds")
 
-ggplot1 = murders %>% ggplot(mapping = aes(x=population/10^6, y=total)) 
+# Quick look
+knitr::kable(head(merged_data))
 
-  ggplot1 + geom_point(aes(col=region), size = 4) +
-  geom_text_repel(aes(label=abb)) +
-  scale_x_log10() +
-  scale_y_log10() +
-  geom_smooth(formula = "y~x", method=lm,se = F)+
-  xlab("Populations in millions (log10 scale)") + 
-  ylab("Total number of murders (log10 scale)") +
-  ggtitle("US Gun Murders in 2010") +
-  scale_color_discrete(name = "Region")+
-      theme_bw()
-  
+# Tabulations
+table(merged_data$BMDBMIC, useNA = "ifany")
+table(merged_data$DIQ240,  useNA = "ifany")
+
+# Example plot: Age distribution
+ggplot(merged_data, aes(x = RIDAGEYR)) +
+  geom_histogram(binwidth = 5, fill = "steelblue", color = "white") +
+  labs(
+    title = "Age Distribution (NHANES 2013–2014)",
+    x = "Age (years)", y = "Count"
+  ) +
+  theme_minimal()
 
 ```
 
