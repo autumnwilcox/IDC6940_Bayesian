@@ -53,7 +53,7 @@ uncertainty rather than drop cases. (See full citations in
 - **Source:** NHANES (CDC) 2013–2014.
 - **Files:** `BMX_H` (body measures), `DEMO_H` (demographics),
   `DIQ_H` (diabetes questionnaire).
-- **Variables (kept as your team selected):**
+- **Variables:**
   - Predictors/Covariates: `BMDBMIC` (BMI category), `RIDAGEYR` (age),
     `RIAGENDR` (sex), `RIDRETH1` (race/ethnicity).
   - Survey design: `WTMEC2YR`, `SDMVPSU`, `SDMVSTRA`.
