@@ -1,117 +1,166 @@
 ---
-title: "Present a great story for data science projects"
-subtitle: "This is a Slide Template"
-author: "Students names (Advisor: Dr. Cohen)"
+
+title: "Bayesian Logistic Regression Application in Diabetes Probability Prediction"
+subtitle: "IDC6940 Fall 2025 Capstone Project Presentation"
+author: "Namita Mishra, Autumn Wilcox (Advisor: Dr. Cohen)"
 date: '`r Sys.Date()`'
 format:
-  revealjs
+revealjs
 course: Capstone Projects in Data Science
 bibliography: references.bib # file contains bibtex for references
 #always_allow_html: true # this allows to get PDF with HTML features
 self-contained: true
-execute: 
-  warning: false
-  message: false
-editor: 
-  markdown: 
-    wrap: 72
----
-
-::: callout-important
-**Remember:** Your goal is to make your audience understand and care
-about your findings. By crafting a compelling story, you can effectively
-communicate the value of your data science project.
-
-Carefully read this template since it has instructions and tips to
-writing!
-
-More information about `revealjs`:
-<https://quarto.org/docs/reference/formats/presentations/revealjs.html>
-:::
+execute:
+warning: false
+message: false
+editor:
+markdown:
+wrap: 72
+--------
 
 ## Introduction  {.smaller}
 
--   Develop a storyline that captures attention and maintains interest.
+* Develop a storyline that captures attention and maintains interest.
+* Your audience is your peers.
+* Clearly state the problem or question you're addressing.
+* Introduce why it is relevant.
+* Provide an overview of your approach.
 
--   Your audience is your peers
+**Our framing (for this project):**
 
--   Clearly state the problem or question you're addressing.
+* T2D is a major public health burden. Early identification of risk factors (age, BMI, race/ethnicity, sex) can guide prevention.
+* Traditional logistic regression can suffer from separation and unstable estimates with small effective samples and missingness.
+* We compare frequentist vs Bayesian logistic regression on **NHANES 2013–2014** to predict diabetes-related outcomes.
 
--   Introduce why it is relevant needs.
-
--   Provide an overview of your approach.
-
-In kernel estimator, weight function is known as kernel function
-[@efr2008]. Cite this paper [@bro2014principal]. The GEE [@wang2014].
-The PCA [@daffertshofer2004pca]\*
+In kernel estimator, weight function is known as kernel function [@efr2008].
+Cite this paper [@bro2014principal]. The GEE [@wang2014]. The PCA [@daffertshofer2004pca].
 
 ## Methods
 
--   Detail the models or algorithms used.
+* Detail the models or algorithms used.
+* Justify your choices based on the problem and data.
 
--   Justify your choices based on the problem and data.
+**Planned approach:**
 
-
+* Baseline: classical logistic regression (MLE).
+* Main: Bayesian logistic regression (e.g., `rstanarm`/`brms`) with weakly-informative priors.
+* Address missingness via multiple imputation if needed; pool results.
+* Use NHANES complex survey design (`WTMEC2YR`, `SDMVPSU`, `SDMVSTRA`).
 
 ## Data Exploration and Visualization
 
--   Describe your data sources and collection process.
+* Describe your data sources and collection process.
+* Present initial findings and insights through visualizations.
+* Highlight unexpected patterns or anomalies.
 
--   Present initial findings and insights through visualizations.
+**Data source & variables (kept to match teammate’s script):**
 
--   Highlight unexpected patterns or anomalies.
+* **DEMO_H (2013–2014)**: `SEQN`, `RIDAGEYR`, `RIAGENDR`, `RIDRETH1`, `SDMVPSU`, `SDMVSTRA`, `WTMEC2YR`.
+* **BMX_H (2013–2014)**: `SEQN`, `BMDBMIC` (BMI category; often NA for adults).
+* **DIQ_H (2013–2014)**: `SEQN`, `DIQ240` (usual doctor for diabetes care; a feature, not diagnosis).
 
-## Data Exploration and Visualization {.smaller}
-
-A study was conducted to determine how...
-
-```{r, warning=FALSE, echo=F, message=FALSE}
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
 # loading packages 
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+need <- c("tidyverse","nhanesA","survey","ggrepel","ggthemes","dslabs")
+inst <- rownames(installed.packages())
+miss <- setdiff(need, inst)
+if (length(miss) > 0) install.packages(miss)
+
 library(tidyverse)
-library(knitr)
-library(ggthemes)
+library(nhanesA)
+library(survey)
 library(ggrepel)
+library(ggthemes)
 library(dslabs)
 ```
 
-```{r, warning=FALSE, echo=F}
-# Load Data
-#kable(head(murders))
+```{r, warning=FALSE, echo=FALSE}
+# Load NHANES data (2013–2014)
+bmx_h  <- nhanes("BMX_H")
+demo_h <- nhanes("DEMO_H")
+diq_h  <- nhanes("DIQ_H")
 
-ggplot1 = murders %>% ggplot(mapping = aes(x=population/10^6, y=total)) 
+stopifnot(all(c("SEQN","BMDBMIC") %in% names(bmx_h)))
+stopifnot(all(c("SEQN","RIDAGEYR","RIAGENDR","RIDRETH1","SDMVPSU","SDMVSTRA","WTMEC2YR") %in% names(demo_h)))
+stopifnot(all(c("SEQN","DIQ240") %in% names(diq_h)))
 
-  ggplot1 + geom_point(aes(col=region), size = 4) +
-  geom_text_repel(aes(label=abb)) +
-  scale_x_log10() +
-  scale_y_log10() +
-  geom_smooth(formula = "y~x", method=lm,se = F)+
-  xlab("Populations in millions (log10 scale)") + 
-  ylab("Total number of murders (log10 scale)") +
-  ggtitle("US Gun Murders in 2010") +
-  scale_color_discrete(name = "Region")+
-      theme_bw()
-  
+exam_sub <- bmx_h  %>% select(SEQN, BMDBMIC)
+demo_sub <- demo_h %>% select(SEQN, RIDAGEYR, RIAGENDR, RIDRETH1, SDMVPSU, SDMVSTRA, WTMEC2YR)
+diq_sub  <- diq_h  %>% select(SEQN, DIQ240)
 
+merged_data <- exam_sub %>%
+  left_join(demo_sub, by = "SEQN") %>%
+  left_join(diq_sub,  by = "SEQN")
+
+# Quick EDA
+data.frame(
+  BMDBMIC = as.integer(names(table(merged_data$BMDBMIC, useNA="ifany"))),
+  n = as.integer(table(merged_data$BMDBMIC, useNA="ifany"))
+) -> bmdbmic_tab
+
+bmdbmic_tab %>% ggplot(aes(x = factor(BMDBMIC, exclude=NULL), y = n)) +
+  geom_col() +
+  labs(x = "BMDBMIC (BMI category code)", y = "Count",
+       title = "Unweighted counts by BMDBMIC (NHANES 2013–2014)") +
+  theme_minimal()
+```
+
+## Data Exploration and Visualization {.smaller}
+
+A study was conducted to determine how… (Replace with your narrative.)
+
+```{r, warning=FALSE, echo=F, message=FALSE}
+# Example from template left here (not evaluated against NHANES)
+# ggplot on murders dataset (dslabs) for slide layout reference
+# ggplot1 = murders %>% ggplot(mapping = aes(x=population/10^6, y=total))
+# ggplot1 + geom_point(aes(col=region), size = 4) +
+#   geom_text_repel(aes(label=abb)) +
+#   scale_x_log10() +
+#   scale_y_log10() +
+#   geom_smooth(formula = "y~x", method=lm,se = F)+
+#   xlab("Populations in millions (log10 scale)") + 
+#   ylab("Total number of murders (log10 scale)") +
+#   ggtitle("US Gun Murders in 2010") +
+#   scale_color_discrete(name = "Region")+
+#   theme_bw()
 ```
 
 ## Modeling and Results
 
--   Explain your data preprocessing and cleaning steps.
-
--   Present your key findings in a clear and concise manner.
-
--   Use visuals to support your claims.
-
--   **Tell a story about what the data reveals.**
+* Explain your data preprocessing and cleaning steps.
+* Present your key findings in a clear and concise manner.
+* Use visuals to support your claims.
+* **Tell a story about what the data reveals.**
 
 ```{r}
-
+# Placeholders to be replaced with actual modeling as the team proceeds
+# library(rstanarm) # or library(brms)
+# analysis_df <- merged_data %>% mutate(
+#   # recodes / outcome construction (if adding DIQ010 later)
+# )
+# fit_mle <- glm(outcome ~ BMDBMIC + RIDAGEYR + RIAGENDR + RIDRETH1 + DIQ240,
+#                data = analysis_df, family = binomial())
+# summary(fit_mle)
+#
+# fit_bayes <- rstanarm::stan_glm(
+#   outcome ~ BMDBMIC + RIDAGEYR + RIAGENDR + RIDRETH1 + DIQ240,
+#   data = analysis_df, family = binomial(),
+#   prior = rstanarm::normal(0, 2.5), prior_intercept = rstanarm::normal(0, 5),
+#   chains = 4, iter = 2000, seed = 42
+# )
+# summary(fit_bayes)
 ```
 
 ## Conclusion
 
--   Summarize your key findings.
+* Summarize your key findings.
+* Discuss the implications of your results.
 
--   Discuss the implications of your results.
+**Next steps**
+
+* Confirm outcome label (consider adding `DIQ010` while keeping `DIQ240` as a covariate).
+* Implement imputation and document MAR/MNAR assumptions.
+* Compare MLE vs Bayesian results; include survey-weighted estimates.
 
 ## References
