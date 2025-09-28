@@ -24,11 +24,6 @@ editor:
 
 Slides: [slides.html](slides.html){target="_blank"} (Edit `slides.qmd`.)
 
-::: callout-important
-**Remember:** Keep the story tight: What question, why it matters,
-what data, what model, what we found, and what to do with it.
-:::
-
 ## Introduction
 
 Type 2 diabetes (T2D) is a major public health burden. Early
