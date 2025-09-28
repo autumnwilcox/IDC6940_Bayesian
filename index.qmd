@@ -4,8 +4,6 @@ subtitle: "Capstone Report"
 author:
   - "Namita Mishra"
   - "Autumn Wilcox"
-  - "Chad Michael Eyer"
-  - "Ecil Teodoro"
 advisor: "Dr. Ashraf Cohen"
 date: '`r Sys.Date()`'
 format:
