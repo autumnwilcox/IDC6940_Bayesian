@@ -24,29 +24,25 @@ Slides: [slides.html](slides.html){target="_blank"} (Edit `slides.qmd`.)
 
 ## Introduction
 
-Type 2 diabetes (T2D) is a major public health burden. Early
-identification of population-level risk factors—age, BMI category,
-sex, and race/ethnicity—supports prevention and targeted intervention.
-Classical logistic regression (MLE) can become unstable when effective
-sample size shrinks (after missingness handling) or when quasi-/complete
-separation occurs. Bayesian logistic regression adds priors that
-regularize estimates and provides full uncertainty (posterior) for
-transparent decision-making.
+Diabetes mellitus (DM) is a major public health challenge, and identifying key risk factors—such as obesity, age, race, and gender—is essential for prevention and targeted intervention. Logistic regression is widely used to estimate associations between such risk factors and binary outcomes, including the presence or absence of diabetes. However, classical maximum likelihood estimation (MLE) can yield unstable results in small samples or in the presence of missing data, quasi-separation, or complete separation. Moreover, healthcare data (e.g., DNA sequences, imaging, patient-reported outcomes, electronic health records, and longitudinal health measurements) are often complex, making standard analytical approaches insufficient [@zeger2020].
 
-**Our question:** Using NHANES 2013–2014, what is the association
-between key predictors (BMI category, age, sex, race/ethnicity) and a
-diabetes-related outcome, and does a Bayesian approach yield more stable
-inference than a frequentist baseline under missingness and potential
-separation?
+Bayesian hierarchical models, implemented via Markov Chain Monte Carlo (MCMC), provide a framework that integrates prior knowledge and accounts for hierarchical data structures. These models have been successfully applied in predicting patient health status across diseases such as pneumonia, prostate cancer, and mental disorders [@zeger2020]. Compared to frequentist approaches, Bayesian inference naturally quantifies uncertainty and accommodates complex covariate structures, though it remains limited by parametric assumptions.
+
+Recent work has extended Bayesian methods to disease diagnostics. For example, Bayesian inference has been used to evaluate diagnostic test data from the National Health and Nutrition Examination Survey (NHANES), comparing parametric and nonparametric approaches. These methods provide posterior probabilities that improve disease classification, especially where conventional dichotomous thresholds fail to capture heterogeneity in populations [@chatzimichail2023]. Similarly, Bayesian clinical reasoning models have been applied to cardiovascular risk prediction, emulating clinician decision-making by incorporating demographic, metabolic, and conventional risk factors [@liu2013].
+
+Bayesian regression also addresses methodological challenges such as missing data. Multiple imputation combined with Bayesian modeling has been applied to clinical research settings, generating robust estimates under assumptions of missing at random (MAR), missing not at random (MNAR), or missing completely at random (MCAR) [@austin2021]. These applications highlight the versatility of Bayesian approaches in healthcare, particularly when traditional models are undermined by data limitations.
 
 ## Related Work
 
-Bayesian methods can stabilize inference with small or messy health
-data and quantify uncertainty via posteriors (e.g., hierarchical and
-GLM settings). Prior choices and sensitivity checks matter; multiple
-imputation can be combined with Bayesian modeling to propagate
-uncertainty rather than drop cases. (See full citations in
-`references.bib`.)
+The broader Bayesian literature emphasizes the importance of prior specification, model checking, and variable selection. Vande Schoot et al. highlight the role of informative, weakly informative, and diffuse priors, noting that prior elicitation can draw from experts, data-based approaches, or maximum likelihood estimates [@vandeschoot2021]. Priors not only regularize estimates but also improve performance in small samples. Tutorials demonstrate how packages such as brms and blavaan in R, combined with MCMC, allow estimation of posterior distributions and facilitate empirical Bayesian analysis [@klauenberg2015].
+
+In meta-analytic settings, Bayesian hierarchical regression has been used to augment data with results from prior studies. This approach incorporates both exchangeable and unexchangeable predictors, enabling explicit testing of heterogeneity across studies [@deleeuw2012]. Such hierarchical modeling strengthens inference in small-sample or multi-study contexts where frequentist regression falls short.
+
+Applications extend beyond traditional regression. Baldwin and Larson illustrated Bayesian regression with EEG and anxiety data, showing how priors and posterior distributions yield richer probabilistic interpretations than frequentist results [@baldwin2017]. Kruschke and Liddell framed Bayesian reasoning as intuitive, reflecting how individuals update beliefs with new evidence [@kruschke2017]. Abdullah et al. reviewed Bayesian deep learning in healthcare, highlighting its role in uncertainty quantification for tasks such as medical imaging and disease classification [@abdullah2022].
+
+Together, these works underscore the adaptability of Bayesian methods across domains, while also noting challenges including computational demands, subjective prior specification, and the need for careful convergence diagnostics. This literature directly motivates our project, which applies Bayesian logistic regression to NHANES survey data to explore predictors of diabetes outcomes while addressing quasi-separation, missingness, and small effective sample size.
+
+**Our question:** Using NHANES 2013–2014, what is the association between key predictors (BMI category, age, sex, race/ethnicity) and a diabetes-related outcome, and does a Bayesian approach yield more stable inference than a frequentist baseline under missingness and potential separation?
 
 ## Data & Preparation
 
@@ -169,8 +165,3 @@ interpretable uncertainty.
 and present results with clear figures and tables.
 
 ## References
-
-```{r}
-# Optional reproducibility details
-sessionInfo()
-```
