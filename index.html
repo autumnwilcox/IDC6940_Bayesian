@@ -2246,12 +2246,9 @@ vertical-align: -.125em;
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>Type 2 diabetes (T2D) is a major public health burden. Early identification of population-level risk factors—age, BMI category, sex, and race/ethnicity—supports prevention and targeted intervention. Classical logistic regression (MLE) can become unstable when effective sample size shrinks (after missingness handling) or when quasi-/complete separation occurs. Bayesian logistic regression adds priors that regularize estimates and provides full uncertainty (posterior) for transparent decision-making.</p>
 <p><strong>Our question:</strong> Using NHANES 2013–2014, what is the association between key predictors (BMI category, age, sex, race/ethnicity) and a diabetes-related outcome, and does a Bayesian approach yield more stable inference than a frequentist baseline under missingness and potential separation?</p>
-<blockquote class="blockquote">
-<p>Note: In this draft we keep the team’s chosen variables unchanged (<code>BMDBMIC</code>, <code>DIQ240</code>, demographics). In the next iteration we may swap in <code>DIQ010</code> (“ever told you had diabetes”) as a clearer outcome and keep <code>DIQ240</code> as a predictor.</p>
-</blockquote>
 </section>
-<section id="related-work-very-brief" class="level2">
-<h2 class="anchored" data-anchor-id="related-work-very-brief">Related Work (very brief)</h2>
+<section id="related-work" class="level2">
+<h2 class="anchored" data-anchor-id="related-work">Related Work</h2>
 <p>Bayesian methods can stabilize inference with small or messy health data and quantify uncertainty via posteriors (e.g., hierarchical and GLM settings). Prior choices and sensitivity checks matter; multiple imputation can be combined with Bayesian modeling to propagate uncertainty rather than drop cases. (See full citations in <code>references.bib</code>.)</p>
 </section>
 <section id="data-preparation" class="level2">

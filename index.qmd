@@ -39,12 +39,7 @@ diabetes-related outcome, and does a Bayesian approach yield more stable
 inference than a frequentist baseline under missingness and potential
 separation?
 
-> Note: In this draft we keep the team’s chosen variables unchanged
-> (`BMDBMIC`, `DIQ240`, demographics). In the next iteration we may
-> swap in `DIQ010` (“ever told you had diabetes”) as a clearer outcome
-> and keep `DIQ240` as a predictor.
-
-## Related Work (very brief)
+## Related Work
 
 Bayesian methods can stabilize inference with small or messy health
 data and quantify uncertainty via posteriors (e.g., hierarchical and
@@ -80,13 +75,11 @@ merged_data <- readRDS("data/merged_2013_2014.rds")
 
 # Quick peek
 knitr::kable(head(merged_data))
-
 ```
 
 ## Basic Exploration 
 
 ```{r}
-
 # Safe tabulations (keep NA visible)
 table(merged_data$BMDBMIC, useNA = "ifany")
 table(merged_data$DIQ240,  useNA = "ifany")
@@ -107,13 +100,11 @@ merged_data %>%
   labs(title = "Counts by BMDBMIC (BMI category code)",
        x = "BMDBMIC (code; NA common for adults)", y = "Count") +
   theme_minimal()
-
 ```
 
 ## Survey Design
 
 ``` {r}
-
 # Survey design setup (weights/strata/PSU)
 library(survey)
 nhanes_design <- svydesign(
@@ -126,7 +117,6 @@ nhanes_design <- svydesign(
 
 # Example: weighted mean age
 svymean(~RIDAGEYR, nhanes_design, na.rm = TRUE)
-
 ```
 
 ## Methods
@@ -142,7 +132,6 @@ sensitivity checks.
 ## Modeling (placeholders)
 
 ```{r}
-
 # Example skeletons (commented until outcome is finalized)
 
 # library(rstanarm)  # or library(brms)
@@ -163,7 +152,6 @@ sensitivity checks.
 # Next steps:
 # - finalize outcome (prefer DIQ010), run MI if needed, then fit both models
 # - compare odds ratios/posteriors, AUC, calibration, and survey-weighted variants
-
 ```
 
 ## Results (to be populated)
@@ -183,8 +171,6 @@ and present results with clear figures and tables.
 ## References
 
 ```{r}
-
 # Optional reproducibility details
 sessionInfo()
-
 ```

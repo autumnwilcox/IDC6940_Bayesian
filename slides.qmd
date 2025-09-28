@@ -24,8 +24,10 @@ editor:
 ## Our Question
 
 - Can Bayesian logistic regression provide **more stable** and **transparent** inference than classical MLE for diabetes-related outcomes in **NHANES 2013–2014**?
-- Focus predictors: **BMI category (BMDBMIC)**, **Age (RIDAGEYR)**, **Sex (RIAGENDR)**, **Race/Ethnicity (RIDRETH1)**  
-- Outcome (for now): **DIQ240** (usual diabetes doctor) — diabetes-related; we may swap to **DIQ010** (diagnosis) in the next iteration and keep DIQ240 as a covariate.
+
+- **Focus predictors:** BMI category (BMDBMIC), Age (RIDAGEYR), Sex (RIAGENDR), Race/Ethnicity (RIDRETH1)  
+
+- **Outcome:** DIQ240 (usual diabetes doctor) — diabetes-related; we may swap to DIQ010 (diagnosis) in the next iteration and keep DIQ240 as a covariate.
 
 ---
 
@@ -33,43 +35,44 @@ editor:
 
 - Source: NHANES 2013–2014  
 - Files: **BMX_H**, **DEMO_H**, **DIQ_H**  
-- Preprocessing is in **`R/data_prep.R`** (team runs once)
-- Analysis slides **load** prebuilt data:
+- Preprocessing is in **`R/data_prep.R`** 
+- Analysis slides load prebuilt data:
 
 ```{r}
-# Build if missing, then load
 if (!file.exists("data/merged_2013_2014.rds")) {
   source("R/data_prep.R")
 }
 merged_data <- readRDS("data/merged_2013_2014.rds")
+dim(merged_data)
 ```
 
 ---
 
-## Variables (Kept to Match Team Script)
+## Variables
 
-**Predictors/Covariates:**
-- BMDBMIC (BMI category), RIDAGEYR (Age), RIAGENDR (Sex), RIDRETH1 (Race/Ethnicity)
+- **Predictors/Covariates:**
+BMDBMIC (BMI category), RIDAGEYR (Age), RIAGENDR (Sex), RIDRETH1 (Race/Ethnicity)
 
-**Survey Design:**
-- WTMEC2YR (weights), SDMVPSU (PSU), SDMVSTRA (strata)
+- **Survey Design:**
+WTMEC2YR (weights), SDMVPSU (PSU), SDMVSTRA (strata)
 
-**Outcome (current placeholder):**
-- DIQ240 — not a diagnosis; proxy for diabetes care.
+- **Outcome (current placeholder):**
+DIQ240 — not a diagnosis; proxy for diabetes care.
 - **Plan:** consider DIQ010 as outcome; keep DIQ240 as access/behavior covariate.
 
 ---
+
+## Quick EDA: Age Table
+
+```{r}
+library(knitr)
+knitr::kable(head(merged_data[, c("SEQN", "BMDBMIC", "RIDAGEYR")]))
+```
 
 ## Quick EDA: Age Distribution 
 
 ```{r}
 library(tidyverse)
-library(knitr)
-
-# Peek
-knitr::kable(head(merged_data))
-
-# Plot
 ggplot(merged_data, aes(x = RIDAGEYR)) +
   geom_histogram(binwidth = 5, boundary = 0, closed = "left") +
   labs(title = "Age Distribution (NHANES 2013–2014)",
@@ -104,7 +107,7 @@ nhanes_design <- svydesign(
 svymean(~RIDAGEYR, nhanes_design, na.rm = TRUE)
 ```
 
-## Methods (Plan)
+## Methods
 
 - **Baseline:** Logistic regression (MLE)
 - **Main:** Bayesian logistic regression with weakly-informative priors
