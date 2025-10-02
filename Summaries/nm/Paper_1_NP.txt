@@ -1,0 +1,15 @@
+Importance of Bayesian methods in medical diagnosis and management 
+
+Problem:
+Conventional methods for medical diagnosis commonly use established clinical criteria and fixed numerical thresholds, which have limitations and fail to capture the intricate relations between diagnostic tests and the varying prevalence of diseases. 
+
+
+Solution: To address these limitations, our research focuses on implementing Bayesian inference to calculate the posterior probabilities associated with disease diagnosis and developed a computational tool that employ Bayesian inference, calculate the posterior probability of disease diagnosis integrating prior probabilities of disease with distributions of diagnostic measurands in both diseased and nondiseased populations that enables the evaluation of the information on diagnostic measurements and the combination of data from multiple diagnostic tests, to improve diagnostic accuracy and precision while introducing flexibility, adaptability, and versatility into the diagnostic process. The study mentions that, although a normal distribution is invaluable in statistical modeling, critical evaluation should be accompanied by an openness to adopt alternative statistical distributions when needed.
+
+Application: National Health and Nutrition Examination Survey (NHANES) data were used to demonstrate the application of the program, where fasting plasma glucose (FPG) and glycated hemoglobin A1c (HbA1c) were measurands used for Bayesian diagnosis of diabetes mellitus. The tool compared parametric and nonparametric distributions to calculate posterior probabilities for the disease. 
+
+Result:
+Bayesian methodologies provide a framework that offers enhanced diagnostic precision through a more comprehensive probabilistic assessment. Nonparametric Bayesian model produced a better fit to data distributions, emphasizing the robustness of nonparametric techniques in capturing complex data distributions. The method can be applied to real-world clinical trials and also in more diagnostic modalities.
+
+Ref
+Chatzimichail, T., & Hatjimihail, A. T. (2023). A Bayesian Inference-Based Computational Tool for Parametric and Nonparametric Medical Diagnosis. Diagnostics, 13(19). https://doi.org/10.3390/DIAGNOSTICS13193135
