@@ -1,0 +1,16 @@
+Baysian MI and Bayesian Logistic regression @Austin2021
+
+Problem
+Missing data a common occurrence in clinical research occurs when the values of the variables of interest are not measured or recorded for all subjects in the sample due to -
+(i) patient refusal to respond to specific questions
+(ii) loss of patient to follow-up; 
+(iii)investigator or mechanical error 
+(iv) physicians not ordering certain investigations for some patients 
+
+Solution
+The study mentined the portance of understanding the type  of missing data and conditions (MAR, MNAR, MCAR). Based on the type  missing data, Multiple imputation (MI) is a popular approach for addressing the presence of missing data. 
+Mi provides multiple plausible values of a given variable imputed or filled in for each subject who has missing data for that variable.  This results in the creation of multiple completed data sets. 
+With this approach identical statistical analyses are conducted in each of these complete data sets. The pooled results from across complete data sets, are then analyzed. The study introduces MI, its implementation, developing the imputation model, emphasizing number of imputed data sets to create, and addresses derived variables. 
+
+Application
+They provided application of MI through an analysis on patients hospitalised with heart failure to estimate the probability of 1-year mortality in the presence of missing data using (R, SAS, and Stata)@Austin2021

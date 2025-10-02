@@ -1,0 +1,16 @@
+Problem: 
+Analysis of subpopulations that exist with tumours and their ancestral relationships 
+Without examining the impact of priors through a sensitivity analysis and prior predictive checking, the researcher would not be aware of how sensitive results are to changes in the priors. 
+The individual parameters have a different amount of uncertainty in priors (hyperparameters). A larger variance has a greater amount of uncertainty surrounding the mean, and vice versa. The diffuse and weakly informative priors show more spread than the informative priors, owing to their larger variances. 
+Prior elicitation that derives the priors varies (data-based, experts,  or expert panels, generic expert-based). Prior results can be aligned or may not align with the likelihood and require prior sensitivity analysis to fully understand the influence of the prior on posterior estimates, depending on the sample size, subjectivity.
+
+Solution:
+Prior predictive checking can help prevent mistakes in the formalization of the priors, whether it is (informative, weakly informative, or diffuse). The normal distribution of the prior is specified by the hyperparameters (mean and variance, mean and standard deviation, or mean and precision (the inverse of the variance).
+Prior predictive distribution and the data are compared on  mean and standard deviation of the data, which are used to check prior predictive performance to reflect important characteristics of the data, such as skewness. Also, it is suggested to check the prior through the prior predictive kernel distributions.
+
+Applications:
+Bayesian approaches have provided a powerful alternative to frequentist approaches for assessing associations between genetic variants and a phenotype of interest in a population. The approach incorporated prior knowledge of phenotype relationships derived from a diagnosis classification tree, as from the International Classification of Diseases (ICD-10). 
+Multi-omics data sets are better analyzed using Bayesian solutions to the problem of multimodal data integration and in large-scale cancer genomic data sets to identify molecular changes associated with cancer initiation and progression. Phylogenetic analysis of heterogeneous cancers identifies subpopulations that exist within tumours and their ancestral relationships through the analysis of single-cell and bulk tissue-sequencing data.
+
+Ref:
+van de Schoot, R., Depaoli, S., King, R., Kramer, B., Märtens, K., Tadesse, M. G., Vannucci, M., Gelman, A., Veen, D., Willemsen, J., & Yau, C. (2021). Bayesian statistics and modelling. Nature Reviews Methods Primers, 1(1), 1–26. https://doi.org/10.1038/S43586-020-00001-2;SUBJMETA=531,639,648,705,706;KWRD=SCIENTIFIC+COMMUNITY,STATISTICS

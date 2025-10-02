@@ -1,0 +1,59 @@
+NHANES DATASET -https://wwwn.cdc.gov/nchs/nhanes/continuousnhanes/default.aspx?BeginYear=2013
+# loading packages 
+
+library(tidyverse)
+library(knitr)
+library(ggthemes)
+library(ggrepel)
+library(dslabs)
+library(Hmisc)
+library(dplyr)
+library(tidyr)
+library(forcats)
+library(ggplot2)
+library ("nhanesA")                 
+
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
+install.packages("nhanesA")
+
+# making subsets for each dataset  
+                       
+                       nhanesTables('EXAM', 2013)
+                       nhanesTables('QUESTIONNAIRE', 2013)
+                       nhanesTables('DEMOGRAPHICS', 2013)
+                       
+                       
+nhanesCodebook("BMX_H")
+nhanesCodebook("SMQ_H")
+           
+  #  .xpt files read ( 2013–2014) 
+                      bmx_h <- nhanes("BMX_H")         #Exam
+                      smq_h <- nhanes("SMQ_H")         #Quest
+                      demo_h <- nhanes("DEMO_H")       #Demo
+                      diq_h <- nhanes("DIQ_H")         #diabetes
+
+
+# variables of interest
+exam_sub <-   bmx_h  %>% select(SEQN, BMDBMIC)
+demo_sub <- demo_h %>% select(SEQN, RIDAGEYR, RIAGENDR, RIDRETH1, SDMVPSU, SDMVSTRA, WTMEC2YR)
+diq_sub <-  diq_h %>% select (SEQN, DIQ240)
+
+# Names of all variables selected for analysis
+names(exam_sub)
+names(demo_sub)
+names(diq_sub)
+
+# merged dataframe
+merged_data <- exam_sub %>%
+  left_join(demo_sub, by = "SEQN") %>%
+  left_join(diq_sub, by = "SEQN")
+head(merged_data)
+
+
+nhanesCodebook("DEMO_H",'RIDRETH1')
+nhanesCodebook("DEMO_H",'RIAGENDR')
+nhanesCodebook("DEMO_H",'RIDAGEYR')
+nhanesCodebook("DIQ_H","DIQ240")
+nhanesCodebook("BMX_H",'BMDBMIC')
+
