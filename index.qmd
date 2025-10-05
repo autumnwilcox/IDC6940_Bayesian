@@ -7,15 +7,21 @@ author:
   - "Ecil Teodoro"
 advisor: "Dr. Ashraf Cohen"
 date: '`r Sys.Date()`'
+course: Capstone Projects in Data Science
+
 format:
   html:
     code-fold: true
-course: Capstone Projects in Data Science
+
 bibliography: references.bib
+reference-section-title: "References"
+link-citations: true
 self-contained: true
+
 execute:
   warning: false
   message: false
+
 editor:
   markdown:
     wrap: 72
@@ -25,7 +31,7 @@ Slides: [slides.html](slides.html){target="_blank"} (Edit `slides.qmd`.)
 
 ## Introduction
 
-Diabetes mellitus (DM) is a major public health challenge, and identifying key risk factors—such as obesity, age, sex, and race/ethnicity—is essential for prevention and targeted intervention. Logistic regression is widely used to estimate associations between such risk factors and binary outcomes, including the presence or absence of diabetes. However, classical maximum likelihood estimation (MLE) can yield unstable results in small samples or in the presence of missing data, quasi-separation, or complete separation. Moreover, healthcare data (e.g., DNA sequences, imaging, patient-reported outcomes, electronic health records, and longitudinal health measurements) are often complex, making standard analytical approaches insufficient [@zeger2020].
+Diabetes mellitus (DM) is a major public health challenge, and identifying key risk factors—such as obesity, age, sex, and race/ethnicity—is essential for prevention and targeted intervention. Logistic regression is widely used to estimate associations between such risk factors and binary outcomes, including the presence or absence of diabetes. However, classical maximum likelihood estimation (MLE) can yield unstable results in small samples or in the presence of missing data, quasi-separation, or complete separation. Moreover, healthcare data (e.g., DNA sequences, imaging, patient-reported outcomes, electronic health records, and longitudinal health measurements) are often complex, making standard analytical approaches insufficient [@zeger2020]. Recent Bayesian advances emphasize representing predictive **uncertainty** alongside point estimates, which is critical when clinical decisions hinge on risk thresholds; for example, approximate Bayesian deep learning with Monte Carlo dropout provides calibrated uncertainty without changing model architecture [@gal2016dropout]. In epidemiologic modeling, Bayesian approaches are increasingly preferred when separation, small samples, or missingness complicate classical inference [@baldwin2017; @kruschke2017].
 
 Bayesian hierarchical models, implemented via Markov Chain Monte Carlo (MCMC), provide a framework that integrates prior knowledge and accounts for hierarchical data structures. These models have been successfully applied in predicting patient health status across diseases such as pneumonia, prostate cancer, and mental disorders [@zeger2020]. Compared to frequentist approaches, Bayesian inference naturally quantifies uncertainty and accommodates complex covariate structures, though it remains limited by parametric assumptions.
 
@@ -35,7 +41,11 @@ Bayesian regression also addresses methodological challenges such as missing dat
 
 The broader Bayesian literature emphasizes the importance of prior specification, model checking, and variable selection. Vande Schoot et al. highlight the role of informative, weakly informative, and diffuse priors, noting that prior elicitation can draw from experts, data-based approaches, or maximum likelihood estimates [@vandeschoot2021]. Priors not only regularize estimates but also improve performance in small samples. Tutorials demonstrate how packages such as brms and blavaan in R, combined with MCMC, allow estimation of posterior distributions and facilitate empirical Bayesian analysis [@klauenberg2015].
 
-In meta-analytic settings, Bayesian hierarchical regression has been used to augment data with results from prior studies. This approach incorporates both exchangeable and unexchangeable predictors, enabling explicit testing of heterogeneity across studies [@deleeuw2012]. Other works extend Bayesian methods to psychology and neuroscience (e.g., EEG studies [@baldwin2017]), intuitive reasoning frameworks [@kruschke2017], and Bayesian deep learning in healthcare applications such as imaging [@abdullah2022].
+In meta-analytic settings, Bayesian hierarchical regression has been used to augment data with results from prior studies. This approach incorporates both exchangeable and unexchangeable predictors, enabling explicit testing of heterogeneity across studies [@deleeuw2012]. Other works extend Bayesian methods to psychology and neuroscience (e.g., EEG studies [@baldwin2017]), intuitive reasoning frameworks [@kruschke2017], and Bayesian deep learning in healthcare applications such as imaging [@abdullah2022bdlhealth].
+
+### Related Bayesian Methods for Clinical Risk Modeling
+
+Beyond standard Bayesian GLMs, several strands of the literature inform our approach and possible extensions. **Bayesian nonparametric regression** can flexibly capture heavy tails and zero-inflation common in health cost and utilization data [@richardson2018bnr]. For **variable selection and nonlinear effects**, Bayesian Additive Regression Trees (BART) provide a robust alternative to linear terms; recent work proposes permutation- and backward-selection procedures that improve the identification of relevant predictors in mixed-type data [@luo2024bartvs]. In **dynamic risk prediction**, Bayesian state-space/Markov models that incorporate time-varying biomarkers have substantially improved clinical stratification relative to static baselines [@momeni2021covidbayes]. For **time-to-event outcomes**, BART-based survival models relax proportional hazards assumptions while delivering calibrated uncertainty [@sparapani2020bartsurvival]. Finally, **Bayesian model averaging** offers a principled way to account for model uncertainty by weighting across candidate specifications rather than selecting a single “best” model [@hoeting1999bma], and **Bayesian deep learning** contributes scalable uncertainty quantification when richer feature sets (e.g., imaging, EHR embeddings) are used [@abdullah2022bdlhealth; @gal2016dropout].
 
 ## Aim 
 
@@ -235,7 +245,7 @@ saveRDS(adult, "data/adult_cleaned_2013_2014.rds")
 
 ### Survey Design
 
-``` {r}
+```{r}
 # ---------------- Survey Design ----------------
 # Use exam weights because BMI (BMXBMI) is an MEC variable
 nhanes_design_adult <- survey::svydesign(
@@ -276,7 +286,7 @@ We applied four complementary approaches to the NHANES 2013–2014 adult dataset
 4. **Bayesian Logistic Regression:**  
    - Modeled `DIQ010` as a function of standardized BMI (`bmi_c`), age (`age_c`), sex, and race/ethnicity using `brms`.  
    - Priors: weakly informative Normal(0, 2.5) for coefficients and Student-t(3, 0, 10) for the intercept [@gelman2008].  
-   - Four chains × 2000 iterations (50% warm-up), `adapt_delta = 0.95`.  
+   - Four chains × 2000 iterations (50% warm-up), `adapt_delta = 0.95`. Sampling used the No-U-Turn Sampler (NUTS), an adaptive variant of Hamiltonian Monte Carlo that removes most manual tuning while maintaining efficient exploration of complex posteriors [@hoffman2014nuts].
    - **Normalized survey weights** (`WTMEC2YR` scaled to mean 1) used as importance weights to approximate complex sampling.  
    - Diagnostics: **R̂ < 1.01**, effective sample sizes, trace plots, and **posterior predictive checks (`pp_check`)**.  
    - Note: `brms` weights approximate but do not fully model NHANES design (no strata/PSU in likelihood).
@@ -513,12 +523,14 @@ Overall, the Bayesian approach yielded inference that was comparably accurate, m
 
 ### Discussion and Conclusion
 
-This analysis examined whether Bayesian logistic regression offers more stable and interpretable inference than classical logistic regression when modeling diabetes risk factors using NHANES 2013–2014 data. All methods—frequentist, imputed, and Bayesian—identified **age** and **BMI** as the strongest predictors of doctor-diagnosed diabetes, with **higher odds among older adults and those with higher BMI.** Females consistently showed lower odds of diabetes than males, while **Mexican American, non-Hispanic Black, and multiracial adults** exhibited elevated odds compared to non-Hispanic Whites.  
+This analysis examined whether Bayesian logistic regression offers more stable and interpretable inference than classical logistic regression when modeling diabetes risk factors using NHANES 2013–2014 data. All methods—frequentist, imputed, and Bayesian—identified **age** and **BMI** as the strongest predictors of doctor-diagnosed diabetes, with **higher odds among older adults and those with higher BMI.** Females consistently showed lower odds of diabetes than males, while **Mexican American, non-Hispanic Black, and multiracial adults** exhibited elevated odds compared to non-Hispanic Whites. These sex-specific disparities are consistent with findings from a Bayesian meta-analysis, which identified higher prevalence and risk factors for type 2 diabetes among men compared to women [@ali2024].
 
 The Bayesian approach provided several advantages. By integrating weakly informative priors, it produced regularized parameter estimates that avoided instability under missing data or quasi-separation. Its posterior distributions offered richer insight into uncertainty than single-point frequentist estimates. In contrast, traditional MLE and even multiple imputation can yield biased or overly confident estimates in small or incomplete samples.  
 
 Although the Bayesian model approximated survey weighting rather than fully modeling NHANES’s complex design, the resulting estimates aligned closely with design-based frequentist results, supporting its robustness. The high effective sample sizes and R̂ ≈ 1.00 across parameters confirmed excellent model convergence.  
 
 **In conclusion,** Bayesian logistic regression provided inference that was **statistically consistent, computationally stable, and interpretable**—achieving the aim of this project. Its flexibility and transparency make it a valuable complement to classical regression in epidemiologic research, particularly when data are incomplete or model assumptions are strained. Future work could extend this approach to hierarchical NHANES cycles or include biomarkers to assess nonlinear effects of metabolic risk factors.
+
+Future work could (i) compare linear-term models with **nonlinear BART-based classifiers** and permutation/backward selection for variable importance [@luo2024bartvs], (ii) evaluate **Bayesian model averaging** to reflect model uncertainty across alternative covariate sets [@hoeting1999bma], and (iii) extend to **dynamic Bayesian models** that update diabetes risk as longitudinal biomarkers accrue [@momeni2021covidbayes].
 
 ## References
