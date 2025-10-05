@@ -1,0 +1,40 @@
+/* === Global text scaling === */
+.reveal {
+  font-size: 1.05em;      /* Moderate increase — halfway between original and large */
+  line-height: 1.55;
+}
+
+/* === Headings === */
+.reveal h1 { font-size: 2.0em; margin-bottom: 0.5em; }
+.reveal h2 { font-size: 1.6em; margin-bottom: 0.4em; }
+.reveal h3 { font-size: 1.3em; margin-bottom: 0.35em; }
+
+/* === Lists & paragraphs === */
+.reveal ul, .reveal ol { font-size: 1.0em; line-height: 1.5; }
+.reveal p { font-size: 1.0em; }
+
+/* === Tables === */
+.reveal table { font-size: 0.95em; }
+
+/* === Code blocks === */
+.reveal pre code {
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+/* === Utility classes for per-slide tuning === */
+.slightly-smaller { font-size: 0.9em !important; }
+.small-text       { font-size: 0.8em !important; }
+.xsmall-text      { font-size: 0.7em !important; }
+
+.slightly-larger  { font-size: 1.15em !important; }
+.large-text       { font-size: 1.25em !important; }
+
+/* === Optional footer === */
+.reveal .footer {
+  position: absolute;
+  bottom: 0.7em;
+  right: 1.2em;
+  font-size: 0.85em;
+  opacity: 0.7;
+}
