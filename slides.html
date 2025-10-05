@@ -11,7 +11,7 @@
 
   <meta name="author" content="Namita Mishra">
   <meta name="author" content="Autumn Wilcox">
-  <meta name="dcterms.date" content="2025-10-01">
+  <meta name="dcterms.date" content="2025-10-05">
   <title>Bayesian Logistic Regression for Diabetes Risk (NHANES 2013–2014)</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -32,6 +32,7 @@
     }
   </style>
   <link rel="stylesheet" href="slides_files/libs/revealjs/dist/theme/quarto-0fde88a82f0356838740f155f1088782.css">
+  <link rel="stylesheet" href="slides.css">
   <link href="slides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="slides_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="slides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -145,249 +146,233 @@ Autumn Wilcox
 </div>
 </div>
 
-  <p class="date">2025-10-01</p>
+  <p class="date">2025-10-05</p>
 </section>
-<section id="our-question" class="slide level2">
-<h2>Our Question</h2>
+<section id="aim" class="slide level2">
+<h2>Aim</h2>
 <ul>
-<li>Can Bayesian logistic regression provide <strong>more stable</strong> and <strong>transparent</strong> inference than classical MLE for diabetes-related outcomes in <strong>NHANES 2013–2014</strong>?</li>
+<li>Can Bayesian logistic regression provide <strong>more stable</strong> and <strong>transparent</strong> inference than classical MLE for doctor-diagnosed diabetes in <strong>NHANES 2013–2014</strong>?</li>
 </ul>
 </section>
-<section id="data-pipeline-reproducible" class="slide level2">
-<h2>Data Pipeline (Reproducible)</h2>
+<section id="why-bayesian-principles-motivation" class="slide level2">
+<h2>Why Bayesian? (Principles &amp; Motivation)</h2>
 <ul>
-<li>Source: NHANES 2013–2014<br>
+<li><strong>Posterior ∝ Likelihood × Prior</strong>: update beliefs with data.</li>
+<li><strong>We need</strong> stability under missingness and potential separation.</li>
+<li><strong>Advantages here:</strong>
+<ul>
+<li>Regularization from weakly-informative priors</li>
+<li>Full uncertainty via posterior distributions (credible intervals)</li>
+<li>Incorporates prior clinical/epi knowledge when available</li>
+</ul></li>
+<li><strong>Bottom line:</strong> improves stability and interpretability vs.&nbsp;classical MLE.</li>
+</ul>
+</section>
+<section id="study-overview-data" class="slide level2">
+<h2>Study Overview &amp; Data</h2>
+<ul>
+<li><strong>Data Source:</strong> NHANES 2013–2014 (CDC/NCHS)<br>
 </li>
-<li>Files: <strong>BMX_H</strong>, <strong>DEMO_H</strong>, <strong>DIQ_H</strong><br>
+<li><strong>Population:</strong> Adults aged ≥20 years<br>
 </li>
-<li>Preprocessing:in <strong><code>R/data_prep.R</code></strong> → creates <strong><code>merged_2013_2014.rds</code></strong></li>
+<li><strong>Outcome Variable:</strong> <code>DIQ010</code> — “Has a doctor told you that you have diabetes?”
+<ul>
+<li>Recorded as 1 = Yes, 0 = No (excluding 7 = Refused, 9 = Don’t know)</li>
+</ul></li>
+<li><strong>Predictors:</strong>
+<ul>
+<li><code>BMXBMI</code> – Body Mass Index (kg/m²)<br>
+</li>
+<li><code>RIDAGEYR</code> – Age (years)<br>
+</li>
+<li><code>RIAGENDR</code> – Sex (Male/Female)<br>
+</li>
+<li><code>RIDRETH1</code> – Race/Ethnicity (5 categories)</li>
+</ul></li>
+<li><strong>Survey Design Variables:</strong>
+<ul>
+<li>Weight = <code>WTMEC2YR</code>, Strata = <code>SDMVSTRA</code>, PSU = <code>SDMVPSU</code></li>
+</ul></li>
+<li><strong>Sample Size:</strong> 5,769 adults; 5,592 with non-missing diabetes status<br>
+</li>
+<li><strong>Weighted diabetes prevalence:</strong> 8.9%</li>
 </ul>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 9813    9</code></pre>
-</div>
-</div>
-</section>
-<section id="predictors" class="slide level2">
-<h2>Predictors</h2>
-<ul>
-<li>BMI category (<code>BMDBMIC</code>)</li>
-<li>Age (<code>RIDAGEYR</code>)</li>
-<li>Sex (<code>RIAGENDR</code>)</li>
-<li>Race/Ethnicity (<code>RIDRETH1</code>)</li>
-</ul>
-</section>
-<section id="survey-design" class="slide level2">
-<h2>Survey Design</h2>
-<ul>
-<li>weights (<code>WTMEC2YR</code>)</li>
-<li>PSU (<code>SDMVPSU</code>)</li>
-<li>strata (<code>SDMVSTRA</code>)</li>
-</ul>
-</section>
-<section id="outcome" class="slide level2">
-<h2>Outcome</h2>
-<ul>
-<li><code>DIQ240</code> — a proxy indicator of diabetes status.</li>
-</ul>
-</section>
-<section id="quick-eda-age-table" class="slide level2">
-<h2>Quick EDA: Age Table</h2>
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th style="text-align: right;">SEQN</th>
-<th style="text-align: left;">BMDBMIC</th>
-<th style="text-align: right;">RIDAGEYR</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">73557</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: right;">69</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">73558</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: right;">54</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">73559</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: right;">72</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">73560</td>
-<td style="text-align: left;">Normal weight</td>
-<td style="text-align: right;">9</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">73561</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: right;">73</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">73562</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: right;">56</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</section>
-<section id="quick-eda-age-distribution" class="slide level2">
-<h2>Quick EDA: Age Distribution</h2>
-
-<img data-src="slides_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"></section>
-<section id="quick-eda-bmi-category-codes" class="slide level2">
-<h2>Quick EDA: BMI Category Codes</h2>
-
-<img data-src="slides_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"></section>
-<section id="survey-design-1" class="slide level2">
-<h2>Survey Design</h2>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>           mean     SE
-RIDAGEYR 37.504 0.4412</code></pre>
+<pre><code>
+   1    2    3    7    9 &lt;NA&gt; 
+ 737 8841  185    1    5  406 </code></pre>
 </div>
 </div>
 </section>
 <section id="methods" class="slide level2">
 <h2>Methods</h2>
-<p>We applied four approaches:</p>
+<p>We compared four approaches to model doctor-diagnosed diabetes:</p>
 <ol type="1">
-<li><strong>MLE Logistic Regression</strong> – unstable due to quasi-separation.</li>
-<li><strong>Firth Regression</strong> – finite estimates with tiny complete-case sample.</li>
-<li><strong>MICE + MLR</strong> – stable across ~9,813 cases but poor fit.</li>
-<li><strong>Bayesian Logistic Regression</strong> – priors regularize, stable posteriors, uncertainty fully captured.</li>
+<li><strong>Survey-weighted Logistic Regression (MLE)</strong>
+<ul>
+<li>Baseline frequentist model using NHANES sampling weights.<br>
+</li>
+<li>Provided odds ratios (OR) and 95% confidence intervals.</li>
+</ul></li>
+<li><strong>Firth Penalized Logistic Regression</strong>
+<ul>
+<li>Added a Jeffreys-prior penalty to reduce small-sample bias.<br>
+</li>
+<li>Produced finite estimates under quasi- or complete separation.</li>
+</ul></li>
+<li><strong>Multiple Imputation + Logistic Regression (MICE)</strong>
+<ul>
+<li>Imputed missing predictor values using chained equations.<br>
+</li>
+<li>Combined five imputed datasets via Rubin’s rules.</li>
+</ul></li>
+<li><strong>Bayesian Logistic Regression (brms)</strong>
+<ul>
+<li>Weakly informative priors:
+<ul>
+<li>Coefficients: Normal(0, 2.5)<br>
+</li>
+<li>Intercept: Student-t(3, 0, 10)<br>
+</li>
+</ul></li>
+<li>Four chains × 2000 iterations, <code>adapt_delta = 0.95</code><br>
+</li>
+<li>Used normalized survey weights (mean = 1) as importance weights.<br>
+</li>
+<li>Diagnostics: R̂ &lt; 1.01, high effective sample sizes, trace plot inspection.</li>
+</ul></li>
 </ol>
 </section>
-<section id="modeling" class="slide level2">
-<h2>Modeling</h2>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>
-SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
-Chain 1: 
-Chain 1: Gradient evaluation took 2.2e-05 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.22 seconds.
-Chain 1: Adjust your expectations accordingly!
-Chain 1: 
-Chain 1: 
-Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
-Chain 1: Iteration:  200 / 2000 [ 10%]  (Warmup)
-Chain 1: Iteration:  400 / 2000 [ 20%]  (Warmup)
-Chain 1: Iteration:  600 / 2000 [ 30%]  (Warmup)
-Chain 1: Iteration:  800 / 2000 [ 40%]  (Warmup)
-Chain 1: Iteration: 1000 / 2000 [ 50%]  (Warmup)
-Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
-Chain 1: Iteration: 1200 / 2000 [ 60%]  (Sampling)
-Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
-Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
-Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
-Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
-Chain 1: 
-Chain 1:  Elapsed Time: 0.021 seconds (Warm-up)
-Chain 1:                0.014 seconds (Sampling)
-Chain 1:                0.035 seconds (Total)
-Chain 1: 
-
-SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
-Chain 2: 
-Chain 2: Gradient evaluation took 2e-06 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.02 seconds.
-Chain 2: Adjust your expectations accordingly!
-Chain 2: 
-Chain 2: 
-Chain 2: Iteration:    1 / 2000 [  0%]  (Warmup)
-Chain 2: Iteration:  200 / 2000 [ 10%]  (Warmup)
-Chain 2: Iteration:  400 / 2000 [ 20%]  (Warmup)
-Chain 2: Iteration:  600 / 2000 [ 30%]  (Warmup)
-Chain 2: Iteration:  800 / 2000 [ 40%]  (Warmup)
-Chain 2: Iteration: 1000 / 2000 [ 50%]  (Warmup)
-Chain 2: Iteration: 1001 / 2000 [ 50%]  (Sampling)
-Chain 2: Iteration: 1200 / 2000 [ 60%]  (Sampling)
-Chain 2: Iteration: 1400 / 2000 [ 70%]  (Sampling)
-Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
-Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
-Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
-Chain 2: 
-Chain 2:  Elapsed Time: 0.02 seconds (Warm-up)
-Chain 2:                0.015 seconds (Sampling)
-Chain 2:                0.035 seconds (Total)
-Chain 2: 
-
-SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
-Chain 3: 
-Chain 3: Gradient evaluation took 1e-06 seconds
-Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.01 seconds.
-Chain 3: Adjust your expectations accordingly!
-Chain 3: 
-Chain 3: 
-Chain 3: Iteration:    1 / 2000 [  0%]  (Warmup)
-Chain 3: Iteration:  200 / 2000 [ 10%]  (Warmup)
-Chain 3: Iteration:  400 / 2000 [ 20%]  (Warmup)
-Chain 3: Iteration:  600 / 2000 [ 30%]  (Warmup)
-Chain 3: Iteration:  800 / 2000 [ 40%]  (Warmup)
-Chain 3: Iteration: 1000 / 2000 [ 50%]  (Warmup)
-Chain 3: Iteration: 1001 / 2000 [ 50%]  (Sampling)
-Chain 3: Iteration: 1200 / 2000 [ 60%]  (Sampling)
-Chain 3: Iteration: 1400 / 2000 [ 70%]  (Sampling)
-Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
-Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
-Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
-Chain 3: 
-Chain 3:  Elapsed Time: 0.021 seconds (Warm-up)
-Chain 3:                0.014 seconds (Sampling)
-Chain 3:                0.035 seconds (Total)
-Chain 3: 
-
-SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 4).
-Chain 4: 
-Chain 4: Gradient evaluation took 1e-06 seconds
-Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.01 seconds.
-Chain 4: Adjust your expectations accordingly!
-Chain 4: 
-Chain 4: 
-Chain 4: Iteration:    1 / 2000 [  0%]  (Warmup)
-Chain 4: Iteration:  200 / 2000 [ 10%]  (Warmup)
-Chain 4: Iteration:  400 / 2000 [ 20%]  (Warmup)
-Chain 4: Iteration:  600 / 2000 [ 30%]  (Warmup)
-Chain 4: Iteration:  800 / 2000 [ 40%]  (Warmup)
-Chain 4: Iteration: 1000 / 2000 [ 50%]  (Warmup)
-Chain 4: Iteration: 1001 / 2000 [ 50%]  (Sampling)
-Chain 4: Iteration: 1200 / 2000 [ 60%]  (Sampling)
-Chain 4: Iteration: 1400 / 2000 [ 70%]  (Sampling)
-Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
-Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
-Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
-Chain 4: 
-Chain 4:  Elapsed Time: 0.021 seconds (Warm-up)
-Chain 4:                0.015 seconds (Sampling)
-Chain 4:                0.036 seconds (Total)
-Chain 4: </code></pre>
-</div>
-</div>
-</section>
-<section id="results" class="slide level2">
-<h2>Results</h2>
+<section id="modeling-framework-bayes-our-model" class="slide level2">
+<h2>Modeling Framework (Bayes &amp; Our Model)</h2>
+<p><strong>Bayes’ Rule</strong> [ P() P(),P() ]</p>
+<p><strong>Project Model (logistic regression)</strong> [ P(=1)= _0+_1(_c)+_2(_c)+_3() +_k _k(_k) ]</p>
 <ul>
-<li><strong>MLE:</strong> collapsed; unstable estimates.</li>
-<li><strong>Firth:</strong> finite but based on N = 14 complete cases.</li>
-<li><strong>MICE + MLR:</strong> stable across ~9,813; Hosmer-Lemeshow misfit (p &lt; 0.001).</li>
-<li><strong>Bayesian:</strong> stable, interpretable ORs with credible intervals; best handling of missingness + separation.</li>
+<li><strong>Priors:</strong> Normal(0, 2.5) for coefficients; Student-t(3, 0, 10) for intercept<br>
+</li>
+<li><strong>Weights:</strong> NHANES exam weights normalized to mean 1</li>
+<li><strong>Sampling:</strong> 4 chains, 2000 iter, <code>adapt_delta = 0.95</code></li>
 </ul>
 </section>
-<section id="discussion" class="slide level2">
-<h2>Discussion</h2>
+<section id="key-results-correlations" class="slide level2">
+<h2>Key Results &amp; Correlations</h2>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Model</th>
+<th style="text-align: left;">BMI (per 1 SD) OR (95% CI)</th>
+<th style="text-align: left;">Age (per 1 SD) OR (95% CI)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Survey-weighted MLE</td>
+<td style="text-align: left;">1.89 (1.65 – 2.15)</td>
+<td style="text-align: left;">3.03 (2.70 – 3.40)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">MICE pooled</td>
+<td style="text-align: left;">1.73 (1.58 – 1.89)</td>
+<td style="text-align: left;">2.90 (2.60 – 3.24)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Bayesian</td>
+<td style="text-align: left;">1.87 (1.71 – 2.05)</td>
+<td style="text-align: left;">2.99 (2.64 – 3.37)</td>
+</tr>
+</tbody>
+</table>
 <ul>
-<li><strong>Best approach:</strong> MICE + Bayesian logistic regression</li>
-<li><strong>Priors:</strong> weakly-informative + literature-informed (Ali 2024)</li>
-<li><strong>Limitations:</strong> subjective priors, computation time, proxy outcome (<code>DIQ240</code>)</li>
+<li>Higher <strong>BMI</strong> and <strong>age</strong> → increased odds of diabetes across all models.<br>
+</li>
+<li><strong>Females</strong> had lower odds than males.<br>
+</li>
+<li><strong>Mexican American, Non-Hispanic Black, and Multiracial</strong> groups showed elevated odds relative to Non-Hispanic White.</li>
+</ul>
+<table class="caption-top">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 40%">
+<col style="width: 18%">
+<col style="width: 22%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Predictor</th>
+<th>Relationship with Diabetes</th>
+<th>Direction</th>
+<th>Significance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Age</strong></td>
+<td>Older adults more likely diagnosed</td>
+<td>Positive</td>
+<td>Strong</td>
+</tr>
+<tr class="even">
+<td><strong>BMI</strong></td>
+<td>Higher BMI → greater risk</td>
+<td>Positive</td>
+<td>Strong</td>
+</tr>
+<tr class="odd">
+<td><strong>Sex (Female)</strong></td>
+<td>Lower odds vs.&nbsp;male</td>
+<td>Negative</td>
+<td>Significant</td>
+</tr>
+<tr class="even">
+<td><strong>Race (Mexican Am., NH Black, Multiracial)</strong></td>
+<td>Higher risk vs.&nbsp;NH White</td>
+<td>Positive</td>
+<td>Significant</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="posterior-distributions" class="slide level2">
+<h2>Posterior Distributions</h2>
+
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"></section>
+<section id="comparative-interpretation" class="slide level2">
+<h2>Comparative Interpretation</h2>
+<ul>
+<li><p><strong>Effect stability:</strong><br>
+Bayesian estimates closely aligned with frequentist ORs, showing robust inference even under moderate missingness.</p></li>
+<li><p><strong>Uncertainty quantification:</strong><br>
+Bayesian credible intervals were comparable in width to 95% CIs but offered a clearer probabilistic interpretation of uncertainty.</p></li>
+<li><p><strong>Survey weighting:</strong><br>
+The Bayesian model’s normalized weights approximated the NHANES design effectively, while the MLE incorporated full survey structure directly.</p></li>
+</ul>
+</section>
+<section id="discussion-and-conclusion" class="slide level2">
+<h2>Discussion and Conclusion</h2>
+<ul>
+<li>All modeling frameworks identified <strong>age</strong> and <strong>BMI</strong> as strong independent predictors of doctor-diagnosed diabetes.<br>
+</li>
+<li>Bayesian modeling produced <strong>stable, interpretable, and well-regularized estimates</strong> while fully quantifying uncertainty.<br>
+</li>
+<li>Results were <strong>consistent</strong> with classical logistic regression but more resilient to potential separation or small-sample issues.<br>
+</li>
+<li><strong>Conclusion:</strong><br>
+Bayesian logistic regression achieved the study aim — providing more <strong>stable and transparent inference</strong> than traditional MLE for population-based diabetes risk modeling.<br>
+</li>
+<li><strong>Future directions:</strong><br>
+Extend Bayesian analysis across multiple NHANES cycles and include biomarker covariates to evaluate nonlinear effects.</li>
+</ul>
+</section>
+<section id="key-takeaways" class="slide level2">
+<h2>Key Takeaways</h2>
+<ul>
+<li><p><strong>Consistent Findings:</strong><br>
+Higher BMI and age were significant predictors of diabetes across all models.</p></li>
+<li><p><strong>Bayesian Advantage:</strong><br>
+Provided stable, interpretable estimates with full uncertainty quantification — outperforming classical MLE under missingness or quasi-separation.</p></li>
+<li><p><strong>Practical Impact:</strong><br>
+Demonstrates that Bayesian regression offers a more transparent and resilient framework for population-based health modeling.</p></li>
 </ul>
 </section>
 <section id="references" class="slide level2">

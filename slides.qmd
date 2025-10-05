@@ -11,6 +11,7 @@ format:
     theme: simple
     slide-number: true
     transition: slide
+    css: slides.css
 bibliography: references.bib
 execute:
   warning: false
@@ -20,144 +21,258 @@ execute:
 
 ```{r}
 #| include: false
-# Global libs & theme for all slides
-library(ggplot2)   # ggplot()
-library(dplyr)     # %>% and verbs (mutate, count, etc.)
-library(viridis)   # colorblind-friendly palettes
-
+# Global libs & theme
+library(ggplot2)
+library(dplyr)
+library(viridis)
 theme_set(theme_minimal(base_size = 13))
 custom_colors <- viridis(3, option = "D")
 ```
 
-## Our Question
+## Aim
 
-- Can Bayesian logistic regression provide **more stable** and **transparent** inference than classical MLE for diabetes-related outcomes in **NHANES 2013–2014**?
+- Can Bayesian logistic regression provide **more stable** and **transparent** inference than classical MLE for doctor-diagnosed diabetes in **NHANES 2013–2014**?
 
 ---
 
-## Data Pipeline (Reproducible)
+## Why Bayesian? (Principles & Motivation)
 
-- Source: NHANES 2013–2014  
-- Files: **BMX_H**, **DEMO_H**, **DIQ_H**  
-- Preprocessing:in **`R/data_prep.R`** → creates **`merged_2013_2014.rds`**
+- **Posterior ∝ Likelihood × Prior**: update beliefs with data.
+- **We need** stability under missingness and potential separation.
+- **Advantages here:**
+  - Regularization from weakly-informative priors
+  - Full uncertainty via posterior distributions (credible intervals)
+  - Incorporates prior clinical/epi knowledge when available
+- **Bottom line:** improves stability and interpretability vs. classical MLE.
+
+---
+
+## Study Overview & Data
+
+- **Data Source:** NHANES 2013–2014 (CDC/NCHS)  
+- **Population:** Adults aged ≥20 years  
+- **Outcome Variable:** `DIQ010` — “Has a doctor told you that you have diabetes?”  
+  - Recorded as 1 = Yes, 0 = No (excluding 7 = Refused, 9 = Don’t know)
+- **Predictors:**  
+  - `BMXBMI` – Body Mass Index (kg/m²)  
+  - `RIDAGEYR` – Age (years)  
+  - `RIAGENDR` – Sex (Male/Female)  
+  - `RIDRETH1` – Race/Ethnicity (5 categories)
+- **Survey Design Variables:**  
+  - Weight = `WTMEC2YR`, Strata = `SDMVSTRA`, PSU = `SDMVPSU`
+- **Sample Size:** 5,769 adults; 5,592 with non-missing diabetes status  
+- **Weighted diabetes prevalence:** 8.9%
 
 ```{r}
-if (!file.exists("data/merged_2013_2014.rds")) {
-  source("R/data_prep.R")
-}
+# minimal, quick counts; heavy work was done in the report
+if (!file.exists("data/merged_2013_2014.rds")) source("R/data_prep.R")
 merged_data <- readRDS("data/merged_2013_2014.rds")
-dim(merged_data)
+table(merged_data$DIQ010, useNA = "ifany")
 ```
 
 ---
-
-## Predictors
-
-- BMI category (`BMDBMIC`)
-- Age (`RIDAGEYR`)
-- Sex (`RIAGENDR`)
-- Race/Ethnicity (`RIDRETH1`)
-
-## Survey Design
-
-- weights (`WTMEC2YR`)
-- PSU (`SDMVPSU`) 
-- strata (`SDMVSTRA`)
-
-## Outcome
-
-- `DIQ240` — a proxy indicator of diabetes status.
-
----
-
-## Quick EDA: Age Table
-
-```{r}
-knitr::kable(head(merged_data[, c("SEQN", "BMDBMIC", "RIDAGEYR")]))
-```
-
-## Quick EDA: Age Distribution 
-
-```{r}
-ggplot(merged_data, aes(x = RIDAGEYR)) +
-  geom_histogram(binwidth = 5, boundary = 0, closed = "left",
-                 fill = custom_colors[1], color = "white") +
-  labs(title = "Age Distribution (NHANES 2013–2014)",
-       x = "Age (years)", y = "Count")
-```
-
-## Quick EDA: BMI Category Codes
-
-```{r}
-merged_data %>%
-  mutate(BMDBMIC = factor(BMDBMIC, exclude = NULL)) %>%
-  count(BMDBMIC) %>%
-  ggplot(aes(x = BMDBMIC, y = n)) +
-  geom_col(fill = custom_colors[2], color = "black") +
-  labs(title = "Counts by BMDBMIC (BMI Category Code)",
-       x = "BMDBMIC (code; NA common for adults)", y = "Count")
-```
-
-## Survey Design 
-
-```{r}
-library(survey)
-nhanes_design <- svydesign(
-  id = ~SDMVPSU,
-  strata = ~SDMVSTRA,
-  weights = ~WTMEC2YR,
-  nest = TRUE,
-  data = merged_data
-)
-svymean(~RIDAGEYR, nhanes_design, na.rm = TRUE)
-```
 
 ## Methods
 
-We applied four approaches:
+We compared four approaches to model doctor-diagnosed diabetes:
 
-1. **MLE Logistic Regression** – unstable due to quasi-separation.
-2. **Firth Regression** – finite estimates with tiny complete-case sample.
-3. **MICE + MLR** – stable across ~9,813 cases but poor fit.
-4. **Bayesian Logistic Regression** – priors regularize, stable posteriors, uncertainty fully captured.
+1. **Survey-weighted Logistic Regression (MLE)**  
+   - Baseline frequentist model using NHANES sampling weights.  
+   - Provided odds ratios (OR) and 95% confidence intervals.
+
+2. **Firth Penalized Logistic Regression**  
+   - Added a Jeffreys-prior penalty to reduce small-sample bias.  
+   - Produced finite estimates under quasi- or complete separation.
+
+3. **Multiple Imputation + Logistic Regression (MICE)**  
+   - Imputed missing predictor values using chained equations.  
+   - Combined five imputed datasets via Rubin’s rules.  
+
+4. **Bayesian Logistic Regression (brms)**  
+   - Weakly informative priors:  
+     - Coefficients: Normal(0, 2.5)  
+     - Intercept: Student-t(3, 0, 10)  
+   - Four chains × 2000 iterations, `adapt_delta = 0.95`  
+   - Used normalized survey weights (mean = 1) as importance weights.  
+   - Diagnostics: R̂ < 1.01, high effective sample sizes, trace plot inspection.
 
 ---
 
-## Modeling
+## Modeling Framework (Bayes & Our Model)
+
+**Bayes’ Rule**
+\[
+P(\theta \mid \text{Data}) \propto P(\text{Data}\mid \theta)\,P(\theta)
+\]
+
+**Project Model (logistic regression)**
+\[
+\text{logit }P(\text{Diabetes}=1)=
+\beta_0+\beta_1(\text{Age}_c)+\beta_2(\text{BMI}_c)+\beta_3(\text{Sex})
++\sum_k \beta_k(\text{Race}_k)
+\]
+
+- **Priors:** Normal(0, 2.5) for coefficients; Student-t(3, 0, 10) for intercept  
+- **Weights:** NHANES exam weights normalized to mean 1
+- **Sampling:** 4 chains, 2000 iter, `adapt_delta = 0.95`
+
+---
+
+## Key Results & Correlations
+
+| Model | BMI (per 1 SD) OR (95% CI) | Age (per 1 SD) OR (95% CI) |
+|:------|:-----------------------------|:----------------------------|
+| Survey-weighted MLE | 1.89 (1.65 – 2.15) | 3.03 (2.70 – 3.40) |
+| MICE pooled | 1.73 (1.58 – 1.89) | 2.90 (2.60 – 3.24) |
+| Bayesian | 1.87 (1.71 – 2.05) | 2.99 (2.64 – 3.37) |
+
+- Higher **BMI** and **age** → increased odds of diabetes across all models.  
+- **Females** had lower odds than males.  
+- **Mexican American, Non-Hispanic Black, and Multiracial** groups showed elevated odds relative to Non-Hispanic White.  
+
+| Predictor | Relationship with Diabetes | Direction | Significance |
+|------------|---------------------------|------------|---------------|
+| **Age** | Older adults more likely diagnosed | Positive | Strong |
+| **BMI** | Higher BMI → greater risk | Positive | Strong |
+| **Sex (Female)** | Lower odds vs. male | Negative | Significant |
+| **Race (Mexican Am., NH Black, Multiracial)** | Higher risk vs. NH White | Positive | Significant |
+
+---
 
 ```{r}
+#| include: false
+# --- Load or (light) rebuild bayes_fit so plots won't fail ---
+
 library(brms)
+library(dplyr)
+library(forcats)
 
-priors <- c(
-  set_prior("normal(0,2.5)", class="b"),
-  set_prior("normal(0,5)", class="Intercept")
-)
+if (file.exists("outputs/bayes_fit.rds")) {
+  bayes_fit <- readRDS("outputs/bayes_fit.rds")
+} else {
+  # use cleaned adults saved by the report; fallback from merged_data if needed
+  if (!file.exists("data/adult_cleaned_2013_2014.rds")) {
+    adult <- merged_data %>%
+      dplyr::filter(RIDAGEYR >= 20) %>%
+      dplyr::transmute(
+        diabetes_dx = dplyr::case_when(
+          DIQ010 == 1 ~ 1,
+          DIQ010 == 2 ~ 0,
+          DIQ010 %in% c(3,7,9) ~ NA_real_,
+          TRUE ~ NA_real_
+        ),
+        bmi  = BMXBMI,
+        age  = RIDAGEYR,
+        sex  = forcats::fct_recode(factor(RIAGENDR), Male = "1", Female = "2"),
+        race = forcats::fct_recode(
+          factor(RIDRETH1),
+          "Mexican American" = "1",
+          "Other Hispanic"   = "2",
+          "NH White"         = "3",
+          "NH Black"         = "4",
+          "Other/Multi"      = "5"
+        ),
+        WTMEC2YR
+      ) %>%
+      dplyr::mutate(
+        age_c  = as.numeric(scale(age)),
+        bmi_c  = as.numeric(scale(bmi)),
+        race   = forcats::fct_relevel(race, "NH White"),
+        sex    = forcats::fct_relevel(sex, "Male"),
+        wt_norm = WTMEC2YR / mean(WTMEC2YR, na.rm = TRUE)
+      ) %>%
+      dplyr::filter(!is.na(diabetes_dx), !is.na(age_c), !is.na(bmi_c),
+                    !is.na(sex), !is.na(race)) %>%
+      droplevels()
+  } else {
+    adult <- readRDS("data/adult_cleaned_2013_2014.rds") %>%
+      dplyr::mutate(
+        race   = forcats::fct_relevel(race, "NH White"),
+        sex    = forcats::fct_relevel(sex, "Male"),
+        wt_norm = WTMEC2YR / mean(WTMEC2YR, na.rm = TRUE)
+      ) %>%
+      dplyr::filter(!is.na(diabetes_dx), !is.na(age_c), !is.na(bmi_c),
+                    !is.na(sex), !is.na(race)) %>%
+      droplevels()
+  }
 
-bayes_fit <- brm(
-  DIQ240 ~ BMDBMIC + RIDAGEYR + RIAGENDR + RIDRETH1,
-  data = merged_data,
-  family = bernoulli(link="logit"),
-  prior = priors,
-  chains = 4, iter = 2000, seed = 123,
-  control = list(adapt_delta = 0.95)
-)
+  priors_light <- c(
+    set_prior("normal(0, 2.5)", class = "b"),
+    set_prior("student_t(3, 0, 10)", class = "Intercept")
+  )
+
+  # lighter settings to render fast in slides
+  bayes_fit <- brm(
+    formula = diabetes_dx | weights(wt_norm) ~ age_c + bmi_c + sex + race,
+    data    = adult,
+    family  = bernoulli(link = "logit"),
+    prior   = priors_light,
+    chains  = 2, iter = 1500, warmup = 750, seed = 123,
+    control = list(adapt_delta = 0.95),
+    refresh = 0
+  )
+}
 ```
 
-## Results
+## Posterior Distributions
 
-- **MLE:** collapsed; unstable estimates.
-- **Firth:** finite but based on N = 14 complete cases.
-- **MICE + MLR:** stable across ~9,813; Hosmer-Lemeshow misfit (p < 0.001).
-- **Bayesian:** stable, interpretable ORs with credible intervals; best handling of missingness + separation.
+```{r}
+library(bayesplot)
+library(posterior)
+color_scheme_set("viridis")
+
+draws <- posterior::as_draws_df(bayes_fit)
+want <- c("b_age_c","b_bmi_c","b_sexFemale",
+          "b_raceMexicanAmerican","b_raceOtherHispanic",
+          "b_raceNHBlack","b_raceOtherDMulti")
+have <- intersect(want, colnames(draws))
+
+if (length(have) >= 2) {
+  bayesplot::mcmc_areas(draws, pars = have, prob = 0.95) +
+    ggtitle("Posterior (log-odds) for key predictors")
+} else {
+  plot.new(); text(0.5, 0.5, "Posterior plot skipped (parameters not found).")
+}
+```
 
 ---
 
-## Discussion
+## Comparative Interpretation
 
-- **Best approach:** MICE + Bayesian logistic regression
-- **Priors:** weakly-informative + literature-informed (Ali 2024)
-- **Limitations:** subjective priors, computation time, proxy outcome (`DIQ240`)
+- **Effect stability:**  
+  Bayesian estimates closely aligned with frequentist ORs, showing robust inference even under moderate missingness.  
 
+- **Uncertainty quantification:**  
+  Bayesian credible intervals were comparable in width to 95% CIs but offered a clearer probabilistic interpretation of uncertainty.  
+
+- **Survey weighting:**  
+  The Bayesian model’s normalized weights approximated the NHANES design effectively, while the MLE incorporated full survey structure directly.
+
+---
+
+## Discussion and Conclusion
+
+- All modeling frameworks identified **age** and **BMI** as strong independent predictors of doctor-diagnosed diabetes.  
+- Bayesian modeling produced **stable, interpretable, and well-regularized estimates** while fully quantifying uncertainty.  
+- Results were **consistent** with classical logistic regression but more resilient to potential separation or small-sample issues.  
+- **Conclusion:**  
+  Bayesian logistic regression achieved the study aim — providing more **stable and transparent inference** than traditional MLE for population-based diabetes risk modeling.  
+- **Future directions:**  
+  Extend Bayesian analysis across multiple NHANES cycles and include biomarker covariates to evaluate nonlinear effects.
+
+---
+
+## Key Takeaways
+
+- **Consistent Findings:**  
+  Higher BMI and age were significant predictors of diabetes across all models.
+
+- **Bayesian Advantage:**  
+  Provided stable, interpretable estimates with full uncertainty quantification — outperforming classical MLE under missingness or quasi-separation.
+
+- **Practical Impact:**  
+  Demonstrates that Bayesian regression offers a more transparent and resilient framework for population-based health modeling.
+  
 ---
 
 ## References
