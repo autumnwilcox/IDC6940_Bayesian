@@ -73,7 +73,7 @@ Where:
 
 ---
 
-## Discussion
+## Conclusion
 
 - All models identified age and BMI as significant independent predictors of diabetes.
 - Bayesian modeling produced **stable, interpretable, and well-regularized estimates.**
