@@ -120,4 +120,5 @@ quarto render slides.qmd
 ## Authors
 - Namita Mishra
 - Autumn Wilcox
+- Ecil Teodoro
 - **Advisor:** Dr. Ashraf Cohen
