@@ -4,6 +4,7 @@ subtitle: "Capstone Presentation"
 author:
   - "Namita Mishra"
   - "Autumn Wilcox"
+  - "Ecil Teodoro"
 advisor: "Dr. Ashraf Cohen"
 date: '`r Sys.Date()`'
 format:

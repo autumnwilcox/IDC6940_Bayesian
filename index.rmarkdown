@@ -522,3 +522,4 @@ Although the Bayesian model approximated survey weighting rather than fully mode
 **In conclusion,** Bayesian logistic regression provided inference that was **statistically consistent, computationally stable, and interpretable**—achieving the aim of this project. Its flexibility and transparency make it a valuable complement to classical regression in epidemiologic research, particularly when data are incomplete or model assumptions are strained. Future work could extend this approach to hierarchical NHANES cycles or include biomarkers to assess nonlinear effects of metabolic risk factors.
 
 ## References
+
