@@ -1,20 +1,19 @@
-# Paper 5 Summary
-
-**Abdullah, Hassan, & Mustafa (2022).** *“A Review on Bayesian Deep Learning in Healthcare: Applications and Challenges.”* IEEE Access, 10, 36538–62.  
-
 ---
 
-### Goal  
-To systematically review how Bayesian Deep Learning (BDL) methods are applied in healthcare, highlighting applications, methodological approaches, challenges, and opportunities for future research.  
+# Summary: The No-U-Turn Sampler (NUTS)—Adaptively Setting Path Lengths in Hamiltonian Monte Carlo  
+*Matthew D. Hoffman & Andrew Gelman (2014)*  
 
-### Importance  
-Healthcare data is often uncertain, heterogeneous, and high-stakes. While deep learning offers strong predictive capabilities, it lacks mechanisms to quantify uncertainty. Bayesian approaches combine probabilistic reasoning with deep learning, enabling uncertainty estimation, prior knowledge integration, and potentially more interpretable and safer clinical models.  
+## Problem the Article is Addressing  
+**Hamiltonian Monte Carlo (HMC)** offers efficient sampling from complex posteriors but requires manual tuning of the trajectory length (number of leapfrog steps). Poor tuning can cause slow convergence or biased sampling, making HMC difficult for non-experts to use effectively.  
 
-### Methods  
-- Conducted a structured literature review of BDL methods in healthcare domains such as diagnosis, prognosis, and treatment planning.  
-- Categorized approaches: variational inference, Monte Carlo dropout, ensemble methods, Gaussian processes, and Bayesian neural networks.  
-- Compared models based on scalability, interpretability, uncertainty calibration, data demands, and privacy/security considerations.  
+## How It Has Been Solved  
+The authors introduce the **No-U-Turn Sampler (NUTS)**, an adaptive extension of HMC that automatically determines the optimal trajectory length. NUTS expands the trajectory until it detects a “U-turn” in parameter space—meaning further movement would retrace steps—and then stops. Combined with **dual-averaging step-size adaptation**, this removes nearly all manual tuning while preserving the sampling efficiency of HMC.  
 
-### Results & Limitations  
-- **Results**: BDL has been applied to disease classification, medical image segmentation, survival analysis, and predictive modeling. It improves uncertainty quantification, sometimes enhances generalization, and provides confidence information useful for clinicians.  
-- **Limitations**: BDL methods are computationally expensive, face scalability issues with large/high-dimensional datasets, and require careful prior specification. Interpretability remains limited despite probabilistic framing. Many studies are proofs of concept rather than validated in real-world clinical practice. Regulatory, privacy, and workflow integration issues also hinder deployment.  
+## Results  
+Across hierarchical models and logistic regression tasks, NUTS produces **higher effective sample sizes per second** and improved convergence diagnostics compared to traditional HMC or Gibbs sampling. It is robust across diverse posterior geometries and scales well with model complexity, forming the **default MCMC algorithm in Stan**.  
+
+## Limitations  
+While adaptive, NUTS still relies on differentiable log-posteriors and can be computationally intensive for extremely complex or multimodal distributions. Performance depends on the choice of priors and model reparameterization, and it remains unsuitable for discrete or non-differentiable models.  
+
+## Datasets  
+The paper evaluates NUTS on **simulated hierarchical models** and **real logistic regression datasets**, reporting metrics like effective sample size (ESS) and Gelman–Rubin convergence diagnostics (\(\hat{R}\)) to assess efficiency and accuracy.  

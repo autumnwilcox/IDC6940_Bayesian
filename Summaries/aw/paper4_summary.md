@@ -1,16 +1,17 @@
-**Paper 4: Baldwin & Larson (2017). “An Introduction to Using Bayesian Linear Regression with Clinical Data”**
+# Summary: Dropout as a Bayesian Approximation—Representing Model Uncertainty in Deep Learning  
+*Yarin Gal & Zoubin Ghahramani (2016)*  
 
-**Goal**  
-The paper introduces Bayesian linear regression as a practical tool for clinical researchers, explaining how it works, what advantages it provides over standard linear regression, and how it can be applied to real clinical data.
+## Problem the Article is Addressing  
+Deep neural networks achieve strong predictive accuracy but typically **do not quantify uncertainty**. This limitation is critical in applications like healthcare or autonomous systems, where overconfidence can lead to serious consequences. Traditional Bayesian neural networks can model uncertainty but are often **computationally expensive and hard to train**.  
 
-**Importance**  
-Clinical data are often small-sample and noisy, with prior knowledge that could strengthen inference. Traditional frequentist regression produces point estimates and confidence intervals but does not naturally incorporate prior knowledge or fully quantify uncertainty. Bayesian regression addresses these gaps by incorporating priors, estimating full posterior distributions, and enabling richer, more nuanced inference.
+## How It Has Been Solved  
+The authors demonstrate that **standard dropout**, a common regularization technique, can serve as an **approximate Bayesian inference method**. By keeping dropout active during both training and testing and performing multiple stochastic forward passes, the resulting distribution of predictions can be interpreted as **samples from a posterior**. This provides an efficient, scalable way to estimate model uncertainty without altering model architecture.  
 
-**Methods**  
-- Provide a tutorial-style explanation of Bayesian linear regression, including priors, posterior distributions, and inference.  
-- Apply Bayesian regression to real clinical psychology datasets, showing modeling steps, prior choices, model fitting (likely via MCMC), diagnostic checks, and interpretation of posterior distributions.  
-- Compare Bayesian regression outcomes with traditional frequentist regression to highlight differences in inference and interpretation.
+## Results  
+The paper shows that “Monte Carlo Dropout” (MC-Dropout) yields **well-calibrated uncertainty estimates** and competitive accuracy on tasks such as image classification (MNIST, CIFAR-10) and regression. The method improves **out-of-distribution detection**, **active learning**, and **decision-making under uncertainty**.  
 
-**Results & Limitations**  
-- *Results*: Bayesian regression enables probabilistic interpretations (e.g., probability that a parameter exceeds a threshold), incorporates prior evidence, and generates posterior predictive distributions that capture uncertainty in future observations. In practice, it often produced similar central estimates to frequentist regression but with more realistic uncertainty intervals.  
-- *Limitations*: Bayesian methods require greater computational resources, especially for large datasets or complex priors. Prior specification is subjective and can bias results if poorly chosen. Additionally, limited training in Bayesian approaches may hinder adoption and correct interpretation among clinical researchers.
+## Limitations  
+The uncertainty estimates depend on the dropout rate and can underestimate epistemic uncertainty for small or biased datasets. The approach is an **approximation**, not a full Bayesian posterior, so results may deviate from exact inference. Additional calibration steps may still be required.  
+
+## Datasets  
+Experiments include standard image datasets (MNIST, CIFAR-10) and regression benchmarks from the UCI repository. Predictions are made using multiple forward passes with dropout enabled to approximate posterior mean and variance.  
