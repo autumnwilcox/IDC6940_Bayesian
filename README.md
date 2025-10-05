@@ -73,6 +73,15 @@ Where:
 
 ---
 
+## Discussion
+
+- All models identified age and BMI as significant independent predictors of diabetes.
+- Bayesian modeling produced **stable, interpretable, and well-regularized estimates.**
+- Results aligned with frequentist outcomes but offered improved transparency and resilience under missingness.
+- The Bayesian approach successfully achieved the study aim — delivering **more stable and transparent inference** for population-based diabetes risk.
+
+---
+
 ## Repository Structure
 ```bash
 .
@@ -106,15 +115,6 @@ source("R/data_prep.R")
 quarto render index.qmd
 quarto render slides.qmd
 ```
----
-
-## Discussion
-
-- All models identified age and BMI as significant independent predictors of diabetes.
-- Bayesian modeling produced **stable, interpretable, and well-regularized estimates.**
-- Results aligned with frequentist outcomes but offered improved transparency and resilience under missingness.
-- The Bayesian approach successfully achieved the study aim — delivering **more stable and transparent inference** for population-based diabetes risk.
-
 ---
 
 ## Authors
