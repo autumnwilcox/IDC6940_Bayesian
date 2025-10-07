@@ -50,7 +50,7 @@ custom_colors <- viridis(3, option = "D")
 
 ## Study Overview & Data
 
-- **Data Source:** NHANES 2013–2014 (CDC/NCHS)  
+- **Data Source:** NHANES 2013–2014 (CDC/NCHS) [@nchs2014] 
 - **Population:** Adults aged ≥20 years  
 - **Outcome Variable:** `DIQ010` — “Has a doctor told you that you have diabetes?”  
   - Recorded as 1 = Yes, 0 = No (excluding 7 = Refused, 9 = Don’t know)
@@ -90,10 +90,8 @@ We compared four approaches to model doctor-diagnosed diabetes:
    - Combined five imputed datasets via Rubin’s rules.  
 
 4. **Bayesian Logistic Regression (brms)**  
-   - Weakly informative priors:  
-     - Coefficients: Normal(0, 2.5)  
-     - Intercept: Student-t(3, 0, 10)  
-   - Four chains × 2000 iterations, `adapt_delta = 0.95`  
+   - Weakly informative priors (coefficients Normal(0, 2.5); intercept Student-t(3, 0, 10)) [@gelman2008]  
+   - Four chains × 2000 iterations, `adapt_delta = 0.95` using NUTS [@hoffman2014nuts]  
    - Used normalized survey weights (mean = 1) as importance weights.  
    - Diagnostics: R̂ < 1.01, high effective sample sizes, trace plot inspection.
 
