@@ -1,5 +1,3 @@
----
-
 # Summary: The No-U-Turn Sampler (NUTS)—Adaptively Setting Path Lengths in Hamiltonian Monte Carlo  
 *Matthew D. Hoffman & Andrew Gelman (2014)*  
 
