@@ -263,7 +263,7 @@ survey::svymean(~diabetes_dx, nhanes_design_adult, na.rm = TRUE)
 
 ## Methods
 
-We applied four complementary approaches to the NHANES 2013–2014 adult dataset to estimate the association between BMI, age, sex, and race/ethnicity and doctor-diagnosed diabetes (`DIQ010`). Continuous predictors (age, BMI) were standardized (mean = 0, SD = 1) to improve model convergence and interpretability. Analyses were limited to adults aged ≥20 years and accounted for NHANES’s complex sampling design using weights (`WTMEC2YR`), strata (`SDMVSTRA`), and primary sampling units (`SDMVPSU`).
+We applied three complementary approaches to the NHANES 2013–2014 adult dataset to estimate the association between BMI, age, sex, and race/ethnicity and doctor-diagnosed diabetes (`DIQ010`). Continuous predictors (age, BMI) were standardized (mean = 0, SD = 1) to improve model convergence and interpretability. Analyses were limited to adults aged ≥20 years and accounted for NHANES’s complex sampling design using weights (`WTMEC2YR`), strata (`SDMVSTRA`), and primary sampling units (`SDMVPSU`).
 
 1. **Frequentist Logistic Regression (MLE):**  
    - Baseline model predicting doctor-diagnosed diabetes (`DIQ010`) from standardized BMI (`bmi_c`), age (`age_c`), sex, and race/ethnicity.  
@@ -271,19 +271,13 @@ We applied four complementary approaches to the NHANES 2013–2014 adult dataset
    - Provided population-weighted odds ratios and 95% confidence intervals.  
    - Limitation: listwise deletion of missing predictors may reduce precision and introduce bias.
 
-2. **Firth Penalized Logistic Regression:**  
-   - Frequentist alternative using the **Jeffreys prior penalty** for small-sample bias reduction [@dangelo2025].  
-   - Produces finite coefficients even under quasi- or complete-separation conditions.  
-   - Used as a sensitivity analysis to assess stability of frequentist results.  
-   - Does not yield posterior distributions or full uncertainty quantification like Bayesian models.
-
-3. **Multiple Imputation by Chained Equations (MICE):**  
+2. **Multiple Imputation by Chained Equations (MICE):**  
    - Applied to **predictors only** (not the diabetes outcome) to address missing data and retain sample size [@vanbuuren2012].  
    - Predictive mean matching (`pmm`) for continuous variables; polytomous logistic regression (`polyreg`) for categorical predictors.  
    - Five imputed datasets analyzed with logistic regression; results combined using Rubin’s rules.  
    - Survey design variables (`WTMEC2YR`, `SDMVPSU`, `SDMVSTRA`) included as auxiliaries, not imputed.
 
-4. **Bayesian Logistic Regression:**  
+3. **Bayesian Logistic Regression:**  
    - Modeled `DIQ010` as a function of standardized BMI (`bmi_c`), age (`age_c`), sex, and race/ethnicity using `brms`.  
    - Priors: weakly informative Normal(0, 2.5) for coefficients and Student-t(3, 0, 10) for the intercept [@gelman2008].  
    - Four chains × 2000 iterations (50% warm-up), `adapt_delta = 0.95`. Sampling used the No-U-Turn Sampler (NUTS), an adaptive variant of Hamiltonian Monte Carlo that removes most manual tuning while maintaining efficient exploration of complex posteriors [@hoffman2014nuts].
