@@ -12,6 +12,7 @@ course: Capstone Projects in Data Science
 format:
   html:
     code-fold: true
+    toc: true
 
 bibliography: references.bib
 reference-section-title: "References"
