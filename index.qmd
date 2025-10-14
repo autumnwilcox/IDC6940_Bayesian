@@ -170,27 +170,35 @@ survey::svymean(~diabetes_dx, nhanes_design_adult, na.rm = TRUE)
 
 ## Methods
 
-We applied three complementary approaches to the NHANES 2013–2014 adult dataset to estimate the association between BMI, age, sex, and race/ethnicity and doctor-diagnosed diabetes (`DIQ010`). Continuous predictors (age, BMI) were standardized (mean = 0, SD = 1) to improve model convergence and interpretability. Analyses were limited to adults aged ≥20 years and accounted for NHANES’s complex sampling design using weights (`WTMEC2YR`), strata (`SDMVSTRA`), and primary sampling units (`SDMVPSU`).
+We applied three complementary approaches to estimate the association between BMI, age, sex, and race/ethnicity and doctor-diagnosed diabetes (DIQ010) in the NHANES 2013–2014 adult dataset. Continuous predictors were standardized (mean = 0, SD = 1) to improve model convergence and interpretability. All analyses accounted for NHANES’s complex survey design using weights (`WTMEC2YR`), strata (`SDMVSTRA`), and primary sampling units (`SDMVPSU`).
 
 1. **Frequentist Logistic Regression (MLE):**  
-   - Baseline model predicting doctor-diagnosed diabetes (`DIQ010`) from standardized BMI (`bmi_c`), age (`age_c`), sex, and race/ethnicity.  
-   - Complete-case, **survey-weighted logistic regression** implemented with the `survey` package in R.  
-   - Provided population-weighted odds ratios and 95% confidence intervals.  
-   - Limitation: listwise deletion of missing predictors may reduce precision and introduce bias.
+  - Baseline model predicting diabetes from standardized BMI (`bmi_c`), age (`age_c`), sex, and race/ethnicity.
+  - Implemented as a survey-weighted logistic regression via the `survey` package in R.
+  - Reported population-weighted odds ratios (ORs) with 95% confidence intervals.
+  - Limitation: listwise deletion of missing predictors may reduce precision and introduce bias.
 
 2. **Multiple Imputation by Chained Equations (MICE):**  
-   - Applied to **predictors only** (not the diabetes outcome) to address missing data and retain sample size [@vanbuuren2012].  
-   - Predictive mean matching (`pmm`) for continuous variables; polytomous logistic regression (`polyreg`) for categorical predictors.  
-   - Five imputed datasets analyzed with logistic regression; results combined using Rubin’s rules.  
-   - Survey design variables (`WTMEC2YR`, `SDMVPSU`, `SDMVSTRA`) included as auxiliaries, not imputed.
+  - Applied to predictors only (not the diabetes outcome) to address missing data and preserve sample size.
+  - Predictive mean matching (`pmm`) was used for continuous variables and polytomous logistic regression (`polyreg`) for categorical predictors.
+  - Five imputed datasets were generated and analyzed; results were combined using Rubin’s rules.
+  - Survey design variables (`WTMEC2YR`, `SDMVPSU`, `SDMVSTRA`) were included as auxiliary variables but not imputed.
+  - Pooled odds ratios with 95% confidence intervals summarized across imputations.
 
 3. **Bayesian Logistic Regression:**  
-   - Modeled `DIQ010` as a function of standardized BMI (`bmi_c`), age (`age_c`), sex, and race/ethnicity using `brms`.  
-   - Priors: weakly informative Normal(0, 2.5) for coefficients and Student-t(3, 0, 10) for the intercept [@gelman2008].  
-   - Four chains × 2000 iterations (50% warm-up), `adapt_delta = 0.95`. Sampling used the No-U-Turn Sampler (NUTS), an adaptive variant of Hamiltonian Monte Carlo that removes most manual tuning while maintaining efficient exploration of complex posteriors [@hoffman2014nuts].
-   - **Normalized survey weights** (`WTMEC2YR` scaled to mean 1) used as importance weights to approximate complex sampling.  
-   - Diagnostics: **R̂ < 1.01**, effective sample sizes, trace plots, and **posterior predictive checks (`pp_check`)**.  
-   - Note: `brms` weights approximate but do not fully model NHANES design (no strata/PSU in likelihood).
+  - Modeled `DIQ010` ∼ `age_c + bmi_c + sex + race` using the `brms` package.
+  - Priors:
+    - Coefficients → Normal(0, 2.5) (weakly informative)
+    - Intercept → Student-t(3, 0, 10)
+  - Sampling used the No-U-Turn Sampler (NUTS) with four chains × 2000 iterations (50% warm-up).
+  - `adapt_delta = 0.95` and `max_treedepth = 12` ensured stable convergence.
+  - Normalized survey weights (`WTMEC2YR / mean(WTMEC2YR)`) were applied as importance weights to approximate NHANES design effects.
+  - Diagnostics included:
+    - R-hat < 1.01 and effective sample sizes > 1000 for all parameters.
+    - Trace plots inspected for mixing.
+    - Posterior predictive checks (`pp_check`) confirmed model fit.
+    - Visual inspection of posterior distributions verified that prior influence was minimal.
+  - Posterior odds ratios and 95% credible intervals were summarized for interpretability.
 
 ## Modeling
 
