@@ -1,6 +1,6 @@
 ---
-title: "Bayesian Logistic Regression for Diabetes Risk (NHANES 2013–2014)"
-subtitle: "Capstone Report"
+title: "Bayesian Logistic Regression for Predicting Diabetes Risk Using NHANES 2013–2014 Data"
+subtitle: "A Capstone Project on Bayesian Applications in Epidemiologic Modeling"
 author:
   - "Namita Mishra"
   - "Autumn Wilcox"
@@ -29,23 +29,28 @@ editor:
 
 Slides: [slides.html](slides.html){target="_blank"} (Edit `slides.qmd`.)
 
+## Group Project Workflow and Contributions
+
+This project was developed collaboratively as part of the Capstone Projects in Data Science course under the guidance of Dr. Ashraf Cohen. The team followed an iterative workflow encompassing data preparation, model development, validation, and documentation using GitHub for version control and collaborative editing.
+
+- Autumn Wilcox – Contributed to analytic coding, content drafting, and structured the overall project workflow. Led documentation efforts and coordinated GitHub updates.
+- Namita Mishra – Developed the initial project plan, conducted Bayesian model implementation, and integrated analytic code with visual diagnostics and posterior checks.
+- Ecil Teodoro – Drafted sections of the Introduction and assisted in literature review and editing for clarity and cohesion.
+
 ## Introduction
+Diabetes mellitus (DM) remains a major public health challenge, and identifying key risk factors—such as obesity, age, sex, and race/ethnicity—is essential for prevention and targeted intervention. Logistic regression is widely used to estimate associations between such factors and binary outcomes like diabetes diagnosis. However, classical maximum likelihood estimation (MLE) can produce unstable estimates in the presence of missing data, quasi-separation, or small samples. Bayesian logistic regression offers a robust alternative by integrating prior information, regularizing estimates, and quantifying uncertainty more transparently than frequentist approaches.
 
-Diabetes mellitus (DM) is a major public health challenge, and identifying key risk factors—such as obesity, age, sex, and race/ethnicity—is essential for prevention and targeted intervention. Logistic regression is widely used to estimate associations between such risk factors and binary outcomes, including the presence or absence of diabetes. However, classical maximum likelihood estimation (MLE) can yield unstable results in small samples or in the presence of missing data, quasi-separation, or complete separation. Moreover, healthcare data (e.g., DNA sequences, imaging, patient-reported outcomes, electronic health records, and longitudinal health measurements) are often complex, making standard analytical approaches insufficient [@zeger2020]. Recent Bayesian advances emphasize representing predictive uncertainty alongside point estimates, which is critical when clinical decisions hinge on risk thresholds; for example, approximate Bayesian deep learning with Monte Carlo dropout provides calibrated uncertainty without changing model architecture [@gal2016dropout]. In epidemiologic modeling, Bayesian approaches are increasingly preferred when separation, small samples, or missingness complicate classical inference [@baldwin2017; @kruschke2017].
+In this project, we apply Bayesian logistic regression to the 2013–2014 National Health and Nutrition Examination Survey (NHANES) dataset to examine the association between demographic and anthropometric factors and doctor-diagnosed diabetes. Our objective is to evaluate whether Bayesian inference provides more stable and interpretable estimates than frequentist baselines when data complexity or separation challenges arise.
 
-Bayesian hierarchical models, implemented via Markov Chain Monte Carlo (MCMC), provide a framework that integrates prior knowledge and accounts for hierarchical data structures. These models have been successfully applied in predicting patient health status across diseases such as pneumonia, prostate cancer, and mental disorders [@zeger2020]. Compared to frequentist approaches, Bayesian inference naturally quantifies uncertainty and accommodates complex covariate structures, though it remains limited by parametric assumptions.
+Bayesian hierarchical models, implemented via Markov Chain Monte Carlo (MCMC), have been successfully applied in predicting patient health status across diseases such as pneumonia, prostate cancer, and mental disorders [@zeger2020]. By representing predictive uncertainty alongside point estimates, Bayesian inference offers a practical advantage in epidemiologic modeling where decisions hinge on probabilistic thresholds. Beyond stability, Bayesian methods support model checking, variable selection, and uncertainty quantification under missingness or imputation frameworks [@baldwin2017; @kruschke2017].
 
-Recent work has extended Bayesian methods to disease diagnostics. For example, Bayesian inference has been used to evaluate diagnostic test data from the National Health and Nutrition Examination Survey (NHANES), comparing parametric and nonparametric approaches. These methods provide posterior probabilities that improve disease classification, especially where conventional dichotomous thresholds fail to capture heterogeneity in populations [@chatzimichail2023]. Similarly, Bayesian clinical reasoning models have been applied to cardiovascular and metabolic risk prediction, emulating clinician decision-making by incorporating demographic, metabolic, and conventional risk factors [@liu2013].
+Recent work has expanded Bayesian applications to disease diagnostics and health risk modeling. For instance, Bayesian approaches have been used to evaluate NHANES diagnostic data [@chatzimichail2023], to model cardiovascular and metabolic risk [@liu2013], and to integrate multiple data modalities such as imaging and laboratory measures [@abdullah2022bdlhealth]. Moreover, multiple imputation combined with Bayesian modeling generates robust estimates when data are missing at random (MAR) or not at random (MNAR) [@austin2021].
 
-Bayesian regression also addresses methodological challenges such as missing data. Multiple imputation combined with Bayesian modeling has been applied in clinical research, generating robust estimates under assumptions of missing at random (MAR), missing not at random (MNAR), or missing completely at random (MCAR) [@austin2021]. These applications highlight the versatility of Bayesian approaches in healthcare, particularly when traditional models are undermined by data limitations.
+The broader Bayesian literature emphasizes the role of priors and model checking. Weakly informative priors, such as Normal(0, 2.5) for coefficients, regularize estimation and reduce variance in small samples [@gelman2008; @vandeschoot2021]. Tutorials using R packages like brms and blavaan illustrate how MCMC enables posterior inference and empirical Bayes analysis [@klauenberg2015].
 
-The broader Bayesian literature emphasizes the importance of prior specification, model checking, and variable selection. Vande Schoot et al. highlight the role of informative, weakly informative, and diffuse priors, noting that prior elicitation can draw from experts, data-based approaches, or maximum likelihood estimates [@vandeschoot2021]. Priors not only regularize estimates but also improve performance in small samples. Tutorials demonstrate how packages such as brms and blavaan in R, combined with MCMC, allow estimation of posterior distributions and facilitate empirical Bayesian analysis [@klauenberg2015].
+Beyond standard generalized linear models, Bayesian nonparametric regression flexibly captures nonlinearity and zero inflation common in health data [@richardson2018bnr]. Bayesian Additive Regression Trees (BART) improve variable selection in mixed-type data [@luo2024bartvs], while state-space and dynamic Bayesian models incorporate time-varying biomarkers for longitudinal prediction [@momeni2021covidbayes]. Bayesian model averaging (BMA) further addresses model uncertainty by weighting across multiple specifications [@hoeting1999bma]. 
 
-In meta-analytic settings, Bayesian hierarchical regression has been used to augment data with results from prior studies. This approach incorporates both exchangeable and unexchangeable predictors, enabling explicit testing of heterogeneity across studies [@deleeuw2012]. Other works extend Bayesian methods to psychology and neuroscience (e.g., EEG studies [@baldwin2017]), intuitive reasoning frameworks [@kruschke2017], and Bayesian deep learning in healthcare applications such as imaging [@abdullah2022bdlhealth].
-
-### Related Bayesian Methods for Clinical Risk Modeling
-
-Beyond standard Bayesian GLMs, several strands of the literature inform our approach and possible extensions. Bayesian nonparametric regression can flexibly capture heavy tails and zero-inflation common in health cost and utilization data [@richardson2018bnr]. For variable selection and nonlinear effects, Bayesian Additive Regression Trees (BART) provide a robust alternative to linear terms; recent work proposes permutation- and backward-selection procedures that improve the identification of relevant predictors in mixed-type data [@luo2024bartvs]. In dynamic risk prediction, Bayesian state-space/Markov models that incorporate time-varying biomarkers have substantially improved clinical stratification relative to static baselines [@momeni2021covidbayes]. For time-to-event outcomes, BART-based survival models relax proportional hazards assumptions while delivering calibrated uncertainty [@sparapani2016_bartsurvival]. Finally, Bayesian model averaging offers a principled way to account for model uncertainty by weighting across candidate specifications rather than selecting a single “best” model [@hoeting1999bma], and Bayesian deep learning contributes scalable uncertainty quantification when richer feature sets (e.g., imaging, EHR embeddings) are used [@abdullah2022bdlhealth; @gal2016dropout].
+Together, these approaches demonstrate the versatility and growing importance of Bayesian inference in clinical and epidemiologic modeling.
 
 ## Aim 
 
@@ -53,210 +58,112 @@ Beyond standard Bayesian GLMs, several strands of the literature inform our appr
 
 ## Data & Preparation
 
-- **Source:** NHANES (CDC/NCHS) 2013–2014 [@nchs2014].
-- **Files:** `BMX_H` (body measures), `DEMO_H` (demographics),
-  `DIQ_H` (diabetes questionnaire).
-- **Population:** **Adults aged ≥20 years**.
-- **Outcome:** `DIQ010` — *“Has a doctor told you that you have diabetes?”* (1=Yes, 2=No; 7/9 treated as NA). We construct `diabetes_dx` ∈ {0,1}.
-- **Predictors:**
-  - `BMXBMI` (continuous BMI, kg/m²). Optional adult categories if needed.
-  - `RIDAGEYR` (age, continuous).
-  - `RIAGENDR` (sex: male/female).
-  - `RIDRETH1` (race/ethnicity: 5-level categorical).
-- **Survey Design Variables:** `WTMEC2YR` (exam weight), `SDMVPSU`, `SDMVSTRA`.
+We used data from the **2013-2014 National Health and Nutrition Examination Survey (NHANES)**, conducted by the CDC's National Center for Health Statistics (NCHS) [@nchs2014]. Three datasets were merged for this analysis: 
+- `DEMO_H` (demographics)
+- `BMX_H` (body measures)
+- `DIQ_H` (diabetes questionnaire)
+
+### Population and Variables
+
+The analytic sample included adults aged ≥20 years with complete information on diabetes diagnosis, BMI, age, sex, and race/ethnicity.
+
+Outcome
+`DIQ010` - "Has a doctor told you that you have diabetes?" (1 = Yes, 2 = No; 7/9 coded as missing).
+
+Predictors
+- `BMXBMI` (Body Mass Index, kg/m²)
+- `RIDAGEYR` (Age, years)
+- `RIAGENDR` (Sex: Male/Female)
+- `RIDRETH1` (Race/Ethnicity: 5 categories)
+
+Survey Design Variables
+`WTMEC2YR` (exam weight), `SDMVPSU`, and `SDMVSTRA` were included to preserve NHANES’s complex survey design.
+
+### Data Preparation Workflow
+
+1. Merging and Cleaning
+NHANES .XPT files were imported and merged using participant identifiers. Variables were recoded to numeric form where necessary and standardized (e.g., `age_c`, `bmi_c`) to facilitate convergence in regression modeling.
+
+2. Data Validation
+Logic checks ensured that all required variables were present and that diabetes outcome values were valid (1 or 2). Missing or nonstandard codes (3, 7, 9) were excluded.
+
+3. Survey Design Specification 
+The survey structure was defined using the `survey` package with appropriate weights, strata, and PSU identifiers to ensure nationally representative estimates.
+
+4. Exploratory Visualization
+Exploratory visualizations were generated to assess data completeness and distributions:
+- Missingness patterns: `plot_intro()` and `plot_missing()` highlighted overall missing data structure.
+- Distributions: Preliminary plots examined BMI, age, and diabetes prevalence by demographic groups.
+
+5. Standardization and Storage
+Cleaned datasets were saved as `.rds` files (`merged_2013_2014.rds` and `adult_cleaned_2013_2014.rds`) for reproducible downstream analysis.
 
 ```{r}
-# ---- Load merged data that DEFINITELY includes DIQ010 ----
+# ---- Load merged data (DEMO_H + BMX_H + DIQ_H) ----
 library(tidyverse)
-
-if (!file.exists("data/merged_2013_2014.rds")) {
-  message("Rebuilding merged_2013_2014.rds ...")
-  source("R/data_prep.R")
-}
-merged_data <- readRDS("data/merged_2013_2014.rds")
-
-# Hard stop if DIQ010 isn't usable
-if (!("DIQ010" %in% names(merged_data))) {
-  stop("DIQ010 missing in merged_data (R/data_prep.R).")
-}
-if (sum(merged_data$DIQ010 %in% c(1,2), na.rm = TRUE) == 0) {
-  stop("DIQ010 has no 1/2 values in merged_data. Re-run R/data_prep.R and check console counts.")
-}
-
-# ---- Packages & plotting theme ----
-library(tidyverse)
-library(knitr)
 library(survey)
-library(ggplot2)
-library(viridis)
-library(bayesplot)
 
-theme_set(theme_minimal(base_size = 13))
-custom_colors <- viridis(3, option = "D")
-color_scheme_set("viridis")
-
-# ---- Load or rebuild merged data (DEMO_H + BMX_H + DIQ_H) ----
 if (!file.exists("data/merged_2013_2014.rds")) {
-  message("Building merged_2013_2014.rds via R/data_prep.R ...")
-  source("R/data_prep.R")
+message("Rebuilding merged_2013_2014.rds via R/data_prep.R ...")
+source("R/data_prep.R")  # does: import XPTs, merge, coerce, validate, saveRDS()
 }
-
 merged_data <- readRDS("data/merged_2013_2014.rds")
 
-# ---- Robust coercion for NHANES-coded fields (handles 'Yes/No' labels) ----
-to_num <- function(x) {
-  if (is.numeric(x)) return(x)
-  xc <- as.character(x)
-  # Try numeric parsing first (handles "1 Yes" or " 2 No")
-  n <- suppressWarnings(readr::parse_number(xc))
-  # If mostly NA after parse, map common text labels explicitly
-  if (mean(is.na(n)) > 0.80) {
-    xlow <- tolower(trimws(xc))
-    n <- dplyr::case_when(
-      xlow %in% c("1","yes","yes, told") ~ 1,
-      xlow %in% c("2","no","no, not told") ~ 2,
-      xlow %in% c("3","borderline") ~ 3,
-      xlow %in% c("7","refused") ~ 7,
-      xlow %in% c("9","don't know","dont know","unknown") ~ 9,
-      TRUE ~ NA_real_
-    )
-  }
-  as.numeric(n)
-}
-
+# Verify required columns exist
 need_cols <- c("DIQ010","DIQ050","BMXBMI","RIDAGEYR","RIAGENDR",
-               "RIDRETH1","SDMVPSU","SDMVSTRA","WTMEC2YR")
-missing_cols <- setdiff(need_cols, names(merged_data))
-if (length(missing_cols)) {
-  stop("Merged data is missing columns: ", paste(missing_cols, collapse = ", "))
-}
+"RIDRETH1","SDMVPSU","SDMVSTRA","WTMEC2YR")
+stopifnot(all(need_cols %in% names(merged_data)))
 
-# Keep a diagnostic copy (before coercion) for helpful error messages
-diag_DIQ010 <- merged_data$DIQ010
-
-merged_data <- merged_data %>%
-  mutate(
-    DIQ010   = to_num(DIQ010),
-    DIQ050   = to_num(if (!"DIQ050" %in% names(.)) NA_real_ else DIQ050),
-    BMXBMI   = to_num(BMXBMI),
-    RIDAGEYR = to_num(RIDAGEYR),
-    RIAGENDR = to_num(RIAGENDR),
-    RIDRETH1 = to_num(RIDRETH1),
-    SDMVPSU  = to_num(SDMVPSU),
-    SDMVSTRA = to_num(SDMVSTRA),
-    WTMEC2YR = to_num(WTMEC2YR)
-  )
-
-# ---- Validate DIQ010 really contains 1/2 after coercion ----
-cat("DIQ010 (after coercion) counts:\n")
-print(table(merged_data$DIQ010, useNA = "ifany"))
-
-if (sum(merged_data$DIQ010 %in% c(1, 2), na.rm = TRUE) == 0) {
-  cat("\nFirst 10 unique raw DIQ010 values found BEFORE coercion:\n")
-  print(utils::head(unique(as.character(diag_DIQ010)), 10))
-  stop("DIQ010 has no 1/2 values after coercion. ",
-       "Inspect DIQ_H in R/data_prep.R (ensure DIQ010 is selected) ",
-       "and re-run source('R/data_prep.R').")
-}
-
-# Optional: quick peek
-# knitr::kable(head(merged_data))
-```
-
-### Basic Exploration 
-
-```{r}
-# ---------------- Basic Exploration (adults) ----------------
-
-# Keep adults only and build analysis variables
+# ---- Basic Exploration (adults) ----
 adult <- merged_data %>%
-  dplyr::filter(RIDAGEYR >= 20) %>%
-  dplyr::transmute(
-    # --- keep survey design variables so svydesign() can see them ---
-    SDMVPSU, SDMVSTRA, WTMEC2YR,
+filter(RIDAGEYR >= 20) %>%
+transmute(
+SDMVPSU, SDMVSTRA, WTMEC2YR,
+diabetes_dx = case_when(
+DIQ010 == 1 ~ 1,
+DIQ010 == 2 ~ 0,
+DIQ010 %in% c(3,7,9) ~ NA_real_,
+TRUE ~ NA_real_
+),
+bmi  = BMXBMI,
+age  = RIDAGEYR,
+sex  = forcats::fct_recode(factor(RIAGENDR), Male = "1", Female = "2"),
+race = forcats::fct_recode(
+factor(RIDRETH1),
+"Mexican American" = "1",
+"Other Hispanic"   = "2",
+"NH White"         = "3",
+"NH Black"         = "4",
+"Other/Multi"      = "5"
+),
+DIQ050 = DIQ050
+) %>%
+mutate(
+age_c  = as.numeric(scale(age)),
+bmi_c  = as.numeric(scale(bmi)),
+bmi_cat = cut(
+bmi,
+breaks = c(-Inf, 18.5, 25, 30, 35, 40, Inf),
+labels = c("<18.5","18.5–<25","25–<30","30–<35","35–<40","≥40"),
+right = FALSE
+),
+# exclude gestational diabetes implied by DIQ050==1 for females
+diabetes_dx = ifelse(sex == "Female" & !is.na(DIQ050) & DIQ050 == 1, 0, diabetes_dx)
+) %>%
+mutate(race = forcats::fct_relevel(race, "NH White"))
 
-    # --- outcome: DIQ010 (1 yes, 2 no; 3/7/9 -> NA) ---
-    diabetes_dx = dplyr::case_when(
-      DIQ010 == 1 ~ 1,
-      DIQ010 == 2 ~ 0,
-      DIQ010 %in% c(3, 7, 9) ~ NA_real_,
-      TRUE ~ NA_real_
-    ),
-
-    # --- predictors (raw) ---
-    bmi  = BMXBMI,
-    age  = RIDAGEYR,
-
-    # sex (1=Male, 2=Female)
-    sex  = forcats::fct_recode(factor(RIAGENDR), Male = "1", Female = "2"),
-
-    # race (5-level)
-    race = forcats::fct_recode(
-      factor(RIDRETH1),
-      "Mexican American" = "1",
-      "Other Hispanic"   = "2",
-      "NH White"         = "3",
-      "NH Black"         = "4",
-      "Other/Multi"      = "5"
-    ),
-
-    # keep DIQ050 so we can safely reference it (may be absent/NA in some rows)
-    DIQ050 = DIQ050
-  ) %>%
-  # standardize continuous predictors
-  dplyr::mutate(
-    age_c = as.numeric(scale(age)),
-    bmi_c = as.numeric(scale(bmi)),
-    bmi_cat = cut(
-      bmi,
-      breaks = c(-Inf, 18.5, 25, 30, 35, 40, Inf),
-      labels = c("<18.5","18.5–<25","25–<30","30–<35","35–<40","≥40"),
-      right = FALSE
-    )
-  ) %>%
-  # adjust outcome: if female & DIQ050==1 ("only when pregnant"), set to 0 (not diabetes)
-  dplyr::mutate(
-    diabetes_dx = ifelse(sex == "Female" & !is.na(DIQ050) & DIQ050 == 1, 0, diabetes_dx)
-  )
-
-# Make NH White the reference level for race (clearer interpretation)
-adult <- adult %>%
-  dplyr::mutate(
-    race = forcats::fct_relevel(race, "NH White")
-  )
-
-# --- sanity checks ---
-cat("Adults n =", nrow(adult), "\n")
-cat("Non-missing diabetes_dx =", sum(!is.na(adult$diabetes_dx)), "\n")
-print(table(adult$diabetes_dx, useNA = "ifany"))
-print(table(adult$sex, useNA = "ifany"))
-print(table(adult$race, useNA = "ifany"))
-
-if (sum(!is.na(adult$diabetes_dx)) == 0) {
-  stop("Too few non-missing outcomes for modeling (n = 0). Check DIQ010 upstream.")
-}
-
-# (optional plots omitted for brevity)
-
-# save for downstream
-if (!dir.exists("data")) dir.create("data", recursive = TRUE)
 saveRDS(adult, "data/adult_cleaned_2013_2014.rds")
-```
 
-### Survey Design
-
-```{r}
-# ---------------- Survey Design ----------------
-# Use exam weights because BMI (BMXBMI) is an MEC variable
+# ---- Survey Design ----
 nhanes_design_adult <- survey::svydesign(
-  id = ~SDMVPSU,
-  strata = ~SDMVSTRA,
-  weights = ~WTMEC2YR,
-  nest = TRUE,
-  data = adult
+id = ~SDMVPSU,
+strata = ~SDMVSTRA,
+weights = ~WTMEC2YR,
+nest = TRUE,
+data = adult
 )
 
-# quick weighted checks
+# Quick weighted checks
 survey::svymean(~age, nhanes_design_adult, na.rm = TRUE)
 survey::svymean(~diabetes_dx, nhanes_design_adult, na.rm = TRUE)
 ```
