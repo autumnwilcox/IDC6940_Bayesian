@@ -103,6 +103,7 @@ Cleaned datasets were saved as `.rds` files (`merged_2013_2014.rds` and `adult_c
 # ---- Load merged data (DEMO_H + BMX_H + DIQ_H) ----
 library(tidyverse)
 library(survey)
+library(forcats)
 
 if (!file.exists("data/merged_2013_2014.rds")) {
 message("Rebuilding merged_2013_2014.rds via R/data_prep.R ...")
@@ -171,7 +172,20 @@ survey::svymean(~diabetes_dx, nhanes_design_adult, na.rm = TRUE)
 
 ## Methods
 
-We applied three complementary approaches to estimate the association between BMI, age, sex, and race/ethnicity and doctor-diagnosed diabetes (DIQ010) in the NHANES 2013–2014 adult dataset. Continuous predictors were standardized (mean = 0, SD = 1) to improve model convergence and interpretability. All analyses accounted for NHANES’s complex survey design using weights (`WTMEC2YR`), strata (`SDMVSTRA`), and primary sampling units (`SDMVPSU`).
+The general logistic regression model estimated the probability of doctor-diagnosed diabetes (`DIQ010`) as a function of demographic and anthropometric predictors. The model is expressed as:
+
+$$
+\text{logit}(P(Y_i = 1)) = \beta_0 + \beta_1(\text{BMI}_i) + \beta_2(\text{Age}_i) + \beta_3(\text{Sex}_i) + \sum_{k=1}^{4}\beta_{3+k}(\text{Race}_{ik})
+$$
+
+where \( Y_i = 1 \) indicates a positive diabetes diagnosis for individual \( i \).  
+- \( \beta_0 \) is the intercept.  
+- \( \beta_1, \beta_2, \beta_3, \ldots \) are regression coefficients representing the log-odds change in diabetes risk associated with each predictor.  
+
+Continuous predictors (BMI, age) were standardized (mean = 0, SD = 1) prior to model estimation.  
+All analyses accounted for NHANES’s complex survey design using weights (`WTMEC2YR`), strata (`SDMVSTRA`), and primary sampling units (`SDMVPSU`).  
+
+We implemented three complementary modeling strategies to evaluate these associations:
 
 1. **Frequentist Logistic Regression (MLE):**  
   - Baseline model predicting diabetes from standardized BMI (`bmi_c`), age (`age_c`), sex, and race/ethnicity.
@@ -201,11 +215,23 @@ We applied three complementary approaches to estimate the association between BM
     - Visual inspection of posterior distributions verified that prior influence was minimal.
   - Posterior odds ratios and 95% credible intervals were summarized for interpretability.
 
+### Software and Methods Note
+
+All analyses were conducted in R (version 4.3.2) using RStudio within a reproducible Quarto workflow.
+The following libraries supported data management, modeling, and visualization:
+- `tidyverse` – data wrangling, transformation, and plotting
+- `nhanesA` – direct import of NHANES public datasets
+- `survey` – complex survey design specification and weighted analysis
+- `mice` – multiple imputation of missing predictor data
+- `brms` and `rstan` – Bayesian regression modeling and posterior simulation
+- `bayesplot` and `ggplot2` – model diagnostics and posterior visualization
+- `knitr` and `kableExtra` – formatted tables for model output
+
+All code was executed using reproducible R scripts housed in the project’s GitHub repository (`R/data_prep.R`, `R/modeling.R`), with outputs rendered dynamically via Quarto (`index.qmd`).
+
 ## Modeling
 
 ```{r}
-## Modeling
-
 library(broom)
 library(mice)
 library(brms)
@@ -362,27 +388,49 @@ saveRDS(mi_or,     "outputs/mi_OR_table.rds")
 saveRDS(bayes_or,  "outputs/bayes_OR_table.rds")
 ```
 
+### Bayesian Diagnostics
+
+Model convergence and fit were assessed using standard Bayesian diagnostics:
+
+- **Trace plots** confirmed good mixing and stationarity across all four chains.  
+- **Autocorrelation plots** verified that posterior draws were sufficiently independent.  
+- **R-hat (Ȓ)** values were < 1.01 for all parameters, indicating proper convergence.  
+- **Effective sample sizes (ESS)** exceeded 1000, ensuring reliable posterior estimation.  
+- **Posterior predictive checks (`pp_check`)** demonstrated that simulated outcomes closely matched the observed distribution of diabetes diagnoses.  
+- **Bayesian R²** from `brms` summarized the proportion of variance explained by the model.
+
+Together, these diagnostics indicated that the Bayesian logistic regression model converged appropriately, achieved stable sampling, and provided a well-calibrated fit to the NHANES 2013–2014 data.
+
 ## Results  
+
+**Key Findings**
+- Age and BMI are positively associated with doctor-diagnosed diabetes across MLE, MICE, and Bayesian models.
+- Female sex shows lower odds vs. male in all models.
+- Race/ethnicity: Mexican American, NH Black, and Other/Multi have elevated odds vs. NH White; Other Hispanic is positive but sometimes less precise.
+- Agreement across methods: Effect sizes are directionally and numerically consistent (robust to listwise deletion, imputation, and priors).
 
 ```{r}
 # ---- Build compact results table (BMI & Age only) ----
-library(dplyr); library(tidyr); library(knitr); library(stringr)
+library(dplyr) 
+library(tidyr)
+library(knitr)
+library(stringr)
 
 # pretty "OR (LCL–UCL)" string
 fmt_or <- function(or, lcl, ucl, digits = 2) {
-  paste0(
-    formatC(or,  format = "f", digits = digits), " (",
-    formatC(lcl, format = "f", digits = digits), "–",
-    formatC(ucl, format = "f", digits = digits), ")"
-  )
+paste0(
+formatC(or,  format = "f", digits = digits), " (",
+formatC(lcl, format = "f", digits = digits), "–",
+formatC(ucl, format = "f", digits = digits), ")"
+)
 }
 
 # guardrails: require these to exist from Modeling
 stopifnot(exists("svy_or"), exists("mi_or"), exists("bayes_or"))
 for (nm in c("svy_or","mi_or","bayes_or")) {
-  if (!all(c("term","OR","LCL","UCL") %in% names(get(nm)))) {
-    stop(nm, " must have columns: term, OR, LCL, UCL")
-  }
+if (!all(c("term","OR","LCL","UCL") %in% names(get(nm)))) {
+stop(nm, " must have columns: term, OR, LCL, UCL")
+}
 }
 
 svy_tbl   <- svy_or   %>% mutate(Model = "Survey-weighted MLE")
@@ -390,55 +438,289 @@ mi_tbl    <- mi_or    %>% mutate(Model = "MICE pooled")
 bayes_tbl <- bayes_or %>% mutate(Model = "Bayesian")
 
 all_tbl <- bind_rows(svy_tbl, mi_tbl, bayes_tbl) %>%
-  mutate(term = case_when(
-    str_detect(term, "bmi_c|\\bBMI\\b") ~ "BMI (per 1 SD)",
-    str_detect(term, "age_c|\\bAge\\b") ~ "Age (per 1 SD)",
-    TRUE ~ term
-  )) %>%
-  filter(term %in% c("BMI (per 1 SD)", "Age (per 1 SD)")) %>%
-  mutate(OR_CI = fmt_or(OR, LCL, UCL, digits = 2)) %>%
-  select(Model, term, OR_CI) %>%
-  arrange(
-    factor(Model, levels = c("Survey-weighted MLE","MICE pooled","Bayesian")),
-    factor(term,  levels = c("BMI (per 1 SD)","Age (per 1 SD)"))
-  )
+mutate(term = case_when(
+str_detect(term, "bmi_c|\\bBMI\\b") ~ "BMI (per 1 SD)",
+str_detect(term, "age_c|\\bAge\\b") ~ "Age (per 1 SD)",
+TRUE ~ term
+)) %>%
+filter(term %in% c("BMI (per 1 SD)", "Age (per 1 SD)")) %>%
+mutate(OR_CI = fmt_or(OR, LCL, UCL, digits = 2)) %>%
+select(Model, term, OR_CI) %>%
+arrange(
+factor(Model, levels = c("Survey-weighted MLE","MICE pooled","Bayesian")),
+factor(term,  levels = c("BMI (per 1 SD)","Age (per 1 SD)"))
+)
 
 res_wide <- all_tbl %>%
-  pivot_wider(names_from = term, values_from = OR_CI) %>%
-  rename(
-    `BMI (per 1 SD) OR (95% CI)` = `BMI (per 1 SD)`,
-    `Age (per 1 SD) OR (95% CI)` = `Age (per 1 SD)`
-  )
+pivot_wider(names_from = term, values_from = OR_CI) %>%
+rename(
+`BMI (per 1 SD) OR (95% CI)` = `BMI (per 1 SD)`,
+`Age (per 1 SD) OR (95% CI)` = `Age (per 1 SD)`
+)
 
 kable(
-  res_wide,
-  align = c("l","c","c"),
-  caption = "Odds ratios (per 1 SD) with 95% CIs across models"
+res_wide,
+align = c("l","c","c"),
+caption = "Odds ratios (per 1 SD) with 95% CIs across models"
 )
 ```
 
-Higher BMI and age were both significantly associated with increased odds of doctor-diagnosed diabetes across all models.  
-
-Results were consistent between frequentist and Bayesian frameworks, with Bayesian credible intervals showing comparable precision.
+Higher BMI and age were both significantly associated with increased odds of doctor-diagnosed diabetes across all models. Results were consistent between frequentist and Bayesian frameworks, with Bayesian credible intervals showing comparable precision.
 
 ### Comparative Interpretation
 
-Across all modeling strategies—survey-weighted MLE, multiple imputation (MICE), and Bayesian logistic regression—the associations between age, BMI, sex, and race/ethnicity with doctor-diagnosed diabetes were consistent in magnitude and direction.  
+Magnitude & direction:
+- Age (per 1 SD): strong positive association across models.
+- BMI (per 1 SD): positive association; somewhat smaller than age but robust.
+- Sex (Female vs Male): OR < 1 across methods.
+- Race/ethnicity: Mexican American, NH Black, Other/Multi > 1 vs NH White; Other Hispanic positive with wider intervals at times.
 
-- **Effect stability:** Point estimates from the Bayesian model closely matched those from the frequentist models, suggesting that prior regularization did not distort inference but instead stabilized estimates under modest missingness.  
-- **Uncertainty quantification:** Bayesian credible intervals were slightly narrower yet fully overlapped with frequentist confidence intervals, indicating similar inferential precision with improved interpretability.  
-- **Design considerations:** While the survey-weighted MLE incorporated NHANES’s complex sampling design directly, the Bayesian model used normalized sampling weights as importance weights—approximating design effects rather than modeling them fully. Therefore, Bayesian results are best interpreted as model-based rather than population-weighted estimates.  
+Across methods (MLE, MICE, Bayesian):
+- Consistency in signs and magnitudes indicates conclusions are not sensitive to listwise deletion, multiple imputation, or weakly informative priors.
+- Precision: Bayesian CrIs are similar to frequentist CIs, sometimes slightly narrower due to regularization that stabilizes estimates without overwhelming the likelihood.
 
-Overall, the Bayesian approach yielded inference that was comparably accurate, more transparent about uncertainty, and less sensitive to small-sample variability.
+Design vs model-based:
+- Survey-weighted MLE targets population-representative effects (weights/strata/PSU).
+- Bayesian used normalized weights as importance weights—an approximation that yielded similar substantive conclusions while enabling full posterior inference.
 
-### Discussion and Conclusion
+### Model Fit and Uncertainty 
+```{r}
+# Bayes R^2 (summary)
+library(brms)
+r2 <- bayes_R2(bayes_fit, summary = TRUE)
+knitr::kable(as.data.frame(r2), caption = "Bayesian R² summary (mean and credible interval)")
+```
 
-This analysis examined whether Bayesian logistic regression offers more stable and interpretable inference than classical logistic regression when modeling diabetes risk factors using NHANES 2013–2014 data. All methods—frequentist, imputed, and Bayesian—identified age and BMI as the strongest predictors of doctor-diagnosed diabetes, with higher odds among older adults and those with higher BMI. Females consistently showed lower odds of diabetes than males, while Mexican American, non-Hispanic Black, and multiracial adults exhibited elevated odds compared to non-Hispanic Whites. These sex-specific and racial disparities align with well-documented patterns in population-level diabetes research, where differences in lifestyle, genetics, and access to healthcare contribute to unequal disease burden across groups.
+- Convergence: Ȓ < 1.01 and large ESS (see Bayesian Diagnostics) indicate reliable sampling.
+- Calibration: Posterior predictive checks (bars/stat/scatter) showed close agreement between simulated and observed outcomes.
+- Explained variance: Bayes R² indicates the model captures a meaningful portion of outcome variability for a compact covariate set.
 
-The Bayesian approach provided several advantages. By integrating weakly informative priors, it produced regularized parameter estimates that avoided instability under missing data or quasi-separation. Its posterior distributions offered richer insight into uncertainty than single-point frequentist estimates. In contrast, traditional MLE and even multiple imputation can yield biased or overly confident estimates in small or incomplete samples.  
+## Discussion and Conclusion
 
-Although the Bayesian model approximated survey weighting rather than fully modeling NHANES’s complex design, the resulting estimates aligned closely with design-based frequentist results, supporting its robustness. The high effective sample sizes and R̂ ≈ 1.00 across parameters confirmed excellent model convergence.  
+This analysis assessed whether Bayesian logistic regression provides stable, interpretable inference relative to classical approaches for diabetes risk in NHANES 2013–2014. All methods—MLE, imputed, and Bayesian—identified age and BMI as dominant predictors, with female sex protective and several race/ethnicity contrasts elevated vs NH White. The Bayesian approach offered full posterior uncertainty and modest regularization, aligning closely with survey-weighted estimates while remaining computationally stable.
 
-**In conclusion,** Bayesian logistic regression provided inference that was statistically consistent, computationally stable, and interpretable—achieving the aim of this project. Its flexibility and transparency make it a valuable complement to classical regression in epidemiologic research, particularly when data are incomplete or model assumptions are strained. Future work could extend this approach to hierarchical NHANES cycles or include biomarkers to assess nonlinear effects of metabolic risk factors.
+In conclusion, the convergent evidence across methods supports a robust finding: age and BMI are key risk factors for doctor-diagnosed diabetes in this population. Bayesian diagnostics and Bayes R² further support that the model is well-calibrated and decision-relevant. Future work could expand to hierarchical NHANES cycles, incorporate laboratory biomarkers, compare with nonlinear learners (e.g., BART), and apply Bayesian model averaging to reflect specification uncertainty.
 
-Future work could (i) compare linear-term models with nonlinear BART-based classifiers and permutation/backward selection for variable importance [@luo2024bartvs], (ii) evaluate Bayesian model averaging to reflect model uncertainty across alternative covariate sets [@hoeting1999bma], and (iii) extend to dynamic Bayesian models that update diabetes risk as longitudinal biomarkers accrue [@momeni2021covidbayes].
+### Translational Perspective
+While our primary focus was on methodological comparison, these findings also carry implications for precision public health. Bayesian frameworks enable individualized prediction and uncertainty quantification—tools that could support risk stratification and targeted intervention in population health. For example, model outputs can be used to estimate the posterior probability of diabetes for a specific patient profile or identify the BMI threshold at which that probability exceeds a chosen risk level.
+
+**Example: predict diabetes probability for a single hypothetical adult**
+```{r}
+new_patient <- tibble(
+age_c = 0.5,       # half SD above mean age
+bmi_c = 1.0,       # one SD above mean BMI
+sex   = factor("Male", levels = levels(adult$sex)),
+race  = factor("NH White", levels = levels(adult$race))
+)
+
+pred <- posterior_epred(bayes_fit, newdata = new_patient)
+quantile(colMeans(pred), probs = c(0.025, 0.5, 0.975))
+```
+
+**Example: inverse prediction – BMI at 50% predicted probability**
+```{r}
+# (approximate using grid search)
+bmi_grid <- seq(-3, 3, 0.1)
+grid_df <- tibble(
+age_c = 0,
+bmi_c = bmi_grid,
+sex   = factor("Male", levels = levels(adult$sex)),
+race  = factor("NH White", levels = levels(adult$race))
+)
+pred_grid <- posterior_epred(bayes_fit, newdata = grid_df)
+mean_prob <- colMeans(pred_grid)
+approx(x = mean_prob, y = bmi_grid, xout = 0.5)$y
+```
+
+These examples illustrate how Bayesian inference can bridge population-level modeling and individualized prediction—key to translating epidemiologic data into actionable prevention strategies.
+
+## Limitations
+
+Several limitations should be acknowledged.
+
+First, while NHANES provides a nationally representative sample, the cross-sectional design precludes causal inference between predictors and diabetes outcomes.
+
+Second, the Bayesian logistic regression model approximated survey weighting rather than fully incorporating NHANES’s complex design structure (PSUs and strata) into the likelihood, meaning the results are model-based rather than fully population-weighted.
+
+Third, self-reported diabetes diagnosis (`DIQ010`) may introduce recall bias or misclassification error.
+Fourth, although multiple imputation was used to mitigate missingness, this assumes data are missing at random, which may not always hold.
+
+Finally, the analysis focused on a limited set of demographic and anthropometric predictors; unmeasured confounders such as diet, physical activity, or socioeconomic status could influence observed associations.
+
+Despite these limitations, the findings provide robust and interpretable estimates of diabetes risk factors and demonstrate the stability of Bayesian inference in epidemiologic modeling.
+
+## Visualizations 
+```{r}
+suppressPackageStartupMessages({
+library(ggplot2)
+library(dplyr)
+library(DataExplorer)
+library(bayesplot)
+library(brms)
+library(survey)
+library(viridis)
+})
+theme_set(theme_minimal(base_size = 13))
+color_scheme_set("viridis")
+```
+
+1. Data Quality & Missingness
+```{r}
+plot_intro(merged_data)
+plot_missing(merged_data)
+```
+
+2. Exploratory Distributions
+```{r}
+# BMI distribution by diabetes status (0 = No, 1 = Yes)
+ggplot(adult, aes(x = bmi, fill = factor(diabetes_dx))) +
+geom_density(alpha = 0.6) +
+scale_fill_viridis_d(name = "Diabetes (1 = Yes, 0 = No)") +
+labs(
+title = "BMI Distribution by Diabetes Status",
+x = "Body Mass Index (BMI)",
+y = "Density"
+)
+
+# Age distribution by diabetes status
+ggplot(adult, aes(x = age, fill = factor(diabetes_dx))) +
+geom_histogram(position = "identity", alpha = 0.5, bins = 40) +
+scale_fill_viridis_d(name = "Diabetes (1 = Yes, 0 = No)") +
+labs(
+title = "Age Distribution by Diabetes Status",
+x = "Age (years)",
+y = "Count"
+)
+```
+
+3. Predicted Probability vs BMI (Bayesian)
+```{r}
+pp_df <- tibble(
+bmi_c = seq(min(adult$bmi_c, na.rm = TRUE), max(adult$bmi_c, na.rm = TRUE), length.out = 120),
+age_c = mean(adult$age_c, na.rm = TRUE),
+sex   = factor("Male", levels = levels(adult$sex)),
+race  = factor("NH White", levels = levels(adult$race))
+)
+
+# Posterior expected probabilities
+pp_pred <- posterior_epred(bayes_fit, newdata = pp_df)
+pp_df <- pp_df %>%
+mutate(
+pred  = apply(pp_pred, 2, mean),
+lower = apply(pp_pred, 2, quantile, 0.025),
+upper = apply(pp_pred, 2, quantile, 0.975)
+)
+
+ggplot(pp_df, aes(x = bmi_c, y = pred)) +
+geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.25) +
+geom_line(size = 1.1) +
+labs(
+title = "Posterior Mean Diabetes Probability vs Standardized BMI",
+x = "Standardized BMI (bmi_c)",
+y = "Predicted Probability (Posterior Mean)"
+)
+```
+
+4. Prior vs Posterior Distributions (Key Coefficients)
+```{r}
+# Posterior coefficient densities
+mcmc_areas(
+as_draws_df(bayes_fit),
+pars = c("b_bmi_c", "b_age_c", "b_sexFemale"),
+prob = 0.8
+) + ggtitle("Posterior Distributions for Key Coefficients")
+
+# Simple prior overlays for age & BMI assuming Normal(0, 2.5)
+set.seed(1)
+prior_draws <- tibble(
+term   = rep(c("Age (per 1 SD)", "BMI (per 1 SD)"), each = 4000),
+value  = c(rnorm(4000, 0, 2.5), rnorm(4000, 0, 2.5)),
+source = "Prior"
+)
+
+post_draws <- as_draws_df(bayes_fit) %>%
+select(b_age_c, b_bmi_c) %>%
+tidyr::pivot_longer(everything(), names_to = "term_raw", values_to = "value") %>%
+mutate(
+term = dplyr::recode(term_raw, b_age_c = "Age (per 1 SD)", b_bmi_c = "BMI (per 1 SD)"),
+source = "Posterior"
+) %>%
+select(term, value, source)
+
+bind_rows(prior_draws, post_draws) %>%
+ggplot(aes(x = value, fill = source)) +
+geom_density(alpha = 0.4) +
+facet_wrap(~ term, scales = "free") +
+labs(
+title = "Prior vs Posterior (Illustrative) for Age and BMI",
+x = "Coefficient",
+y = "Density",
+fill = ""
+)
+```
+
+5. Posterior Predictive Checks
+```{r}
+pp_check(bayes_fit, type = "bars") +
+ggtitle("Posterior Predictive Check: Outcome Bars")
+
+pp_check(bayes_fit, type = "stat", stat = "mean") +
+ggtitle("Posterior Predictive Check: Mean of Outcome")
+
+pp_check(bayes_fit, type = "scatter_avg") +
+ggtitle("Posterior Predictive Check: Scatter (Average)")
+```
+
+6. Observed vs Predicted (Calibration-style view)
+```{r}
+# Posterior expected probabilities for each adult
+bayes_pred <- posterior_epred(bayes_fit, newdata = adult, summary = FALSE)
+
+# Robust mean across draws per observation
+if (is.matrix(bayes_pred)) {
+  # typical shape: draws x N
+  pred_prob <- as.numeric(colMeans(bayes_pred, na.rm = TRUE))
+} else if (length(dim(bayes_pred)) == 3) {
+  # shape: iter x chain x N
+  pred_prob <- as.numeric(apply(bayes_pred, 3, mean, na.rm = TRUE))
+} else {
+  stop("Unexpected shape for posterior_epred() output.")
+}
+
+# Add to data frame and plot
+adult <- dplyr::mutate(adult, pred_prob = pred_prob)
+
+ggplot(adult, aes(x = pred_prob, y = as.numeric(diabetes_dx))) +
+  geom_jitter(height = 0.05, alpha = 0.25) +
+  geom_smooth(method = "loess", se = TRUE) +
+  labs(
+    title = "Observed vs Predicted Probability of Diabetes",
+    x = "Predicted Probability (Posterior Mean)",
+    y = "Observed Outcome (0/1)"
+  ) +
+  theme_minimal()
+```
+
+7. Posterior vs Population (Survey-weighted) Prevalence
+```{r}
+# Survey-weighted prevalence (population-representative)
+pop_prev <- as.numeric(svymean(~diabetes_dx, nhanes_design_adult, na.rm = TRUE))
+
+# Posterior prevalence from Bayesian model
+post_prev <- mean(colMeans(bayes_pred))
+
+bar_df <- tibble(
+Source     = c("Survey-weighted (Population)", "Bayesian Posterior"),
+Prevalence = c(pop_prev, post_prev)
+)
+
+ggplot(bar_df, aes(x = Source, y = Prevalence, fill = Source)) +
+geom_col(alpha = 0.85) +
+scale_fill_viridis_d(guide = "none") +
+labs(
+title = "Population vs Posterior Diabetes Prevalence",
+y = "Prevalence (Proportion with Diabetes)",
+x = NULL
+) +
+ylim(0, max(bar_df$Prevalence) * 1.15)
+```
