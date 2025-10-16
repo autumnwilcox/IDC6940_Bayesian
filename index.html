@@ -9,7 +9,7 @@
 <meta name="author" content="Namita Mishra">
 <meta name="author" content="Autumn Wilcox">
 <meta name="author" content="Ecil Teodoro">
-<meta name="dcterms.date" content="2025-10-14">
+<meta name="dcterms.date" content="2025-10-16">
 
 <title>Bayesian Logistic Regression for Predicting Diabetes Risk Using NHANES 2013–2014 Data</title>
 <style>
@@ -2425,7 +2425,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">October 14, 2025</p>
+      <p class="date">October 16, 2025</p>
     </div>
   </div>
   
@@ -2581,8 +2581,7 @@ diabetes_dx 0.089016 0.0048</code></pre>
 <p>where ( Y_i = 1 ) indicates a positive diabetes diagnosis for individual ( i ).<br>
 - ( _0 ) is the intercept.<br>
 - ( _1, _2, _3, ) are regression coefficients representing the log-odds change in diabetes risk associated with each predictor.</p>
-<p>Continuous predictors (BMI, age) were standardized (mean = 0, SD = 1) prior to model estimation.<br>
-All analyses accounted for NHANES’s complex survey design using weights (<code>WTMEC2YR</code>), strata (<code>SDMVSTRA</code>), and primary sampling units (<code>SDMVPSU</code>).</p>
+<p>Continuous predictors (BMI and age) were standardized (mean = 0, SD = 1) among adults aged ≥ 20 years prior to model estimation. Sex and race/ethnicity were recoded and re-leveled using the <code>forcats</code> package to ensure consistent reference categories (Male and non-Hispanic White). Analyses accounted for NHANES’s complex survey design using weights (<code>WTMEC2YR</code>), strata (<code>SDMVSTRA</code>), and primary sampling units (<code>SDMVPSU</code>). The survey-weighted model used a complete-case subset filtered on all required variables, while multiple imputation addressed missing predictor data.</p>
 <p>We implemented three complementary modeling strategies to evaluate these associations:</p>
 <ol type="1">
 <li><strong>Frequentist Logistic Regression (MLE):</strong><br>
@@ -2628,6 +2627,7 @@ All analyses accounted for NHANES’s complex survey design using weights (<code
 </ul></li>
 <li>Posterior odds ratios and 95% credible intervals were summarized for interpretability.</li>
 </ul>
+<p>Model objects and summary tables were saved as <code>.rds</code> files for reproducibility (<code>outputs/</code> directory). All analytic code was executed in R (version 4.3.2) using RStudio within a reproducible Quarto workflow.</p>
 <section id="software-and-methods-note" class="level3">
 <h3 class="anchored" data-anchor-id="software-and-methods-note">Software and Methods Note</h3>
 <p>All analyses were conducted in R (version 4.3.2) using RStudio within a reproducible Quarto workflow. The following libraries supported data management, modeling, and visualization: - <code>tidyverse</code> – data wrangling, transformation, and plotting - <code>nhanesA</code> – direct import of NHANES public datasets - <code>survey</code> – complex survey design specification and weighted analysis - <code>mice</code> – multiple imputation of missing predictor data - <code>brms</code> and <code>rstan</code> – Bayesian regression modeling and posterior simulation - <code>bayesplot</code> and <code>ggplot2</code> – model diagnostics and posterior visualization - <code>knitr</code> and <code>kableExtra</code> – formatted tables for model output</p>

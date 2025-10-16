@@ -182,8 +182,7 @@ where \( Y_i = 1 \) indicates a positive diabetes diagnosis for individual \( i 
 - \( \beta_0 \) is the intercept.  
 - \( \beta_1, \beta_2, \beta_3, \ldots \) are regression coefficients representing the log-odds change in diabetes risk associated with each predictor.  
 
-Continuous predictors (BMI, age) were standardized (mean = 0, SD = 1) prior to model estimation.  
-All analyses accounted for NHANES’s complex survey design using weights (`WTMEC2YR`), strata (`SDMVSTRA`), and primary sampling units (`SDMVPSU`).  
+Continuous predictors (BMI and age) were standardized (mean = 0, SD = 1) among adults aged ≥ 20 years prior to model estimation. Sex and race/ethnicity were recoded and re-leveled using the `forcats` package to ensure consistent reference categories (Male and non-Hispanic White). Analyses accounted for NHANES’s complex survey design using weights (`WTMEC2YR`), strata (`SDMVSTRA`), and primary sampling units (`SDMVPSU`). The survey-weighted model used a complete-case subset filtered on all required variables, while multiple imputation addressed missing predictor data.
 
 We implemented three complementary modeling strategies to evaluate these associations:
 
@@ -214,6 +213,8 @@ We implemented three complementary modeling strategies to evaluate these associa
     - Posterior predictive checks (`pp_check`) confirmed model fit.
     - Visual inspection of posterior distributions verified that prior influence was minimal.
   - Posterior odds ratios and 95% credible intervals were summarized for interpretability.
+
+Model objects and summary tables were saved as `.rds` files for reproducibility (`outputs/` directory). All analytic code was executed in R (version 4.3.2) using RStudio within a reproducible Quarto workflow.
 
 ### Software and Methods Note
 
