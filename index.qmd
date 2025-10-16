@@ -36,7 +36,7 @@ This project was developed collaboratively as part of the Capstone Projects in D
 
 - Autumn Wilcox – Contributed to analytic coding, content drafting, and structured the overall project workflow. Led documentation efforts and coordinated GitHub updates.
 - Namita Mishra – Developed the initial project plan, conducted Bayesian model implementation, and integrated analytic code with visual diagnostics and posterior checks.
-- Ecil Teodoro – Drafted sections of the Introduction and assisted in literature review and editing for clarity and cohesion.
+- Ecil Teodoro – Pushed literature review summaries to main branch.
 
 ## Introduction
 Diabetes mellitus (DM) remains a major public health challenge, and identifying key risk factors—such as obesity, age, sex, and race/ethnicity—is essential for prevention and targeted intervention. Logistic regression is widely used to estimate associations between such factors and binary outcomes like diabetes diagnosis. However, classical maximum likelihood estimation (MLE) can produce unstable estimates in the presence of missing data, quasi-separation, or small samples. Bayesian logistic regression offers a robust alternative by integrating prior information, regularizing estimates, and quantifying uncertainty more transparently than frequentist approaches.
