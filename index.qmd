@@ -154,10 +154,10 @@ We apply **Bayesian logistic regression** to predict diabetes status and
 to estimate the associations between body mass index (BMI), age (≥ 20
 years), sex, and race/ethnicity using the 2013–2014 NHANES survey.
 Because NHANES uses a complex sampling design with stratification,
-clustering, and oversampling—not simple random sampling
-[@nchs2014]—we compare Bayesian results with
-survey-weighted frequentist models and with multiple imputation analyses
-to address challenges from missing data and potential separation.
+clustering, and oversampling—not simple random sampling [@nchs2014]—we
+compare Bayesian results with survey-weighted frequentist models and
+with multiple imputation analyses to address challenges from missing
+data and potential separation.
 
 # Data & Methods
 
@@ -412,53 +412,58 @@ p_age
 
 ## Logistic Model
 
-We model the probability of doctor-diagnosed diabetes as: \[
-\text{logit}{P(Y_i=1)} =\beta\_0+\beta\_1 \text{BMI}\_i+\beta\_2
-\text{Age}\_i+\beta*3* \text{Sex}*i +*\sum+∑{g} β{3+g} Race{ig}, \] with
-BMI and Age standardized (mean 0, SD 1), Sex and Race/Ethnicity coded
-with Male and non-Hispanic White as references. Analyses use NHANES
-design elements (PSU, strata, exam weights).
+We model the probability of doctor-diagnosed diabetes as:
 
-Race/ethnicity entered the model as a coarsened factor (White, Black,
-Hispanic; rare/other levels were lumped to avoid sparse cells);
-references were Male and White.
+logit{P(Yi​=1)}=β0​+β1​BMIi​+β2​Agei​+β3​Sexi​+g∑​β3+g​Raceig​.
+
+**BMI** and **Age** are standardized (mean 0, SD 1). Categorical
+predictors use **Male** and **White** as reference levels. Because some
+race/ethnicity categories are sparse, race was **coarsened** to a
+three-level factor (**race3**: White, Black, Hispanic; rare/other levels
+lumped as needed) to reduce separation and improve stability. All
+analyses respect NHANES design elements (PSU, strata, exam weights).
 
 ## Frequentist Logistic Regression (Survey-Weighted)
 
 We fit a survey-weighted logistic regression (`svyglm`) for
-(\text{diabetes\_dx} \sim \text{age}\_c + \text{bmi}\_c + \text{sex} +
-\text{race3}), (the coarsened race factor). To avoid separation from
-sparse cells, rare categories were lumped and a model was only fit when
-both sex and race3 had ≥2 observed levels in the complete-case subset.
+
+diabetes_dx∼age_c+bmi_c+sex+race3.\texttt{diabetes\_dx} \sim \texttt{age\_c} + \texttt{bmi\_c} + \texttt{sex} + \texttt{race3}.diabetes_dx∼age_c+bmi_c+sex+race3.
+
+To avoid separation from sparse cells, we used the coarsened **race3**
+factor, and we **only ran the model when both `sex` and `race3` had ≥2
+observed levels among complete cases**. We report odds ratios (ORs) with
+95% CIs.
 
 ## Multiple Imputation (MICE)
 
-We performed MICE (m = 5) using predictive mean matching for continuous
-variables and polytomous regression for categorical variables (**sex,
-race3**). The outcome was not imputed; survey design variables were
-auxiliaries only. Because some imputations collapsed a factor level, we
-fit the logistic model only on imputations with ≥2 levels for each
-included factor and pooled estimates across the consistent subset of
-successful imputations using Rubin’s rules.
+We performed MICE (**m = 5**) using predictive mean matching for
+continuous variables and polytomous/logistic regression for categoricals
+(**sex**, **race3**). The **outcome was not imputed**; NHANES design
+variables were included as **auxiliaries only**. Because certain imputed
+datasets occasionally **collapsed a factor to a single level**, we **fit
+the logistic model only on imputations where each included factor
+retained ≥2 levels**, selected a consistent right-hand side, and
+**pooled** those estimates with Rubin’s rules.
 
 ## Bayesian Logistic Regression
 
-We fit the same formula in `brms` with weakly-informative priors
-(Normal(0, 2.5) for coefficients; Student-t(3, 0, 10) for the
-intercept), sampling via NUTS (4 chains × 2000 iterations;
-`adapt_delta = 0.95`). NHANES exam weights were normalized and used as
-**importance weights**. To avoid sparsity, we used the coarsened race
-factor (race3) and, if a factor collapsed to a single level in the
-selected imputed dataset, that factor was omitted from the Bayesian
-model. We report posterior ORs with 95% credible intervals for the terms
-included in the final formula.
+We fit the same formula in `brms` with weakly informative priors
+(**Normal(0, 2.5)** for coefficients; **Student-t(3, 0, 10)** for the
+intercept), sampling with **NUTS** (4 chains × 2000 iterations;
+`adapt_delta = 0.95`). NHANES exam weights were **normalized and used as
+importance weights**, approximating—but not fully
+reproducing—design-based variance. To mitigate sparsity, we used
+**race3** and adopted an **adaptive formula**: if a factor collapsed to
+one level in the selected imputed dataset, that factor was **omitted**
+from the Bayesian model. We report posterior ORs with 95% credible
+intervals for terms retained in the final formula.
 
-As a sensitivity check, we verified that running the Bayesian model on
-alternative valid imputations yielded similar age and BMI effects.
+**Sensitivity.** Running the Bayesian model on alternative valid
+imputations yielded **similar age and BMI effects**.
 
-**Diagnostics.** We verified (\hat R\<1.01), large effective sample
-sizes, well-mixed traces, and satisfactory posterior predictive checks
-(`pp_check`); we also report Bayesian (R\^2).
+**Diagnostics.** Convergence and fit were acceptable
+(\$\\hat{R}\<1.01\$, large effective sample sizes). Posterior predictive
+checks (`pp_check`) were satisfactory; we also report Bayesian \$R\^2\$.
 
 ## Modeling Code
 
@@ -741,17 +746,18 @@ knitr::kable(
 
 # Results
 
-Across MLE, MI, and Bayesian models, **age** and **BMI** consistently
-showed positive associations with diabetes risk. **When retained in the
-model, female sex** tended to have lower odds versus males. Using the
-coarsened race factor, **Black and Hispanic groups generally showed
-higher odds relative to White**; very small categories were lumped to
-avoid instability. Agreement in direction and approximate magnitude
-across frameworks suggests robustness to listwise deletion, imputation,
-and weak prior regularization.
+Across survey-weighted MLE, MI-pooled, and Bayesian models, **age** and
+**BMI** showed **positive associations** with diabetes risk. **When
+retained**, **female sex** tended to have **lower odds** versus males.
+Using the coarsened race factor, **Black and Hispanic** groups generally
+showed **higher odds relative to White**; very small categories were
+lumped to avoid instability. Agreement in direction and approximate
+magnitude across frameworks suggests robustness to listwise deletion,
+imputation, and weak prior regularization.
 
-We compared odds ratios (OR) and uncertainty intervals for BMI and age
-across survey-weighted MLE, MICE, and Bayesian models.
+We summarize the ORs (per 1 SD) and 95% intervals for **BMI** and
+**Age** across the three modeling strategies; **sex** and **race3**
+effects are shown when those factors were retained in the final model.
 
 ```{r}
 #| label: results-compact
@@ -791,8 +797,10 @@ res_wide <- all_tbl %>%
     `Age (per 1 SD) OR (95% CI)` = `Age (per 1 SD)`
   )
 
-kable(res_wide, align = c("l","c","c"),
-      caption = "Bayesian posterior odds ratios (95% CrI) — refs: White (race3), Male (sex); factors shown only when retained in the final model.")
+kable(
+  res_wide, align = c("l","c","c"),
+  caption = "Odds ratios (per 1 SD) with 95% intervals across models (terms shown only when retained in the final model)."
+)
 ```
 
 ### Model Fit and Uncertainty
@@ -858,24 +866,41 @@ cohorts would support generalizability.
 
 # Limitations
 
-This study has several limitations.
+1.  **Cross-sectional design** limits causal inference, and
+    **self-reported diabetes** (`DIQ010`) may be affected by recall or
+    reporting bias.
 
-First, **NHANES’s cross-sectional design limits causal inference**, and  
-**self-reported diabetes diagnosis** (`DIQ010`) may be affected by recall or reporting bias.
+2.  Although **multiple imputation** helped mitigate missing data, it
+    assumes **MAR**; violations (e.g., **MNAR**) could bias results
+    \[\@vanbuuren2012\].
 
-Second, although **multiple imputation** helped mitigate missing data, this approach assumes data are missing at random (MAR); violations of this assumption (e.g., MNAR) could bias results [@vanbuuren2012].
+3.  Our **Bayesian specification approximated** NHANES’s complex survey
+    design by using **normalized weights** rather than embedding strata
+    and PSUs directly in the likelihood, so variance may **under- or
+    over-state** design effects \[\@nchs2014\].
 
-Third, our **Bayesian specification approximated** NHANES’s complex survey design by using normalized weights rather than embedding strata and PSUs directly in the likelihood, so variance estimates may not fully capture design effects [@nchs2014].
+4.  **BMI** was measured once and may not reflect long-term adiposity or
+    metabolic trajectories.
 
-Fourth, **BMI was measured once** and may not reflect long-term adiposity or metabolic trajectories.
+5.  We modeled a **limited covariate set**, excluding factors such as
+    diet, physical activity, socioeconomic status, and family history
+    that may confound observed associations.
 
-Fifth, we modeled a **limited covariate set**, excluding factors such as diet, physical activity, socioeconomic status, and family history that may confound observed associations.
+6.  **Coarsening and adaptive omission of factors.** Race/ethnicity was
+    coarsened; when a factor **collapsed to one level** in an analysis
+    subset, it was **omitted**. This reduces granularity and may
+    **attenuate** between-group contrasts relative to a full five-level
+    race specification.
 
-Sixth, **coarsening and adaptive omission of factors** were required to mitigate sparse cells. Race/ethnicity was coarsened, and when a factor collapsed to one level in an analysis subset, it was omitted. This reduces granularity and may attenuate between-group contrasts relative to a full five-level race specification.
+7.  The **Bayesian model was fit on a single valid imputed dataset**
+    (coarsened as needed). While sensitivity checks produced similar age
+    and BMI effects, intervals may be **slightly narrower** than those
+    from a full multiple-imputation Bayesian analysis.
 
-Finally, the **Bayesian model was fit on a single valid imputed dataset** (with coarsening as needed). While sensitivity checks produced similar age and BMI effects, intervals may be slightly narrower than those from a full multiple-imputation Bayesian analysis.
-
-Despite these limitations, the results provide robust and interpretable estimates of diabetes risk factors and demonstrate the stability and practical value of Bayesian inference in epidemiologic modeling.
+Despite these limitations, the results provide robust and interpretable
+estimates of diabetes risk factors and demonstrate the stability and
+practical value of Bayesian inference in epidemiologic modeling
+\[\@vandeschoot2021; \@nchs2014\].
 
 # Visualizations
 
@@ -1036,6 +1061,5 @@ All code was executed in R 4.3+ using RStudio. Key packages include:
 `nhanesA`, `tidyverse`, `survey`, `mice`, `brms`, `bayesplot`, and
 `knitr`. Data preparation and modeling scripts are contained in the
 project’s repository and are rendered via Quarto in this document. For
-imputation and prior choices, see @vanbuuren2012;
-@vandeschoot2021. For survey design and weighting details, see
-@nchs2014.
+imputation and prior choices, see @vanbuuren2012; @vandeschoot2021. For
+survey design and weighting details, see @nchs2014.
