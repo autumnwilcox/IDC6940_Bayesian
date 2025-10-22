@@ -872,12 +872,12 @@ cohorts would support generalizability.
 
 2.  Although **multiple imputation** helped mitigate missing data, it
     assumes **MAR**; violations (e.g., **MNAR**) could bias results
-    \[\@vanbuuren2012\].
+    [@vanbuuren2012].
 
 3.  Our **Bayesian specification approximated** NHANES’s complex survey
     design by using **normalized weights** rather than embedding strata
     and PSUs directly in the likelihood, so variance may **under- or
-    over-state** design effects \[\@nchs2014\].
+    over-state** design effects [@nchs2014].
 
 4.  **BMI** was measured once and may not reflect long-term adiposity or
     metabolic trajectories.
@@ -900,7 +900,7 @@ cohorts would support generalizability.
 Despite these limitations, the results provide robust and interpretable
 estimates of diabetes risk factors and demonstrate the stability and
 practical value of Bayesian inference in epidemiologic modeling
-\[\@vandeschoot2021; \@nchs2014\].
+[@vandeschoot2021; @nchs2014].
 
 # Visualizations
 

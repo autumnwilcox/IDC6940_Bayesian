@@ -3411,14 +3411,14 @@ Figure 4: Distributions of BMI and Age by diabetes status (adult cohort, ≥20y
 <h1>Limitations</h1>
 <ol type="1">
 <li><p><strong>Cross-sectional design</strong> limits causal inference, and <strong>self-reported diabetes</strong> (<code>DIQ010</code>) may be affected by recall or reporting bias.</p></li>
-<li><p>Although <strong>multiple imputation</strong> helped mitigate missing data, it assumes <strong>MAR</strong>; violations (e.g., <strong>MNAR</strong>) could bias results [@vanbuuren2012].</p></li>
-<li><p>Our <strong>Bayesian specification approximated</strong> NHANES’s complex survey design by using <strong>normalized weights</strong> rather than embedding strata and PSUs directly in the likelihood, so variance may <strong>under- or over-state</strong> design effects [@nchs2014].</p></li>
+<li><p>Although <strong>multiple imputation</strong> helped mitigate missing data, it assumes <strong>MAR</strong>; violations (e.g., <strong>MNAR</strong>) could bias results <span class="citation" data-cites="vanbuuren2012">(<a href="#ref-vanbuuren2012" role="doc-biblioref">Buuren 2012</a>)</span>.</p></li>
+<li><p>Our <strong>Bayesian specification approximated</strong> NHANES’s complex survey design by using <strong>normalized weights</strong> rather than embedding strata and PSUs directly in the likelihood, so variance may <strong>under- or over-state</strong> design effects <span class="citation" data-cites="nchs2014">(<a href="#ref-nchs2014" role="doc-biblioref">National Center for Health Statistics (NCHS) 2014</a>)</span>.</p></li>
 <li><p><strong>BMI</strong> was measured once and may not reflect long-term adiposity or metabolic trajectories.</p></li>
 <li><p>We modeled a <strong>limited covariate set</strong>, excluding factors such as diet, physical activity, socioeconomic status, and family history that may confound observed associations.</p></li>
 <li><p><strong>Coarsening and adaptive omission of factors.</strong> Race/ethnicity was coarsened; when a factor <strong>collapsed to one level</strong> in an analysis subset, it was <strong>omitted</strong>. This reduces granularity and may <strong>attenuate</strong> between-group contrasts relative to a full five-level race specification.</p></li>
 <li><p>The <strong>Bayesian model was fit on a single valid imputed dataset</strong> (coarsened as needed). While sensitivity checks produced similar age and BMI effects, intervals may be <strong>slightly narrower</strong> than those from a full multiple-imputation Bayesian analysis.</p></li>
 </ol>
-<p>Despite these limitations, the results provide robust and interpretable estimates of diabetes risk factors and demonstrate the stability and practical value of Bayesian inference in epidemiologic modeling [@vandeschoot2021; @nchs2014].</p>
+<p>Despite these limitations, the results provide robust and interpretable estimates of diabetes risk factors and demonstrate the stability and practical value of Bayesian inference in epidemiologic modeling <span class="citation" data-cites="vandeschoot2021 nchs2014">(<a href="#ref-vandeschoot2021" role="doc-biblioref">Vande Schoot et al. 2021</a>; <a href="#ref-nchs2014" role="doc-biblioref">National Center for Health Statistics (NCHS) 2014</a>)</span>.</p>
 </section>
 <section id="visualizations" class="level1">
 <h1>Visualizations</h1>
