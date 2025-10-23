@@ -32,7 +32,7 @@ editor:
 #| include: false
 options(repos = c(CRAN = "https://cloud.r-project.org"))
 
-# Install on first run (safe to leave in; no-op if already installed)
+# Install
 
 need <- c(
 "nhanesA","dplyr","readr","DataExplorer","forcats","survey",
@@ -40,7 +40,7 @@ need <- c(
 )
 for (p in need) if (!requireNamespace(p, quietly = TRUE)) install.packages(p)
 
-# Load what you use later without namespaces
+# Project Libraries
 
 library(dplyr)
 library(readr)
@@ -75,19 +75,22 @@ Projects in Data Science course under the guidance of Dr. Ashraf Cohen.
 
 This study applies Bayesian logistic regression to estimate the risk of
 doctor-diagnosed diabetes among adults in the 2013–2014 National Health
-and Nutrition Examination Survey (NHANES). Using age, body mass index
-(BMI), sex, and a coarsened race/ethnicity factor (White, Black,
-Hispanic; rare/other levels lumped as needed) as predictors, we compare
-three modeling approaches: survey-weighted maximum likelihood estimation
-(MLE), multiple imputation with MICE, and Bayesian inference using
-weakly informative priors. The Bayesian model uses normalized NHANES
-exam weights as importance weights. Across methods, age and BMI were
-positively associated with diabetes odds; when included, female sex
-tended to show lower odds than males, and Black and Hispanic groups
-showed higher odds relative to White. Findings demonstrate the
-consistency and interpretability of Bayesian methods relative to
-frequentist baselines, while providing full posterior uncertainty
-estimates relevant for public health decision-making.
+and Nutrition Examination Survey (NHANES). Predictors include age, body
+mass index (BMI), sex, and a coarsened race/ethnicity factor (**race3**)
+comprising White, Black, and Hispanic groups (low-frequency levels
+combined as Other). Three analytic frameworks were compared: (1)
+survey-weighted maximum likelihood estimation (MLE) using the NHANES
+complex design; (2) multiple imputation (MICE) with predictive mean
+matching and Rubin’s rules; and (3) Bayesian inference with weakly
+informative priors \[N(0, 2.5)\] implemented via brms. The Bayesian
+model incorporated normalized NHANES exam weights as importance weights,
+approximating design-based inference. Across all methods, **age** and
+**BMI** were positively associated with diabetes odds, **female sex**
+tended to have lower odds than male, and **Black** and **Hispanic**
+adults showed higher odds relative to White. Agreement across modeling
+frameworks supports the robustness of these associations and highlights
+the interpretability and uncertainty quantification advantages offered
+by Bayesian analysis for population health modeling.
 
 # Introduction
 
@@ -199,6 +202,7 @@ Save cleaned datasets for reproducible downstream modeling.
 #| warning: false
 
 # ---- Import and merge NHANES 2013–2014 ----
+
 demo_h <- nhanesA::nhanes("DEMO_H")
 bmx_h  <- nhanesA::nhanes("BMX_H")
 diq_h  <- nhanesA::nhanes("DIQ_H")
@@ -323,7 +327,7 @@ bmi_c = as.numeric(scale(bmi)),
 diabetes_f = factor(diabetes_dx, levels = c(0,1), labels = c("No","Yes"))
 ) %>%
 
-# Set NH White as reference (if needed later)
+# Set NH White as reference 
 
 mutate(race = fct_relevel(race, "NH White"))
 
@@ -339,19 +343,27 @@ str(adult)
 # Create a coarser race factor to avoid sparse categories in modeling
 
 adult <- adult %>%
-mutate(
-race3 = forcats::fct_collapse(
-race,
-White    = c("NH White"),
-Black    = c("NH Black"),
-Hispanic = c("Mexican American","Other Hispanic"),
-Other    = c("Other/Multi")
-),
-# If a group is very small, lump it to keep ≥ 2 levels in all analyses
-race3 = forcats::fct_lump_min(race3, min = 30, other_level = "Other")
-) %>%
-mutate(race3 = forcats::fct_relevel(race3, "White"))
+  mutate(
+    race3 = forcats::fct_collapse(
+      race,
+      White    = "NH White",
+      Black    = "NH Black",
+      Hispanic = c("Mexican American", "Other Hispanic"),
+      Other    = "Other/Multi"
+    ),
+    race3 = forcats::fct_lump_min(race3, min = 30, other_level = "Other"),
+    race3 = forcats::fct_relevel(race3, "White")
+  )
 ```
+
+The variable `race3` represents a **coarsened race/ethnicity factor**
+derived from the original five NHANES categories (`RIDRETH1`).
+
+To mitigate sparse cells, we collapsed categories into three primary
+groups: **White**, **Black**, and **Hispanic**, with remaining
+low-frequency levels combined as **Other** when necessary.
+
+All model-based analyses used this coarsened factor.
 
 ## Survey Design
 
@@ -414,11 +426,17 @@ p_age
 
 We model the probability of doctor-diagnosed diabetes as:
 
-logit{P(Yi​=1)}=β0​+β1​BMIi​+β2​Agei​+β3​Sexi​+g∑​β3+g​Raceig​.
+$$
+\operatorname{logit}\{\Pr(Y_i=1)\}
+= \beta_0 + \beta_1\,\mathrm{BMI}_i + \beta_2\,\mathrm{Age}_i
++ \beta_3\,\mathrm{Sex}_i + \sum_{g}\beta_{3+g}\,\mathrm{Race}_{ig}.
+$$
 
 **BMI** and **Age** are standardized (mean 0, SD 1). Categorical
-predictors use **Male** and **White** as reference levels. Because some
-race/ethnicity categories are sparse, race was **coarsened** to a
+predictors use **Male** and **White** as reference levels, with race
+modeled using the **coarsened three-level factor (`race3`)** (White,
+Black, Hispanic; smaller groups lumped as ‘Other’ if present). Because
+some race/ethnicity categories are sparse, race was **coarsened** to a
 three-level factor (**race3**: White, Black, Hispanic; rare/other levels
 lumped as needed) to reduce separation and improve stability. All
 analyses respect NHANES design elements (PSU, strata, exam weights).
@@ -427,7 +445,7 @@ analyses respect NHANES design elements (PSU, strata, exam weights).
 
 We fit a survey-weighted logistic regression (`svyglm`) for
 
-diabetes_dx∼age_c+bmi_c+sex+race3.\texttt{diabetes\_dx} \sim \texttt{age\_c} + \texttt{bmi\_c} + \texttt{sex} + \texttt{race3}.diabetes_dx∼age_c+bmi_c+sex+race3.
+diabetes_dx∼age_c+bmi_c+sex+race3.
 
 To avoid separation from sparse cells, we used the coarsened **race3**
 factor, and we **only ran the model when both `sex` and `race3` had ≥2
@@ -461,9 +479,7 @@ intervals for terms retained in the final formula.
 **Sensitivity.** Running the Bayesian model on alternative valid
 imputations yielded **similar age and BMI effects**.
 
-**Diagnostics.** Convergence and fit were acceptable
-(\$\\hat{R}\<1.01\$, large effective sample sizes). Posterior predictive
-checks (`pp_check`) were satisfactory; we also report Bayesian \$R\^2\$.
+**Diagnostics.** Convergence and fit were acceptable ($\hat{R} < 1.01$ and large effective sample sizes). Posterior predictive checks (`pp_check`) were satisfactory; we also report Bayesian $R^2$.
 
 ## Modeling Code
 
@@ -476,11 +492,11 @@ checks (`pp_check`) were satisfactory; we also report Bayesian \$R\^2\$.
 # Define complete-case rows once
 
 keep_cc <- with(adult, !is.na(diabetes_dx) & !is.na(age_c) & !is.na(bmi_c) &
-!is.na(sex) & !is.na(race))
+                        !is.na(sex) & !is.na(race3))
 
 cat("Complete-case N:", sum(keep_cc), "\n")
-cat("Sex (complete cases):\n"); print(table(droplevels(adult$sex[keep_cc]), useNA="ifany"))
-cat("Race (complete cases):\n"); print(table(droplevels(adult$race[keep_cc]), useNA="ifany"))
+cat("Sex (complete cases):\n");  print(table(droplevels(adult$sex[keep_cc]),  useNA="ifany"))
+cat("race3 (complete cases):\n"); print(table(droplevels(adult$race3[keep_cc]), useNA="ifany"))
 ```
 
 ```{r}
@@ -501,21 +517,19 @@ adult <- adult %>%
 
 # Define complete-case indicator for the survey-weighted model
 keep_cc <- with(adult, !is.na(diabetes_dx) & !is.na(age_c) & !is.na(bmi_c) &
-                        !is.na(sex) & !is.na(race))
+                        !is.na(sex) & !is.na(race3))
 
-# Check levels among complete cases only
-lev_sex  <- nlevels(droplevels(adult$sex[keep_cc]))
-lev_race <- nlevels(droplevels(adult$race[keep_cc]))
-do_svy   <- (lev_sex >= 2 && lev_race >= 2)
+lev_sex   <- nlevels(droplevels(adult$sex[keep_cc]))
+lev_race3 <- nlevels(droplevels(adult$race3[keep_cc]))
+do_svy    <- (lev_sex >= 2 && lev_race3 >= 2)
 
 if (!do_svy) {
   warning(sprintf(
-    "Survey-weighted model skipped: insufficient observed levels among complete cases (sex=%d, race=%d).",
-    lev_sex, lev_race
+    "Survey-weighted model skipped: insufficient observed levels among complete cases (sex=%d, race3=%d).",
+    lev_sex, lev_race3
   ))
-  # Optional quick peek for debugging:
-  print(table(droplevels(adult$sex[keep_cc]),  useNA = "ifany"))
-  print(table(droplevels(adult$race[keep_cc]), useNA = "ifany"))
+  print(table(droplevels(adult$sex[keep_cc]),   useNA = "ifany"))
+  print(table(droplevels(adult$race3[keep_cc]), useNA = "ifany"))
 }
 
 # 1) Survey-weighted complete case  (conditionally run)
@@ -535,9 +549,11 @@ if (do_svy) {
     dplyr::select(term, OR, LCL, UCL, p.value) %>%
     dplyr::filter(term != "(Intercept)")
 
-  knitr::kable(svy_or, caption = "Survey-weighted odds ratios (per 1 SD)")
+  knitr::kable(
+    svy_or,
+    caption = "Survey-weighted odds ratios (per 1 SD) — references: Male; White (race3)."
+  )
 } else {
-  # Create an empty table so downstream code doesn't crash
   svy_or <- tibble::tibble(
     term = character(), OR = numeric(), LCL = numeric(), UCL = numeric(), p.value = numeric()
   )
@@ -616,7 +632,7 @@ fits_ok <- fits[good]
 
 if (!length(fits_ok)) stop("All MI fits failed even after adaptive formulas.")
 
-# Choose the most common RHS across successful fits (usually the full model)
+# Choose the most common RHS across successful fits 
 rhs_key <- vapply(fits_ok, function(f) paste(attr(f, "rhs_terms"), collapse = "+"), "")
 top_rhs <- names(sort(table(rhs_key), decreasing = TRUE))[1]
 fits_consistent <- Filter(function(f) paste(attr(f, "rhs_terms"), collapse = "+") == top_rhs, fits_ok)
@@ -628,12 +644,15 @@ mi_or <- summary(pool_mi, conf.int = TRUE, exponentiate = TRUE) %>%
   dplyr::rename(OR = estimate, LCL = `2.5 %`, UCL = `97.5 %`) %>%
   dplyr::filter(term != "(Intercept)")
 
-knitr::kable(mi_or, caption = sprintf(
-  "MI pooled odds ratios (per 1 SD). Pooled across %d/%d imputations with formula: diabetes_dx ~ %s",
-  length(fits_consistent), imp$m, top_rhs
-))
+knitr::kable(
+  mi_or,
+  caption = sprintf(
+    "MICE pooled odds ratios (per 1 SD) — references: Male; White (race3). Pooled across %d/%d imputations; formula: diabetes_dx ~ %s",
+    length(fits_consistent), imp$m, top_rhs
+  )
+)
 
-# ---- 3) Bayesian (importance weights) — robust & adaptive ----
+# ---- 3) Bayesian (importance weights) ----
 
 if (!exists("imp")) stop("Missing MI object 'imp' — run the MI block first.")
 
@@ -678,7 +697,7 @@ candidates <- lapply(seq_len(imp$m), prep_imputed, coarsen = FALSE)
 good_idx <- which(vapply(candidates, function(x) x$sex_ok && x$race_ok, logical(1)))
 use <- NULL; used_coarsen <- FALSE
 if (length(good_idx)) {
-  use <- candidates[[good_idx[1]]]  # first fully OK
+  use <- candidates[[good_idx[1]]]  
 } else {
   candidates2 <- lapply(seq_len(imp$m), prep_imputed, coarsen = TRUE)
   good2_idx <- which(vapply(candidates2, function(x) x$sex_ok && x$race_ok, logical(1)))
@@ -722,7 +741,7 @@ bayes_fit <- brms::brm(
   refresh = 0
 )
 
-# Posterior ORs table (works for any formula subset)
+# Posterior ORs table 
 bayes_or <- brms::posterior_summary(bayes_fit, pars = "^b_") %>%
   as.data.frame() %>% tibble::rownames_to_column("raw") %>%
   dplyr::mutate(
@@ -738,26 +757,88 @@ knitr::kable(
   dplyr::mutate(bayes_or, dplyr::across(c(OR, LCL, UCL), ~ round(.x, 2))),
   digits = 2,
   caption = paste0(
-    "Bayesian posterior odds ratios (95% CrI) — model: ",
-    deparse(formula(bayes_fit))
+    "Bayesian posterior odds ratios (95% CrI; per 1 SD for age_c/bmi_c) — ",
+    "references: Male; White (race3). Factors shown only when retained in the final model ",
+    "(adaptive formula). Weights are normalized NHANES exam weights (importance weights)."
   )
+)
+```
+
+```{r}
+#| label: prose-or-strings
+#| include: false
+
+# Helper to find a term by pattern across tables
+pick_term <- function(tbl, patterns) {
+  if (is.null(tbl) || !nrow(tbl)) return(NULL)
+  idx <- Reduce(`|`, lapply(patterns, function(p) grepl(p, tbl$term)))
+  if (!any(idx)) return(NULL)
+  tbl[idx, , drop = FALSE]
+}
+
+fmt_or <- function(or, lcl, ucl, digits = 2) {
+  paste0(
+    formatC(or,  format = "f", digits = digits), " (",
+    formatC(lcl, format = "f", digits = digits), "–",
+    formatC(ucl, format = "f", digits = digits), ")"
+  )
+}
+
+# Canonical pulls (BMI & Age per 1 SD) for each model
+svy_bmi  <- pick_term(svy_or,   c("^bmi_c$", "BMI \\(per 1 SD\\)"))
+svy_age  <- pick_term(svy_or,   c("^age_c$", "Age \\(per 1 SD\\)"))
+mi_bmi   <- pick_term(mi_or,    c("^bmi_c$", "BMI \\(per 1 SD\\)"))
+mi_age   <- pick_term(mi_or,    c("^age_c$", "Age \\(per 1 SD\\)"))
+bay_bmi  <- pick_term(bayes_or, c("^bmi_c$", "BMI \\(per 1 SD\\)"))
+bay_age  <- pick_term(bayes_or, c("^age_c$", "Age \\(per 1 SD\\)"))
+
+# Optional: sex & race terms if they’re in the final model
+bay_sexF   <- pick_term(bayes_or, c("^sex:Female$", "^sexFemale$"))
+bay_raceBK <- pick_term(bayes_or, c("^race3:Black$", "^race3Black$"))
+bay_raceHS <- pick_term(bayes_or, c("^race3:Hispanic$", "^race3Hispanic$"))
+
+# Build inline strings (NULL-safe)
+or_text <- list(
+  svy_bmi = if (!is.null(svy_bmi)) fmt_or(svy_bmi$OR, svy_bmi$LCL, svy_bmi$UCL) else NA,
+  svy_age = if (!is.null(svy_age)) fmt_or(svy_age$OR, svy_age$LCL, svy_age$UCL) else NA,
+  mi_bmi  = if (!is.null(mi_bmi))  fmt_or(mi_bmi$OR,  mi_bmi$LCL,  mi_bmi$UCL)  else NA,
+  mi_age  = if (!is.null(mi_age))  fmt_or(mi_age$OR,  mi_age$LCL,  mi_age$UCL)  else NA,
+  bay_bmi = if (!is.null(bay_bmi)) fmt_or(bay_bmi$OR, bay_bmi$LCL, bay_bmi$UCL) else NA,
+  bay_age = if (!is.null(bay_age)) fmt_or(bay_age$OR, bay_age$LCL, bay_age$UCL) else NA,
+  bay_sexF   = if (!is.null(bay_sexF))   fmt_or(bay_sexF$OR,   bay_sexF$LCL,   bay_sexF$UCL)   else NA,
+  bay_raceBK = if (!is.null(bay_raceBK)) fmt_or(bay_raceBK$OR, bay_raceBK$LCL, bay_raceBK$UCL) else NA,
+  bay_raceHS = if (!is.null(bay_raceHS)) fmt_or(bay_raceHS$OR, bay_raceHS$LCL, bay_raceHS$UCL) else NA
 )
 ```
 
 # Results
 
-Across survey-weighted MLE, MI-pooled, and Bayesian models, **age** and
-**BMI** showed **positive associations** with diabetes risk. **When
-retained**, **female sex** tended to have **lower odds** versus males.
-Using the coarsened race factor, **Black and Hispanic** groups generally
-showed **higher odds relative to White**; very small categories were
-lumped to avoid instability. Agreement in direction and approximate
-magnitude across frameworks suggests robustness to listwise deletion,
-imputation, and weak prior regularization.
+Across survey-weighted MLE, MICE-pooled, and Bayesian models, **age**
+and **BMI** showed strong, positive associations with diabetes risk.
+Odds ratios (per 1 SD increase) were broadly consistent across all three
+frameworks, indicating stable inference despite missing data and model
+specification differences. For example, in the **Bayesian model**, the
+odds ratio for **BMI** was `r or_text$bay_bmi`, and for **Age** was
+`r or_text$bay_age`.
 
-We summarize the ORs (per 1 SD) and 95% intervals for **BMI** and
-**Age** across the three modeling strategies; **sex** and **race3**
-effects are shown when those factors were retained in the final model.
+When retained, **female sex** tended to have **lower odds** of diabetes
+compared with males, while **Black** and **Hispanic** adults had
+**higher odds** relative to **White**. These effects were estimated
+using the **coarsened race3 factor** (White, Black, Hispanic; rare
+categories lumped as Other) to reduce sparsity and separation issues.
+
+The Bayesian model, which used normalized NHANES exam weights as
+importance weights, produced odds ratios similar in direction and
+magnitude to the survey-weighted design-based estimates, demonstrating
+good agreement across methods. Posterior predictive checks showed strong
+alignment between observed and predicted diabetes prevalence, and
+Bayesian $R^2$ values indicated that this compact covariate set explained a
+meaningful portion of variability in diabetes risk.
+
+Table summaries and figures confirmed that all models identified **BMI**
+and **Age** as the most influential predictors, with overlapping
+credible and confidence intervals, supporting the **robustness and
+consistency** of results across frequentist and Bayesian approaches.
 
 ```{r}
 #| label: results-compact
@@ -798,8 +879,15 @@ res_wide <- all_tbl %>%
   )
 
 kable(
-  res_wide, align = c("l","c","c"),
-  caption = "Odds ratios (per 1 SD) with 95% intervals across models (terms shown only when retained in the final model)."
+  res_wide,
+  align   = c("l","c","c"),
+  caption = paste0(
+    "Odds ratios (per 1 SD) with 95% intervals across models — ",
+    "references: Male; White (race3). ",
+    "Survey-weighted MLE = design-based; ",
+    "MICE pooled = Rubin's rules over successful imputations; ",
+    "Bayesian = importance-weighted (normalized NHANES exam weights) with adaptive formula."
+  )
 )
 ```
 
@@ -808,7 +896,7 @@ kable(
 ```{r}
 #| label: fit-uncertainty
 r2 <- bayes_R2(bayes_fit, summary = TRUE)
-knitr::kable(as.data.frame(r2), caption = "Bayesian R² summary (mean and CrI)")
+knitr::kable(as.data.frame(r2), caption = "Bayesian $R^2$ summary (mean and CrI)")
 ```
 
 Posterior predictive checks aligned closely with observed proportions of
@@ -828,13 +916,12 @@ screening or prevention strategies in precision public health
 
 ```{r}
 #| label: targeted-bmi
-# Grid of BMI values (if model uses bmi_c, adapt accordingly)
 bmi_seq <- seq(18, 40, by = 0.5)
 newdata_grid <- data.frame(
-  age_c = 0,                     # set at mean age for illustration
+  age_c = 0,
   bmi_c = (bmi_seq - mean(adult$bmi, na.rm = TRUE)) / sd(adult$bmi, na.rm = TRUE),
   sex   = factor("Female", levels = levels(adult$sex)),
-  race  = factor("Mexican American", levels = levels(adult$race))
+  race3 = factor("White",  levels = levels(adult$race3))
 )
 
 pred_probs <- posterior_linpred(bayes_fit, newdata = newdata_grid, transform = TRUE)
@@ -848,59 +935,81 @@ closest
 
 # Discussion
 
-Our findings are consistent with prior epidemiologic evidence that age
-and adiposity are dominant risk factors for type 2 diabetes, with sex
-and race/ethnicity contributing additional variation. Methodologically,
-we observed close agreement among survey-weighted MLE, MICE-pooled
-models, and Bayesian estimates, suggesting that conclusions are robust
-to missing predictors and to weak prior regularization. Approximating
-survey design in Bayesian models via normalized weights yielded
-substantively similar inferences, while enabling full posterior
-uncertainty, predictive checks, and decision-relevant summaries
-[@nchs2014; @vandeschoot2021].
+This analysis of adults aged 20 years and older from the **2013–2014
+NHANES** dataset reinforces well-established findings that **higher
+BMI** and **older age** are dominant risk factors for diabetes, while
+**sex** and **race/ethnicity** introduce additional variation in risk.
+The close correspondence between the **survey-weighted**,
+**MICE-pooled**, and **Bayesian** results supports the robustness of
+these associations across analytic frameworks.
 
-Future work could incorporate laboratory biomarkers and nonlinear
-effects, extend to hierarchical models across NHANES cycles, and examine
-interaction terms (e.g., BMI × age). Future NHANES waves or external
-cohorts would support generalizability.
+Methodologically, the **survey-weighted model** incorporated NHANES
+design elements (strata, clusters, weights), providing
+population-representative estimates. The **Bayesian model**, while using
+normalized weights as importance weights rather than full design-based
+sampling, offered model-based inference with richer uncertainty
+quantification and interpretability through posterior distributions.
+Minor differences in interval width likely reflect the Bayesian model’s
+regularization via weakly informative priors (Normal(0, 2.5)).
+
+The coarsened **race3** variable ensured stable estimation, with
+**Black** and **Hispanic** participants exhibiting higher diabetes odds
+than **White** adults, consistent with known disparities in U.S.
+diabetes prevalence. The posterior predictive checks and Bayesian $R^2$
+indicated adequate model fit and predictive validity.
+
+From a **translational standpoint**, posterior predictions can be
+extended to individualized diabetes risk assessment—helping identify BMI
+thresholds or demographic profiles exceeding clinically meaningful risk
+levels (e.g., \>30% predicted probability). Such Bayesian-derived
+uncertainty estimates can inform personalized prevention and early
+screening initiatives.
+
+Finally, while the Bayesian model approximates design-based variance,
+the observed alignment across all frameworks underscores its potential
+for epidemiologic applications—particularly when complex survey data are
+incomplete, sparse, or prone to separation.
 
 # Limitations
 
-1.  **Cross-sectional design** limits causal inference, and
-    **self-reported diabetes** (`DIQ010`) may be affected by recall or
+1.  **Cross-sectional design** limits causal inference. Diabetes status
+    (`DIQ010`) is self-reported and may be subject to recall or
     reporting bias.
 
-2.  Although **multiple imputation** helped mitigate missing data, it
-    assumes **MAR**; violations (e.g., **MNAR**) could bias results
-    [@vanbuuren2012].
+2.  The study used **NHANES 2013–2014**, representing the **U.S. adult
+    population at that time**. Results should be generalized cautiously
+    to other countries, populations, or more recent survey waves.
 
-3.  Our **Bayesian specification approximated** NHANES’s complex survey
-    design by using **normalized weights** rather than embedding strata
-    and PSUs directly in the likelihood, so variance may **under- or
-    over-state** design effects [@nchs2014].
+3.  Although **multiple imputation (MICE)** mitigated missing data, it
+    assumes **missing at random (MAR)**; violations such as **MNAR**
+    could bias estimates [@vanbuuren2012].
 
-4.  **BMI** was measured once and may not reflect long-term adiposity or
-    metabolic trajectories.
+4.  The **Bayesian model** used **normalized weights** rather than
+    explicitly modeling strata and PSUs, meaning its uncertainty is
+    **model-based** and may not fully capture **design-based** variance.
 
-5.  We modeled a **limited covariate set**, excluding factors such as
-    diet, physical activity, socioeconomic status, and family history
-    that may confound observed associations.
+5.  **BMI** was measured once and may not reflect long-term adiposity or
+    metabolic history.
 
-6.  **Coarsening and adaptive omission of factors.** Race/ethnicity was
-    coarsened; when a factor **collapsed to one level** in an analysis
-    subset, it was **omitted**. This reduces granularity and may
-    **attenuate** between-group contrasts relative to a full five-level
-    race specification.
+6.  The analysis included a **limited covariate set**, excluding
+    behavioral, socioeconomic, and genetic factors that may confound
+    associations.
 
-7.  The **Bayesian model was fit on a single valid imputed dataset**
-    (coarsened as needed). While sensitivity checks produced similar age
-    and BMI effects, intervals may be **slightly narrower** than those
-    from a full multiple-imputation Bayesian analysis.
+7.  **Coarsening and adaptive omission of factors.** Race/ethnicity was
+    simplified to **White**, **Black**, and **Hispanic** (`race3`) to
+    ensure stability; in cases where a factor collapsed to one level, it
+    was omitted. This reduces granularity and may slightly attenuate
+    group contrasts.
 
-Despite these limitations, the results provide robust and interpretable
-estimates of diabetes risk factors and demonstrate the stability and
-practical value of Bayesian inference in epidemiologic modeling
-[@vandeschoot2021; @nchs2014].
+8.  The **Bayesian model** was fit on a **single valid imputed
+    dataset**, with sensitivity checks showing similar age and BMI
+    effects; however, credible intervals may be slightly narrower than
+    those from a fully integrated multiple-imputation Bayesian approach.
+
+Despite these limitations, the analyses provide stable and interpretable
+estimates of diabetes risk factors and illustrate how Bayesian modeling
+can approximate design-based findings while providing richer inference
+on uncertainty and prediction [@vandeschoot2021; @nchs2014].
 
 # Visualizations
 
@@ -963,10 +1072,10 @@ labs(x = "Age (years)", y = "Count", fill = "Diabetes", title = "Age by Diabetes
 #| fig-width: 7
 #| fig-height: 4
 pp_df <- tibble(
-bmi_c = seq(min(adult$bmi_c, na.rm = TRUE), max(adult$bmi_c, na.rm = TRUE), length.out = 120),
-age_c = mean(adult$age_c, na.rm = TRUE),
-sex   = factor("Male", levels = levels(adult$sex)),
-race  = factor("NH White", levels = levels(adult$race))
+  bmi_c = seq(min(adult$bmi_c, na.rm = TRUE), max(adult$bmi_c, na.rm = TRUE), length.out = 120),
+  age_c = mean(adult$age_c, na.rm = TRUE),
+  sex   = factor("Male",  levels = levels(adult$sex)),
+  race3 = factor("White", levels = levels(adult$race3))
 )
 pp_pred <- posterior_epred(bayes_fit, newdata = pp_df)  # draws x N
 pp_df <- pp_df %>%
@@ -978,7 +1087,12 @@ upper = apply(pp_pred, 2, quantile, 0.975)
 ggplot(pp_df, aes(x = bmi_c, y = pred)) +
 geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.25) +
 geom_line(linewidth = 1) +
-labs(x = "Standardized BMI (bmi_c)", y = "Predicted Probability", title = "Posterior Probability vs BMI")
+labs(
+  title = "Posterior Mean Diabetes Probability vs Standardized BMI (Bayesian Model)",
+  subtitle = "Predicted probability holding age = mean, sex = Male, race3 = White",
+  x = "Standardized BMI (bmi_c)",
+  y = "Predicted Probability (Posterior Mean)"
+)
 ```
 
 ## 4. Priors vs Posteriors (Key Coefficients)
@@ -1004,7 +1118,12 @@ bind_rows(prior_draws, post_draws) %>%
 ggplot(aes(x = value, fill = src)) +
 geom_density(alpha = 0.4) +
 facet_wrap(~ term, scales = "free") +
-labs(x = "Coefficient", y = "Density", fill = NULL, title = "Prior vs Posterior (Age & BMI)")
+labs(
+  title = "Prior vs Posterior Distributions for Age and BMI Coefficients",
+  subtitle = "Bayesian logistic model using weakly informative priors (Normal(0, 2.5))",
+  x = "Coefficient Value",
+  y = "Density"
+)
 ```
 
 ## 5. Posterior Predictive Checks
@@ -1014,8 +1133,8 @@ labs(x = "Coefficient", y = "Density", fill = NULL, title = "Prior vs Posterior 
 #| fig-cap: "Posterior predictive checks for outcome distribution and mean."
 #| fig-width: 7
 #| fig-height: 4
-pp_check(bayes_fit, type = "bars")
-pp_check(bayes_fit, type = "stat", stat = "mean")
+pp_check(bayes_fit, type = "bars") + ggtitle("Posterior Predictive Check: Outcome Distribution")
+pp_check(bayes_fit, type = "stat", stat = "mean") + ggtitle("Posterior Predictive Check: Mean Outcome")
 ```
 
 ## 6. Observed vs Predicted (Calibration-style)
@@ -1031,8 +1150,12 @@ adult_plot <- adult %>% mutate(pred_prob = pred_prob)
 ggplot(adult_plot, aes(x = pred_prob, y = as.numeric(diabetes_dx))) +
 geom_jitter(height = 0.05, alpha = 0.25) +
 geom_smooth(method = "loess", se = TRUE) +
-labs(x = "Predicted Probability (Posterior Mean)", y = "Observed Outcome (0/1)",
-title = "Observed vs Predicted")
+labs(
+  title = "Observed vs Predicted Diabetes Probability",
+  subtitle = "Posterior mean predictions from Bayesian model — Male, White (race3)",
+  x = "Predicted Probability (Posterior Mean)",
+  y = "Observed Outcome (0 = No, 1 = Yes)"
+)
 ```
 
 ## 7. Posterior vs Survey-Weighted Prevalence
@@ -1051,8 +1174,12 @@ Prevalence = c(pop_prev, post_prev)
 ggplot(bar_df, aes(x = Source, y = Prevalence, fill = Source)) +
 geom_col(alpha = 0.85) +
 guides(fill = "none") +
-labs(title = "Population vs Posterior Diabetes Prevalence", y = "Prevalence", x = NULL) +
-ylim(0, max(bar_df$Prevalence) * 1.15)
+labs(
+  title = "Population vs Posterior Diabetes Prevalence",
+  subtitle = "Survey-weighted estimate (design-based) vs Bayesian (model-based)",
+  y = "Prevalence (Proportion with Diabetes)",
+  x = NULL
+)
 ```
 
 # Reproducibility Notes
@@ -1061,5 +1188,5 @@ All code was executed in R 4.3+ using RStudio. Key packages include:
 `nhanesA`, `tidyverse`, `survey`, `mice`, `brms`, `bayesplot`, and
 `knitr`. Data preparation and modeling scripts are contained in the
 project’s repository and are rendered via Quarto in this document. For
-imputation and prior choices, see @vanbuuren2012; @vandeschoot2021. For
-survey design and weighting details, see @nchs2014.
+imputation and prior choices, see [@vanbuuren2012; @vandeschoot2021].
+For survey design and weighting details, see [@nchs2014].
