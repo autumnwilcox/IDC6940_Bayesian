@@ -8,3 +8,6 @@
 
 # Data artifacts (we recreate these with R/data_prep.R)
 data/*.rds
+
+/.quarto/
+**/*.quarto_ipynb
