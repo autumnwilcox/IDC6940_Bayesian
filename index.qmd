@@ -162,7 +162,7 @@ compare Bayesian results with survey-weighted frequentist models and
 with multiple imputation analyses to address challenges from missing
 data and potential separation.
 
-# Data & Methods
+# Data and Methods
 
 ## Overview
 
