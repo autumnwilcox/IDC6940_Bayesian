@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.24">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>my_articles – Bayesian Logistic Regression for NHANES</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-f93c2b1f3f0577f377aefa4848a86a36.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Bayesian Logistic Regression for NHANES</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Research</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../slides.html"> 
+<span class="menu-text">Slides</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About Us</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content column-page-left" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+
+
+
+
+<p>Namita’s Literature</p>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<ol type="1">
+<li><strong>Bayesian Hierarchical Model (</strong>Disease reclassification and prediction)</li>
+</ol>
+<p><strong>What is the goal of the paper?</strong></p>
+<p>The authors develop a Bayesian hierarchical model for multivariate longitudinal data to predict health status, trajectories, and intervention effects at the individual level in the PCORI mission to address questions about health status from patients and clinicians.</p>
+<p><strong>Why is it important?</strong></p>
+<p>Healthcare data (DNA sequences, functional images of the brain, patient-reported outcomes, and electronic health records with patients’ sequences of health measurements, diagnoses, and treatments) are complex, and the standard approaches are not adequate for clinical data analysis. Electronic health records (EHRs) could improve diagnostic accuracy and predict treatment effects. Visualizations of characteristics of posterior distributions can be immediately understood by clinicians and patients as relevant to their decision. Combining prior knowledge and patient data with evidence could predict the patient’s health status, trajectory, and/or likely benefits of interventions.</p>
+<p><strong>How is it solved?</strong></p>
+<p>Method: The authors applied Bayesian hierarchical regression for multivariate longitudinal patient data using open-source R-packages and developed 2 levels—time within person and persons within a population</p>
+<p>The model combined exogenous (eg, age, clinical history) factors and endogenous (eg, current treatment) variables on the individual’s multivariate health measurements and the effects of health measurements at one time on subsequent interventions.</p>
+<p>The model produced an estimate of the posterior distribution for each value of the predictor variable and an estimate of the marginal distribution of the regression coefficients for each coefficient that measures the outcome (health status) associated with its predictor variables. In a larger sample, the likelihood dominates the prior distribution for regression coefficients and Bayesian hierarchical model used a likelihood-based approach, used priors (prior laboratory and clinical trials data) that provided the assay sensitivities, which through the prior assumptions, made the model identifiable and the integration of Markov chain Monte Carlo (MCMC) estimates the posterior distributions, avoided missing data and complex outcome measurements.</p>
+<p><strong>Results</strong></p>
+<p>Three case studies: pneumonia etiology in children, prostate cancer, and mental disorders chosen for model development, identified low-risk patient population, reduced the risk of overtreatment, complications, adverse effects, and financial burden for patients (Disease Reclassification). Prostate cancer software was then implemented within the JHM HER.</p>
+<p><strong>Limitation</strong>:</p>
+<p>Models were entirely parametric, and extensions to nonparametric or more flexible parametric models were recommended to improve approaches for neuroimage or genomic data.</p>
+<p>neuroimage or genomic data.</p>
+<p>Applications:</p>
+<ul>
+<li><p>to scale a tool that addresses a particular unmet need across a larger, more diverse population of patients and clinicians</p></li>
+<li><p>use in autoimmune diseases, sudden cardiac arrest, and diabetes.</p></li>
+<li><p>embed a collection of tools to acquire and use the most relevant information, agnostic to its level of measurement, to improve population and individual health decisions that cause better outcomes at more affordable costs. <span class="citation" data-cites="Zeger2020">@Zeger2020</span></p></li>
+</ul>
+<ol start="2" type="1">
+<li><strong>Bayesian Inference (parametric vs non-parametric)</strong></li>
+</ol>
+<p><strong>What is the goal of the paper?</strong></p>
+<p>The authors calculated the posterior probability of disease diagnosis and applied Bayesian inference to develop three modules comparing parametric (with a fixed set of parameters) and nonparametric distributions (which do not make a priori assumptions) by analyzing the National Health and Nutrition Examination Survey dataset from two separate diagnostic tests on both diseased and non-diseased populations.</p>
+<p><strong>Why is it important?</strong></p>
+<p>Medical diagnosis, treatment, and management decisions are crucial, and conventional methods for diagnosis using clinical criteria and fixed numerical thresholds limit the capture of other information related to the intricate relationship between diagnostic tests and the varying prevalence of diseases. The probability distributions associated with quantitative diagnostic test outcomes often demonstrate some overlap between the diseased and nondiseased groups. The dichotomous method fails to capture the complexity and heterogeneity of disease presentations across diverse populations. The applicability of the normal distribution (conventional method) is critiqued, especially in dealing with clinical measurands having skewness, bimodality, or multimodality.</p>
+<p><strong>How is it solved?</strong></p>
+<p>Methods: The Authors developed models employing Bayesian inference (Bayesian diagnostic approach) to calculate the posterior probability of disease diagnosis in the Wolfram Language and integrated prior probabilities of disease with distributions of diagnostic measurands in both diseased and nondiseased populations. The approach enabled the evaluation of combined data from multiple diagnostic tests and improved the diagnostic accuracy, precision and adaptability, The model showed flexibility, adaptability, and versatility in the diagnostic.</p>
+<p>Results</p>
+<p>Nonparametric Bayesian models tend to fit data distributions better, especially given limited existing literature, and are more robust in capturing complex data patterns.</p>
+<p>These models produce multimodal probability patterns for disease, unlike the bimodal, double-sigmoidal curves seen with parametric models.</p>
+<p>Limitations</p>
+<ul>
+<li><p>Reliance on parametric models: A need to extend to nonparametric or more flexible parametric models for medical data.</p></li>
+<li><p>Limited scholarly publications and over-dependence on prior probabilities increase uncertainties, resulting in broader confidence intervals for posterior probabilities. Systemic bias (unrepresentative datasets) compromises the accuracy of Bayesian calculations. For Incomplete datasets, Bayesian methods combined with other statistical and computational techniques could enhance diagnostic capabilities.</p></li>
+<li><p>The foundational data is crucial to compare new diagnostic measurements. Absence of normative data compromises the reliability and validity of Bayesian diagnostic methods. <span class="citation" data-cites="Chatzimichail2023">@Chatzimichail2023</span></p></li>
+</ul>
+<ol start="3" type="1">
+<li><p><strong>Bayesian model stages, development and advantages, and temporal models</strong></p>
+<p><strong>What is the goal of the paper?</strong></p></li>
+</ol>
+<p>The study describes the stages of Bayesian analysis, specifying the importance of the priors, data modeling, inferences, model checking and refinement, selecting a proper sampling technique from a posterior distribution, variational inferences, variable selection and its application across various research fields. The study proposes strategies for reproducibility and reporting standards, outlining an updated WAMBS (when to Worry and how to Avoid the Misuse of Bayesian Statistics) checklist and outlining the impact of Bayesian analysis on artificial intelligence in the future.</p>
+<p><strong>Why is it important?</strong></p>
+<p>Bayesian statistics is suitable for quantitative researchers accross different fields who have at least some knowledge of regression modelling.</p>
+<p><strong>How is it solved?</strong></p>
+<p>Examples of successful applications of Bayesian analysis across various research fields (social sciences, ecology, genetics, medicine) and the advantages and disadvantages of the Bayesian model are provided here, and overview of the current and future use of Bayesian statistics.</p>
+<p>The study mention priors into three categories (informative, weakly informative and diffuse) based on the degree of (un)certainty (hyperparameters) surrounding the population parameter. The prior distribution is as - N( μ0 , σ^ 20) where a larger variance represents a greater amount of uncertainty surrounding.</p>
+<p>Prior elicitation (experts, generic expert, data-based, sample data using maximum likelihood or sample statistics, etc) construct a prior distribution.</p>
+<p>Prior sensitivity analysis of the likelihood helps examine different forms of the model, assesses how the priors and the likelihood align and have an impact on posterior estimates, reflecting variations not captured by the prior or the likelihood alone.</p>
+<p>Prior estimation allows data-informed shrinkage, enacts regularization or influence algorithms towards a likely high-density region, and improves estimation efficiency.</p>
+<p>Knowing the exact probabilistic specification of the priors for a complex model with smaller sample sizes is important. A small sample conveys less information compared to the priors that quantify the strength of support the observed data lends to possible value(s) for the unknown parameter(s).</p>
+<p>Frequentists do not consider the probability of the unknown parameters as useful, and they are considered to be fixed; the likelihood is the conditional probability distribution p(y|θ) of the data (y), given fixed parameters (θ). In Bayesian inference, unknown parameters (random variables) have varied values, while the (observed) data have fixed values, and the likelihood is a function of θ for the fixed data y.</p>
+<p>Therefore, the likelihood function summarizes a statistical model that stochastically generates a range of possible values for θ and the observed data y. With priors and the likelihood of the observed data, the resulting posterior distribution provides an estimate of the unknown parameters, capturing the primary factors and improving our understanding. Monte Carlo technique provides integrals of sampled values from a given distribution through computer simulations. The packages BRMS and Blavaan in R are used for the probabilistic programming language Stan.</p>
+<p>Variable selection after checking correlations among the variables in the model (Eg: gene-to-gene interaction) aids in the prediction of genes in biomedical research (genome-wide association studies).</p>
+<p>Spatial and temporal variability are factored in Bayesian general linear models. A posterior distribution can simulate new data conditional on this distribution, assess, and provide valid predictions to be used for extrapolating to future events.</p>
+<p><strong>Results</strong></p>
+<p>The Bayesian approach analyzes large-scale cancer genomic data, identifies novel molecular changes in cancer initiation and progression, the interactions between mutated genes and captured mutational signatures, highlighting key genetic interactions components, allowing genomic-based patient stratification both in clinical trials, in the personalized use of therapeutics, and in understanding cancer and its evolutionary processes.</p>
+<p><strong>Limitations</strong>:</p>
+<ul>
+<li>In temporal models, posterior inference challenges are inherent in the spatial and/or temporal dependencies (autocorrelation of parameters over time). <span class="citation" data-cites="VandeSchoot2021">@VandeSchoot2021</span></li>
+</ul>
+<ol start="4" type="1">
+<li><strong>Bayesian Normal linear regression</strong></li>
+</ol>
+<p><strong>What is the goal of the paper?</strong></p>
+<p>The author provides guidance on Bayesian inference by performing Bayesian Normal linear regression in metrology to calibrate instruments and to evaluate inter-laboratory comparisons in determining fundamental constants.</p>
+<p><strong>Why is it important?</strong></p>
+<p>The measurement errors are assumed to be additive, independent, and identically distributed according to a Gaussian distribution with mean zero and variance σ2, which is usually unknown.</p>
+<p>Regression is used to calibrate instruments, evaluate inter-laboratory comparisons, or determine fundamental constants, but the regression model cannot be uniquely formulated as a measurement function. Guide to the Expression of Uncertainty in Measurement (GUM) and its supplements are not applicable directly.</p>
+<p><strong>How is it solved?</strong></p>
+<p>Methods: Bayesian inference has the advantage of accounting for additional a priori information, which robustifies the analyses.</p>
+<p>Three steps (prior elicitation, posterior calculation, and robustness to prior uncertainty and model adequacy) and model assumptions are critical to Bayesian inference.</p>
+<p>In Bayesian inference, all unknowns—observables (data) as well as unobservables (parameters and auxiliary variables) are considered to be random, are assigned probability distributions to summarize the available information, and to update prior knowledge about the unobservables with information about them contained in the data. The prior distribution and likelihood function provided by simple graphical displays, sensitivity analyses, or model checking enhance the elicitation and interpretation process.</p>
+<p>For Normal linear regression problems</p>
+<p>(1) a family of prior distributions for θ and σ2 is (Normal inverse Gamma (NIG) distribution to a posterior from the same family of (NIG) distributions or</p>
+<p>(2) alternative families of prior distributions (hierarchical priors) assign an additional layer of distributions to uncertain prior parameters or non-para- metric priors.</p>
+<p>The NIG prior with known variance σ2 of observations is a conjugate prior distribution. Vague or non-informative prior distributions can be derived from the NIG prior.</p>
+<p>Bayesian inference is influenced by</p>
+<ul>
+<li><p>the uncertainty in the transformation of prior knowledge to prior distributions</p></li>
+<li><p>the assumptions of the statistical model</p></li>
+<li><p>the mistakes in data acquisition</p></li>
+</ul>
+<p><strong>Results</strong></p>
+<p>The knowledge from related previous experiments (Normal inverse Gamma distributions) allow for analytic posterior calculations of many quantities of interest. <span class="citation" data-cites="Klauenberg2015">@Klauenberg2015</span></p>
+<ol start="5" type="1">
+<li><strong>Bayesian linear regression</strong> <strong>and priors (exchangeable and unexchangeable)</strong></li>
+</ol>
+<p><strong>What is the goal of the paper?</strong></p>
+<p>The study developed a test of a formal method for augmenting data in linear regression analyses, by incorporating both exchangeable and unexchangeable information on regression coefficients (and standard errors) of previous studies.</p>
+<p><strong>Why is it important?</strong></p>
+<p>The frequent combination of multiple testing has relatively low statistical power, which is problematic in null-hypothesis significance testing. Linear regression analyses do not account for the published results and summary statistics from similar previous studies. Ignoring information on parameters from previous studies (relevant and readily available), affects the stability and precision of the parameter estimates and results in lower values than they could have been, resulting in conclusions that are less certain and are affected by sampling variation.</p>
+<p>Multiple linear regression with separate significance tests for all regression coefficients, and with the modest sample sizes, different studies find different sets of statistically significant predictors, and addressing the issue on larger samples is practically unrealistic.</p>
+<p><strong>How is it solved?</strong></p>
+<p>Methods: Bayesian linear regression accommodates prior knowledge, overcoming the absence of formal studies, handles the issues of increasing the sample size, and augments the data of a new study with previous results (regression coefficients and standard errors) from similar studies.</p>
+<p>The authors used Bayesian linear regression to solve the issue of the univariate case analysis by combining evidence of specific predictors from different linear regression analyses (as in meta-analysis) and found it a better method to resolve the issue of simultaneously combining multiple regression parameters per study, which ignored the relationship between the regression coefficients. Includes summary statistics from previous studies,&nbsp;Bayesian linear regression provided a more acceptable solution when data from previous studies were not (realistically) obtainable.</p>
+<p>Models in the study as categorized the model into - (1) Exchangable - when the current data and previous studies have the same set of predictors. (2) Unexchangable – when the predictors were different in the two.</p>
+<p>To yield the posterior density that reflects the updated knowledge about the model parameters after having observed the data, the steps to Bayesian linear regression steps are mentioned -</p>
+<p>(1) To calculate the probability density function for the data given the unknown model parameters;</p>
+<p>(2) Taken as a function of those model parameters, the likelihood function is the second part of the prior density function of the model parameters. It quantifies what is assumed to be known about the model parameters before observing the data. The study applied the Standard multiple linear regression model, and with the integration of the prior, provided the joint posterior density using the Gibbs sampler. An Ordinary Least Squares linear regression was then applied to each of these samples to obtain the estimated regression coefficients B and the corresponding standard errors.</p>
+<p>(3) A hierarchical model version was developed in analyzing parameters where studies are not exchangeable.</p>
+<p><strong>Results</strong></p>
+<p>Incorporating priors from previous studies in a linear regression on new data yielded a significantly better parameter estimate with an adequate approximation.</p>
+<p>The gains in comparison to using just the new data, and the large effects were obtained when the data from previous studies were available, resulting in encouraging performance.</p>
+<p>Performance of the two versions (exchangeable and unexchangeable) of the replication model was consistently superior to using current data alone.</p>
+<p>The model developed in the article offers the possibility of obtaining significantly better parameter estimates in a linear regression setting without needing to expend a prohibitive amount of time and energy to obtain data from the previous studies.</p>
+<p>Hierarchical version (unexchangeable) of the model offers the advantage of being able to address questions about differences between studies and thus allows for explicit testing of the exchangeability assumption.</p>
+<p><strong>Limitations</strong>:</p>
+<ul>
+<li><p>All studies need to have the same set of predictors.</p></li>
+<li><p>The issue of predictor variables that are correlated. <span class="citation" data-cites="DeLeeuw2012a">@DeLeeuw2012a</span></p></li>
+</ul>
+<ol start="6" type="1">
+<li><strong>Bayesian logistic regression (Sequential clinical reasoning approach)</strong></li>
+</ol>
+<p><strong>What is the goal of the paper?</strong></p>
+<p>The study aimed to develop models using a longitudinal prospective cohort to predict the risk of incident cardiovascular disease by incorporating demographic features (basic), six metabolic syndrome components (metabolic score), and conventional risk factors (enhanced model). The study participants free of CVD at baseline were followed up over five years, and a Bayesian clinical reasoning model was applied to diagnose new CVD cases.</p>
+<p><strong>Why is it important?</strong></p>
+<p>Early diagnosis, prevention, by identifying subjects under the high-risk category for cardiovascular disease (CVD), impacts health interventions.</p>
+<p>Limited availability of molecular information in clinical practice due to being costly and unavailability affects efficient disease diagnosis. To efficiently identify a high-risk population based on the routinely checked biological markers before doing these expensive molecular testsThe requires an alternative approach to analyze data.</p>
+<p>The Tailored Framingham Risk Score method, for the purpose, is not sufficient because of the differences present in ethnic groups, location, and socio-economic status, as they require the construction of their own models. Heterogeneity (geographic, ethnic group, variations, and different characteristics of social contextual network) often is unobservable and unmeasurable.</p>
+<p><strong>How is it solved?</strong></p>
+<p>Methods: The study evaluated subjects enrolled in a Keelung Community-based Integrated Screening (KCIS) Program, for mass screening (20–79 years) in the Keelung city of Taiwan, who were followed for 5 years to identify incident cancers and chronic diseases (cardiovascular disease).</p>
+<p>The study classified the risk of having incident CVD cases or death from CVD by dint of available calculated standardized risk score of the MetS components (fasting glucose, blood pressure, HDL-C, triglyceride and waist circumference) together with conventional risk factors (gender, heredity, smoking, alcohol drinking, family history of parent’s CVD and betel quid and other relevant factors).</p>
+<p>Emulating a clinician’s evaluation process, the Bayesian clinical reasoning approach in a sequential manner was applied and three models were developed. The approach considered the normal distribution of regression coefficients of all predictors, allowing for uncertainty of clinical weights. The credible intervals of predicted risk estimates were obtained by averaging out. In the model, the individual risk is elicited by prior speculation (first impression) that is updated by objective observed data (patient’s history and laboratory findings), the regression coefficients for computing risk score were treated as random variable with a certain statistical distribution (e.g.&nbsp;normal distribution) rather than a fixed value (traditional risk prediction model by frequentist). The updated prior distribution with the likelihood of the current data provided a posterior distribution to predict the risk for a specific disease. The sequential approach included -</p>
+<ol type="1">
+<li><p>The (basic) basic model developed via logistic regression used prior information constructed on gender, age, age2, and time period.</p></li>
+<li><p>The second (classical) model (metabolic score model: MS model) was based on six MetS components.</p></li>
+<li><p>The third (enhanced model) incorporated information on smoking, drinking, betel-quid, and family history of CVD.</p></li>
+</ol>
+<p><strong>Results</strong></p>
+<p>Compared to the basic model and classical model, the enhanced model had better performance. The proposed models predicted CVD incidence at the individual level by incorporating routine information with a sequential Bayesian clinical reasoning approach. Patients’ background significantly contributes to baseline risk. Even with ecological heterogeneity, the regression model adopts individual characteristics and makes individual risk prediction for the CVD incidence.</p>
+<p><strong>Limitations</strong>:</p>
+<ul>
+<li><p>Whether the interactions between age, gender, metabolic score, and other risk factors should be included.</p></li>
+<li><p>The use of an enhanced model should be validated through external validation by applying the proposed models to new subjects not included in the training of the model parameters. <span class="citation" data-cites="Liu2013">@Liu2013</span></p></li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

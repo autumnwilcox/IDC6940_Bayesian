@@ -1,0 +1,10 @@
+---
+title: "About Us"
+format: html
+---
+
+This project was completed by **Namita Mishra** and **Autumn Wilcox**  
+for *Capstone Projects in Data Science* under the supervision of **Dr. Ashraf Cohen**.
+
+Our collaboration focused on applying Bayesian inference to epidemiologic modeling  
+using NHANES data (2013–2014).
