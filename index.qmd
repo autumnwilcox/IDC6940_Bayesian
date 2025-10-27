@@ -1144,17 +1144,19 @@ pp_check(bayes_fit, type = "stat", stat = "mean") + ggtitle("Posterior Predictiv
 #| fig-cap: "Observed outcome vs posterior mean predicted probability (calibration-style view)."
 #| fig-width: 7
 #| fig-height: 4
-bayes_pred <- posterior_epred(bayes_fit, newdata = adult)  # draws x N
+
+bayes_pred <- posterior_epred(bayes_fit, newdata = adult_imp1)  # draws x N (fits' data)
 pred_prob  <- colMeans(bayes_pred)
-adult_plot <- adult %>% mutate(pred_prob = pred_prob)
-ggplot(adult_plot, aes(x = pred_prob, y = as.numeric(diabetes_dx))) +
+adult_plot <- dplyr::mutate(adult_imp1, pred_prob = pred_prob)
+
+ggplot2::ggplot(adult_plot, aes(x = pred_prob, y = as.numeric(diabetes_dx))) +
 geom_jitter(height = 0.05, alpha = 0.25) +
 geom_smooth(method = "loess", se = TRUE) +
 labs(
-  title = "Observed vs Predicted Diabetes Probability",
-  subtitle = "Posterior mean predictions from Bayesian model — Male, White (race3)",
-  x = "Predicted Probability (Posterior Mean)",
-  y = "Observed Outcome (0 = No, 1 = Yes)"
+title = "Observed vs Predicted Diabetes Probability",
+subtitle = "Posterior mean predictions from Bayesian model — using fitted data",
+x = "Predicted Probability (Posterior Mean)",
+y = "Observed Outcome (0 = No, 1 = Yes)"
 )
 ```
 
@@ -1165,21 +1167,46 @@ labs(
 #| fig-cap: "Comparison of survey-weighted population diabetes prevalence vs Bayesian posterior prevalence."
 #| fig-width: 7
 #| fig-height: 4
-pop_prev  <- as.numeric(svymean(~diabetes_dx, nhanes_design_adult, na.rm = TRUE))
-post_prev <- mean(colMeans(bayes_pred))
-bar_df <- tibble(
-Source     = c("Survey-weighted (Population)", "Bayesian Posterior"),
-Prevalence = c(pop_prev, post_prev)
+
+# --- Design-based (survey) prevalence + 95% CI
+
+svy_mean <- svymean(~diabetes_dx, nhanes_design_adult, na.rm = TRUE)
+pop_prev <- as.numeric(svy_mean)
+pop_se   <- as.numeric(SE(svy_mean))
+pop_ci   <- c(pop_prev - 1.96 * pop_se, pop_prev + 1.96 * pop_se)
+
+# --- Model-based (Bayesian) posterior prevalence + 95% CrI
+
+# Predict on the SAME data used to fit (adult_imp1) to avoid NAs and factor-level issues
+
+bayes_pred <- posterior_epred(bayes_fit, newdata = adult_imp1)  # draws x N
+
+# one prevalence per posterior draw:
+
+post_prev_draw <- rowMeans(bayes_pred)
+post_prev      <- mean(post_prev_draw)
+post_ci        <- quantile(post_prev_draw, c(0.025, 0.975))
+
+stopifnot(is.finite(post_prev))  # guardrail
+
+bar_df <- tibble::tibble(
+Source     = c("Bayesian Posterior", "Survey-weighted (Population)"),
+Prevalence = c(post_prev, pop_prev),
+L          = c(post_ci[1], pop_ci[1]),
+U          = c(post_ci[2], pop_ci[2])
 )
-ggplot(bar_df, aes(x = Source, y = Prevalence, fill = Source)) +
-geom_col(alpha = 0.85) +
+
+ggplot2::ggplot(bar_df, aes(x = Source, y = Prevalence, fill = Source)) +
+geom_col(alpha = 0.85, width = 0.65) +
+geom_errorbar(aes(ymin = L, ymax = U), width = 0.15, linewidth = 0.7) +
 guides(fill = "none") +
 labs(
-  title = "Population vs Posterior Diabetes Prevalence",
-  subtitle = "Survey-weighted estimate (design-based) vs Bayesian (model-based)",
-  y = "Prevalence (Proportion with Diabetes)",
-  x = NULL
-)
+title = "Population vs Posterior Diabetes Prevalence",
+subtitle = "Survey-weighted estimate (design-based) vs Bayesian (model-based)",
+y = "Prevalence (Proportion with Diabetes)",
+x = NULL
+) +
+theme_minimal(base_size = 13)
 ```
 
 # Reproducibility Notes
