@@ -1,9 +1,3 @@
----
-editor: 
-  markdown: 
-    wrap: 72
----
-
 # Bayesian Logistic Regression for Diabetes Risk (NHANES 2013–2014)
 
 ## Overview
