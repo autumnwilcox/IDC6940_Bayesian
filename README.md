@@ -66,7 +66,7 @@ Age and BMI are standardized (z-scores); reference groups: **Male** and
 ## Results summary
 
 The report tabulates odds ratios (per 1 SD) for Age and BMI across
-models and includes posterior checks, Bayesian \( R^2 \), and prevalence
+models and includes posterior checks, Bayesian ( R\^2 ), and prevalence
 comparison plots.
 
 *(Avoid hardcoding numeric results here; they are dynamically rendered
