@@ -11,3 +11,13 @@ data/*.rds
 
 /.quarto/
 **/*.quarto_ipynb
+.RData
+.RDataTmp
+.Rhistory
+.Rproj.user/
+_freeze/
+.quarto/_freeze/
+*_cache/
+*.o
+*.so
+*.dylib
