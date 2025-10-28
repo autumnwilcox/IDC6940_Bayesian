@@ -1,0 +1,17 @@
+---
+title: "Contributions"
+format: html
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+This project was developed collaboratively as part of the Capstone
+Projects in Data Science course under the guidance of Dr. Ashraf Cohen.
+
+-   **Autumn Wilcox** – Contributed to analytic coding, content draft,
+    structured the project workflow, and collaborated actively via
+    GitHub.
+-   **Namita Mishra** – Developed the project plan, content draft,
+    analytic coding, and coordinated commits and collaboration with the
+    group on GitHub.
