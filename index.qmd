@@ -151,7 +151,7 @@ compare Bayesian results with survey-weighted frequentist models and
 with multiple imputation analyses to address challenges from missing
 data and potential separation.
 
-# Data and Methods
+# Data
 
 ## Overview
 
@@ -259,9 +259,6 @@ saveRDS(merged_data, "data/merged_2013_2014.rds")
 # ---- Explore structure and missingness ----
 
 str(merged_data)
-summary(merged_data)
-
-plot_intro(merged_data, title = "Overview of NHANES Variables and Types")
 plot_missing(merged_data, title = "Missing Data Patterns in NHANES 2013–2014")
 ```
 
@@ -392,77 +389,15 @@ All model-based analyses used this coarsened factor.
 #| message: false
 #| warning: false
 
-options(survey.lonely.psu = "adjust")  # safe default for single-PSU strata
+options(survey.lonely.psu = "adjust")  # set once
 
 nhanes_design_adult <- survey::svydesign(
-  id      = ~SDMVPSU,
-  strata  = ~SDMVSTRA,
-  weights = ~WTMEC2YR,
-  nest    = TRUE,
-  data    = adult
+id      = ~SDMVPSU,
+strata  = ~SDMVSTRA,
+weights = ~WTMEC2YR,
+nest    = TRUE,
+data    = adult
 )
-```
-
-```{r}
-#| label: qc-type-scrub
-#| echo: true
-#| message: false
-#| warning: false
-
-# --- CLEAN, ATOMIC COPY FOR SURVEY CALCS (safe version; no unlist) ---
-adult_clean <- adult %>%
-  mutate(
-    # ensure outcome is plain 0/1 numeric
-    diabetes_ind = case_when(
-      diabetes_ind %in% c(0L, 1L) ~ as.numeric(diabetes_ind),
-      TRUE ~ NA_real_
-    ),
-    # standardize core types
-    sex          = factor(as.character(sex)),
-    race3        = factor(as.character(race3)),
-    WTMEC2YR     = as.numeric(WTMEC2YR),
-    SDMVPSU      = as.integer(SDMVPSU),
-    SDMVSTRA     = as.integer(SDMVSTRA)
-  ) %>%
-  droplevels() %>%
-  as.data.frame()
-
-# Guardrails
-stopifnot(
-  is.numeric(adult_clean$diabetes_ind),
-  !is.list(adult_clean$sex),
-  !is.list(adult_clean$race3),
-  !is.list(adult_clean$WTMEC2YR)
-)
-
-# Extra: force factors to have their present levels only (helps svyby/svymean)
-adult_clean <- adult_clean %>%
-  mutate(
-    sex   = factor(sex,   levels = unique(as.character(sex))) |> droplevels(),
-    race3 = factor(race3, levels = unique(as.character(race3))) |> droplevels()
-  )
-
-str(adult_clean[, c("diabetes_ind","sex","race3","WTMEC2YR","SDMVPSU","SDMVSTRA")])
-```
-
-```{r}
-#| label: qc-design-clean
-#| echo: true
-#| message: false
-#| warning: false
-
-options(survey.lonely.psu = "adjust")
-
-nhanes_design_adult_clean <- survey::svydesign(
-  id      = ~SDMVPSU,
-  strata  = ~SDMVSTRA,
-  weights = ~WTMEC2YR,
-  nest    = TRUE,
-  data    = adult_clean
-)
-
-# Quick guardrails
-stopifnot(inherits(nhanes_design_adult_clean, "survey.design2"))
 ```
 
 ```{r}
@@ -471,56 +406,51 @@ stopifnot(inherits(nhanes_design_adult_clean, "survey.design2"))
 #| message: false
 #| warning: false
 
-# Use the CLEAN design built on adult_clean
-stopifnot(inherits(nhanes_design_adult_clean, "survey.design2"))
+# Guardrails: diabetes_ind must be plain 0/1 numeric for svymean
 
-# 0) Overall prevalence (design-based) using svymean
-des_outcome <- subset(nhanes_design_adult_clean, !is.na(diabetes_ind))
+stopifnot(is.numeric(adult$diabetes_ind))
+
+des_outcome <- subset(nhanes_design_adult, !is.na(diabetes_ind))
 
 overall_est <- survey::svymean(~diabetes_ind, des_outcome, na.rm = TRUE)
-overall_ci  <- confint(overall_est)[1, ]  # first (and only) coef
+overall_ci  <- confint(overall_est)[1, ]
 overall_se  <- SE(overall_est)[1]
 
 cat("\n--- Overall Diabetes Prevalence ---\n")
 print(data.frame(
-  Prev = as.numeric(coef(overall_est)[1]),
-  SE   = overall_se,
-  LCL  = overall_ci[1],
-  UCL  = overall_ci[2]
+Prev = as.numeric(coef(overall_est)[1]),
+SE   = overall_se,
+LCL  = overall_ci[1],
+UCL  = overall_ci[2]
 ))
 
-# Helper to compute prevalence by a factor without svyby
 by_prevalence <- function(design, factor_name) {
-  # extract non-missing levels from the underlying data in the design
-  fac <- design$variables[[factor_name]]
-  keep <- !is.na(fac) & !is.na(design$variables$diabetes_ind)
-  fac <- droplevels(factor(fac[keep]))
-  if (nlevels(fac) < 1L) return(
-    data.frame(Level = character(), Prev = numeric(), SE = numeric(), LCL = numeric(), UCL = numeric())
-  )
-
-  levs <- levels(fac)
-  rows <- lapply(levs, function(L) {
-    dL <- subset(design, !is.na(diabetes_ind) & !is.na(.data[[factor_name]]) & .data[[factor_name]] == L)
-    est <- survey::svymean(~diabetes_ind, dL, na.rm = TRUE)
-    ci  <- confint(est)[1, ]
-    data.frame(Level = L,
-               Prev  = as.numeric(coef(est)[1]),
-               SE    = SE(est)[1],
-               LCL   = ci[1],
-               UCL   = ci[2])
-  })
-  do.call(rbind, rows)
+fac  <- design$variables[[factor_name]]
+keep <- !is.na(fac) & !is.na(design$variables$diabetes_ind)
+fac  <- droplevels(factor(fac[keep]))
+if (nlevels(fac) < 1L) return(
+data.frame(Level = character(), Prev = numeric(), SE = numeric(), LCL = numeric(), UCL = numeric())
+)
+levs <- levels(fac)
+rows <- lapply(levs, function(L) {
+dL  <- subset(design, !is.na(diabetes_ind) & !is.na(.data[[factor_name]]) & .data[[factor_name]] == L)
+est <- survey::svymean(~diabetes_ind, dL, na.rm = TRUE)
+ci  <- confint(est)[1, ]
+data.frame(Level = L,
+Prev  = as.numeric(coef(est)[1]),
+SE    = SE(est)[1],
+LCL   = ci[1],
+UCL   = ci[2])
+})
+do.call(rbind, rows)
 }
 
-# 1) By sex
 cat("\n--- Diabetes Prevalence by Sex ---\n")
-by_sex_tbl <- by_prevalence(nhanes_design_adult_clean, "sex")
+by_sex_tbl <- by_prevalence(nhanes_design_adult, "sex")
 print(by_sex_tbl)
 
-# 2) By race3
 cat("\n--- Diabetes Prevalence by race3 ---\n")
-by_race3_tbl <- by_prevalence(nhanes_design_adult_clean, "race3")
+by_race3_tbl <- by_prevalence(nhanes_design_adult, "race3")
 print(by_race3_tbl)
 ```
 
@@ -561,14 +491,7 @@ $$
 + \beta_3\,\mathrm{Sex}_i + \sum_{g}\beta_{3+g}\,\mathrm{Race}_{ig}
 $$
 
-BMI and Age are standardized (mean 0, SD 1). Categorical predictors use
-Male and White as reference levels, with race modeled using the
-coarsened three-level factor (`race3`) (White, Black, Hispanic; smaller
-groups lumped as ‘Other’ if present). Because some race/ethnicity
-categories are sparse, race was coarsened to a three-level factor
-(race3: White, Black, Hispanic; rare/other levels lumped as needed) to
-reduce separation and improve stability. All analyses respect NHANES
-design elements (PSU, strata, exam weights).
+BMI and Age are standardized (mean 0, SD 1). Categorical predictors use Male and White as reference levels, and race/ethnicity is modeled with the coarsened three-level factor race3 (White, Black, Hispanic; rare/other levels lumped as “Other” as needed) to reduce sparsity and separation. All analyses respect NHANES design elements (PSU, strata, exam weights).
 
 ## Frequentist Logistic Regression (Survey-Weighted)
 
@@ -1334,17 +1257,15 @@ y = "Observed Outcome (0 = No, 1 = Yes)"
 #| fig-width: 7
 #| fig-height: 4
 
-# --- Design-based (survey) prevalence + 95% CI, using the CLEAN design ---
+# --- Design-based (survey) prevalence + 95% CI, using the unified design ---
 
-# Guardrail: diabetes_ind must be 0/1 numeric in adult_clean (set earlier)
-
-des_outcome <- subset(nhanes_design_adult_clean, !is.na(diabetes_ind))
+des_outcome <- subset(nhanes_design_adult, !is.na(diabetes_ind))
 
 svy_mean <- svymean(~diabetes_ind, des_outcome, na.rm = TRUE)
-pop_prev <- as.numeric(coef(svy_mean))          # proportion
-pop_se   <- as.numeric(SE(svy_mean))            # SE of the proportion
+pop_prev <- as.numeric(coef(svy_mean))
+pop_se   <- as.numeric(SE(svy_mean))
 pop_ci   <- c(pop_prev - 1.96 * pop_se, pop_prev + 1.96 * pop_se)
-pop_ci   <- pmin(pmax(pop_ci, 0), 1)            # clamp to [0,1] for plotting
+pop_ci   <- pmin(pmax(pop_ci, 0), 1)
 
 # --- Model-based (Bayesian) posterior prevalence + 95% CrI ---
 
