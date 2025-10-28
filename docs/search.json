@@ -305,7 +305,7 @@
     "href": "index.html#frequentist-logistic-regression-survey-weighted",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk Using NHANES 2013–2014 Data",
     "section": "Frequentist Logistic Regression (Survey-Weighted)",
-    "text": "Frequentist Logistic Regression (Survey-Weighted)\nWe fit a survey-weighted logistic regression (svyglm) for\n\\[\n\\text{diabetes\\_dx} \\sim \\text{age\\_c} + \\text{bmi\\_c} + \\text{sex} + \\text{race3}\n\\]\nTo avoid separation from sparse cells, we used the coarsened race3 factor, and we only ran the model when both sex and race3 had ≥2 observed levels among complete cases. We report odds ratios (ORs) with 95% CIs."
+    "text": "Frequentist Logistic Regression (Survey-Weighted)\nWe fit a survey-weighted logistic regression (svyglm) for:\n\\[\n\\text{diabetes\\_dx} \\sim \\text{age\\_c} + \\text{bmi\\_c} + \\text{sex} + \\text{race3}\n\\]\nTo avoid separation from sparse cells, we used the coarsened race3 factor, and we only ran the model when both sex and race3 had ≥2 observed levels among complete cases. We report odds ratios (ORs) with 95% CIs."
   },
   {
     "objectID": "index.html#multiple-imputation-mice",

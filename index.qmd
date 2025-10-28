@@ -431,7 +431,7 @@ analyses respect NHANES design elements (PSU, strata, exam weights).
 
 ## Frequentist Logistic Regression (Survey-Weighted)
 
-We fit a survey-weighted logistic regression (`svyglm`) for
+We fit a survey-weighted logistic regression (`svyglm`) for:
 
 $$
 \text{diabetes\_dx} \sim \text{age\_c} + \text{bmi\_c} + \text{sex} + \text{race3}
