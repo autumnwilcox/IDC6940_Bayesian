@@ -534,7 +534,7 @@ dplyr::filter(term != "(Intercept)")
 
 ```{r}
 #| label: tbl-mice
-#| tbl-cap: "Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals for diabetes diagnosis after imputing missing BMI (PMM) and using observed diabetes status (m = 5)."
+#| tbl-cap: "Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals for diabetes diagnosis after imputing missing BMI (m = 5; BMI via predictive mean matching, age via normal regression; outcome not imputed)."
 knitr::kable(mi_or)
 ```
 
@@ -668,15 +668,20 @@ dplyr::mutate(svy_or,   Model = "Survey-weighted (MLE)") else NULL
 mi_tbl    <- if (exists("mi_or") && nrow(mi_or) > 0)
 dplyr::mutate(mi_or,    Model = "MICE Pooled") else NULL
 bayes_tbl <- if (exists("bayes_or") && nrow(bayes_or) > 0)
-dplyr::mutate(bayes_or, Model = "Bayesian") else NULL
+dplyr::mutate(bayes_or, Model = "Bayesian") %>%
+dplyr::filter(term != "Intercept") else NULL
 
 all_tbl <- dplyr::bind_rows(Filter(Negate(is.null), list(svy_tbl, mi_tbl, bayes_tbl))) %>%
 dplyr::mutate(
 term = case_when(
 grepl("bmi", term, ignore.case = TRUE) ~ "BMI (per 1 SD)",
 grepl("age", term, ignore.case = TRUE) ~ "Age (per 1 SD)",
-grepl("sex", term, ignore.case = TRUE) ~ "Female vs Male",
+grepl("^sexMale$", term, ignore.case = TRUE) ~ "Male vs Female",
+grepl("^sex", term, ignore.case = TRUE) ~ "Male vs Female",
 grepl("race3", term, ignore.case = TRUE) ~ sub("race3:","Race = ",term),
+grepl("^race3Hispanic$", term) ~ "Race = Hispanic",
+grepl("^race3Black$", term)    ~ "Race = Black",
+grepl("^race3Other$", term)    ~ "Race = Other",
 TRUE ~ term
 ),
 OR_CI = sprintf("%.2f (%.2f – %.2f)", OR, LCL, UCL)
@@ -712,7 +717,7 @@ credible effects across models.\
 
 These findings align with prior NHANES-based and epidemiologic
 literature demonstrating the dose-dependent relationship between
-adiposity, aging, and metabolic disease risk \[\@liu2013; \@nchs2014\].
+adiposity, aging, and metabolic disease risk [@liu2013; @nchs2014].
 
 The **survey-weighted model** captured the NHANES complex sampling
 design, producing population-representative estimates.\
