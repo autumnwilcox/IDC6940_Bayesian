@@ -4841,7 +4841,7 @@ Female   Male
 <div id="tbl-mice" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mice-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table 2: Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals for diabetes diagnosis after imputing missing BMI and diabetes values (m = 5, predictive mean matching).
+Table 2: Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals for diabetes diagnosis after imputing missing BMI (PMM) and using observed diabetes status (m = 5).
 </figcaption>
 <div aria-describedby="tbl-mice-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -4960,9 +4960,7 @@ Table 2: Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence
 </figure>
 </div>
 </div>
-<p>The multiple imputation (MICE) framework was used to address missing data in BMI and diabetes status. Continuous variables (<code>age</code>, <code>bmi</code>) were imputed using normal regression for <code>age</code> and predictive mean matching (PMM) for <code>bmi</code>, while categorical variables (<code>sex</code>, <code>race3</code>) used logistic or polytomous regression.</p>
-<p>Five imputed datasets (m = 5) were generated and analyzed separately; estimates were then pooled using Rubin’s rules to obtain combined parameter estimates and standard errors.</p>
-<p>The pooled results, in <a href="#tbl-mice" class="quarto-xref">Table 2</a>, show strong positive associations between age and BMI with diabetes risk, as well as higher odds for males and non-White racial/ethnic groups relative to Whites. The direction and magnitude of effects are consistent with the design-based MLE model, confirming that imputation did not meaningfully alter the relationships among variables.</p>
+<p>MICE addressed missingness in BMI using predictive mean matching (PMM) and in age using normal regression; diabetes status was not imputed (used as a predictor only). Categorical variables (sex, race3) were imputed via logistic/polytomous regression. We generated m = 5 imputations and pooled estimates with Rubin’s rules. The pooled results in <a href="#tbl-mice" class="quarto-xref">Table 2</a> are directionally consistent with the design-based MLE model.</p>
 </section>
 <section id="bayesian-logistic-regression" class="level3">
 <h3 class="anchored" data-anchor-id="bayesian-logistic-regression">2.3 Bayesian Logistic Regression</h3>
@@ -5111,6 +5109,7 @@ Table 3: Bayesian logistic regression: posterior odds ratios (OR) with 95% cred
 <p>Weakly informative priors (Normal(0, 2.5) for slopes; Student-t(3, 0, 10) for the intercept) help stabilize estimation and prevent overfitting.<br>
 </p>
 <p>Posterior means and 95% credible intervals (CrI) provide full uncertainty quantification for each predictor, enabling direct probabilistic interpretation.</p>
+<p>Note: NHANES exam weights are used as importance weights; design strata/PSUs are not modeled directly in the Bayesian fit.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-ppc" class="quarto-float quarto-figure quarto-figure-center anchored">

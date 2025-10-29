@@ -534,26 +534,11 @@ dplyr::filter(term != "(Intercept)")
 
 ```{r}
 #| label: tbl-mice
-#| tbl-cap: "Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals for diabetes diagnosis after imputing missing BMI and diabetes values (m = 5, predictive mean matching)."
+#| tbl-cap: "Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals for diabetes diagnosis after imputing missing BMI (PMM) and using observed diabetes status (m = 5)."
 knitr::kable(mi_or)
 ```
 
-The multiple imputation (MICE) framework was used to address missing
-data in BMI and diabetes status. Continuous variables (`age`, `bmi`)
-were imputed using normal regression for `age` and predictive mean
-matching (PMM) for `bmi`, while categorical variables (`sex`, `race3`)
-used logistic or polytomous regression.
-
-Five imputed datasets (m = 5) were generated and analyzed separately;
-estimates were then pooled using Rubin’s rules to obtain combined
-parameter estimates and standard errors.
-
-The pooled results, in @tbl-mice, show strong positive associations
-between age and BMI with diabetes risk, as well as higher odds for males
-and non-White racial/ethnic groups relative to Whites. The direction and
-magnitude of effects are consistent with the design-based MLE model,
-confirming that imputation did not meaningfully alter the relationships
-among variables.
+MICE addressed missingness in BMI using predictive mean matching (PMM) and in age using normal regression; diabetes status was not imputed (used as a predictor only). Categorical variables (sex, race3) were imputed via logistic/polytomous regression. We generated m = 5 imputations and pooled estimates with Rubin’s rules. The pooled results in @tbl-mice are directionally consistent with the design-based MLE model.
 
 ### 2.3 Bayesian Logistic Regression
 
@@ -627,6 +612,8 @@ As shown in @tbl-bayes, this Bayesian logistic regression model estimates the lo
 Weakly informative priors (Normal(0, 2.5) for slopes; Student-t(3, 0, 10) for the intercept) help stabilize estimation and prevent overfitting.\
 
 Posterior means and 95% credible intervals (CrI) provide full uncertainty quantification for each predictor, enabling direct probabilistic interpretation.
+
+Note: NHANES exam weights are used as importance weights; design strata/PSUs are not modeled directly in the Bayesian fit.
 
 ```{r}
 #| label: fig-ppc
