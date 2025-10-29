@@ -635,5 +635,75 @@
     "title": "Variable Selection Using Bayesian Additive Regression Trees",
     "section": "",
     "text": "The paper introduced three new variable selection approaches: (1) a permutation-based approach using within-type BART Variable Inclusion Proportion (VIP), (2) a permutation-based approach using BART Metropolis Importance (MI), and (3) a backward selection procedure with two filters.\nThese new approaches were designed specifically to address issues with existing methods, such as being biased against categorical predictors and being conservative in including relevant predictors, particularly in data settings with mixed-type predictors (e.g., continuous and binary).\nBased on the simulation results, where success was defined as an excellent capability of including all relevant predictors (rmiss \\(\\le 0.1\\)) and acceptable capability of excluding irrelevant predictors (precision \\(\\ge 0.6\\)), the three proposed approaches consistently perform well in identifying all the relevant predictors and excluding irrelevant predictors.\n\nRanking of Successful Approaches (by Success Rate)\nThe backward selection approach with two filters achieves the highest success rate (70.8%) across the various simulation scenarios tested. The two new permutation-based approaches followed closely in performance: 1. Backward selection with two filters: 70.8% success rate. 2. Permutation-based approach using BART MI: 66.7% success rate. 3. Permutation-based approach using BART Within-Type VIP: 62.5% success rate.\nIdentified Drawbacks\n\nA significant drawback of the three proposed approaches, similar to existing BART-based variable selection methods, is that they suffer from multicollinearity (correlated predictors). This challenge is particularly noticeable when the noise is high or when dealing with a binary response variable.\nThe computational cost of the backward selection approach is a shortcoming because it requires running BART multiple times, although this cost can be reduced by fitting the models in parallel on multiple cores.\nWhile the permutation-based approach using BART within-type VIP improves upon the existing BART VIP approach for small numbers of mixed-type predictors, it also suffers from multicollinearity."
+  },
+  {
+    "objectID": "index.html#overview-1",
+    "href": "index.html#overview-1",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk Using NHANES 2013–2014 Data",
+    "section": "Overview",
+    "text": "Overview\nWe model a binary outcome Y∈{0,1}Y{0,1}Y∈{0,1} using Bayesian logistic regression, a member of the generalized linear model (GLM) family with logit link. The approach combines a likelihood for the observed binary responses with prior distributions on regression coefficients. Inference proceeds via posterior simulation (e.g., NUTS/HMC), yielding full distributions for parameters and predictive quantities rather than point estimates alone."
+  },
+  {
+    "objectID": "index.html#model-specification",
+    "href": "index.html#model-specification",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk Using NHANES 2013–2014 Data",
+    "section": "Model Specification",
+    "text": "Model Specification\nLet \\(p_i = \\Pr(Y_i = 1 \\mid \\mathbf{x}_i)\\).\nThe model is:\n\\[\n\\text{logit}(p_i) = \\beta_0 + \\sum_{j=1}^{p} \\beta_j x_{ij},\n\\]\nwhere continuous predictors may be standardized (mean 0, SD 1) to improve computation and interpretability (per-SD odds ratios), and categorical predictors are coded with reference levels.\nOdds for the event vs. non-event follow:\n\\[\n\\text{odds}_i = \\frac{p_i}{1 - p_i}.\n\\]"
+  },
+  {
+    "objectID": "index.html#priors",
+    "href": "index.html#priors",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk Using NHANES 2013–2014 Data",
+    "section": "Priors",
+    "text": "Priors\nWe use weakly informative priors that stabilize estimation while remaining minimally influential in moderate samples. A common default is\n\ncoefficients: βj∼N(0, 2.52)_j (0,,2.5^2)βj​∼N(0,2.52) (weakly informative shrinkage),\nintercept: β0∼Student-t(ν=3,μ=0,σ=10)_0 t(,,)β0​∼Student-t(ν=3,μ=0,σ=10).\n\nThese choices regularize estimates, mitigate separation, and aid convergence while preserving interpretability as log-odds effects."
+  },
+  {
+    "objectID": "index.html#bayesian-computation",
+    "href": "index.html#bayesian-computation",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk Using NHANES 2013–2014 Data",
+    "section": "Bayesian Computation",
+    "text": "Bayesian Computation\nPosterior inference uses Markov chain Monte Carlo (MCMC), typically Hamiltonian Monte Carlo with the No-U-Turn Sampler (NUTS). Multiple chains are run with warmup/adaptation, and tuning parameters (e.g., adapt_delta) are adjusted to reduce divergent transitions."
+  },
+  {
+    "objectID": "index.html#diagnostics-model-checking",
+    "href": "index.html#diagnostics-model-checking",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk Using NHANES 2013–2014 Data",
+    "section": "Diagnostics & Model Checking",
+    "text": "Diagnostics & Model Checking\nConvergence and accuracy are assessed via:\n\nR^R^ near 1.00 and large effective sample sizes (ESS),\ntrace plots without drift,\nMonte Carlo standard errors (MCSE) small relative to posterior SD,\nposterior predictive checks (e.g., outcome distribution, mean, calibration-style plots),\nsummary fit indices (e.g., Bayesian R2R^2R2).\n\nSensitivity to prior strength is examined by widening/narrowing prior scales and confirming stability of substantive conclusions."
+  },
+  {
+    "objectID": "index.html#missing-data-strategy",
+    "href": "index.html#missing-data-strategy",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk Using NHANES 2013–2014 Data",
+    "section": "Missing Data Strategy",
+    "text": "Missing Data Strategy\nWhen predictors contain missingness, multiple imputation (e.g., MICE) can be used to create plausible completed datasets under MAR assumptions. Analyses are run within each completed dataset and combined (Rubin’s rules) or fully integrated in a joint Bayesian model. Categorical predictors should retain at least two observed levels post-imputation; if a factor collapses to a single level, it is omitted or further coarsened to avoid separation."
+  },
+  {
+    "objectID": "index.html#handling-rare-categories-separation",
+    "href": "index.html#handling-rare-categories-separation",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk Using NHANES 2013–2014 Data",
+    "section": "Handling Rare Categories & Separation",
+    "text": "Handling Rare Categories & Separation\nTo reduce sparsity, low-frequency factor levels can be coarsened (lumped) into interpretable groups prior to modeling. Weakly informative priors already help mitigate quasi- or complete separation; penalized likelihood (e.g., Firth) is a frequentist alternative for comparison."
+  },
+  {
+    "objectID": "index.html#designweights",
+    "href": "index.html#designweights",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk Using NHANES 2013–2014 Data",
+    "section": "Design/Weights",
+    "text": "Design/Weights\nIn complex surveys, design elements (strata, PSUs, weights) can be addressed by:\n\nDesign-based modeling (survey-weighted GLM) for frequentist comparison, and/or\nModel-based Bayesian analysis with importance weights (normalized survey weights) to approximate representativeness, with a note that design-based variance is not fully reproduced unless strata/PSUs are modeled explicitly (e.g., hierarchical structures)."
+  },
+  {
+    "objectID": "index.html#reporting",
+    "href": "index.html#reporting",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk Using NHANES 2013–2014 Data",
+    "section": "Reporting",
+    "text": "Reporting\nReport posterior medians/means with 95% credible intervals for βj_jβj​, and odds ratios via exp⁡(βj)(_j)exp(βj​) with 95% CrI. For standardized predictors, interpret effects per 1-SD increase. Provide posterior predictive summaries and calibration visuals. Include convergence metrics (R^R^, ESS) and prior sensitivity results."
+  },
+  {
+    "objectID": "index.html#software-reproducibility",
+    "href": "index.html#software-reproducibility",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk Using NHANES 2013–2014 Data",
+    "section": "Software & Reproducibility",
+    "text": "Software & Reproducibility\nImplementation can be done in R (e.g., brms/Stan) or equivalent probabilistic programming frameworks. Set seeds, record versions, and share code/scripts to ensure reproducibility."
   }
 ]

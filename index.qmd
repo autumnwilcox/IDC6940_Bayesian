@@ -479,7 +479,119 @@ p_bmi
 p_age
 ```
 
-# Statistical Methods and Modeling
+# Methods
+
+## Overview
+
+We model a binary outcome Y∈{0,1}Y\in\{0,1\}Y∈{0,1} using **Bayesian
+logistic regression**, a member of the generalized linear model (GLM)
+family with logit link. The approach combines a likelihood for the
+observed binary responses with prior distributions on regression
+coefficients. Inference proceeds via posterior simulation (e.g.,
+NUTS/HMC), yielding full distributions for parameters and predictive
+quantities rather than point estimates alone.
+
+## Model Specification
+
+Let $p_i = \Pr(Y_i = 1 \mid \mathbf{x}_i)$.  
+The model is:
+
+$$
+\text{logit}(p_i) = \beta_0 + \sum_{j=1}^{p} \beta_j x_{ij},
+$$
+
+where continuous predictors may be standardized (mean 0, SD 1) to improve computation and interpretability (per-SD odds ratios), and categorical predictors are coded with reference levels.  
+Odds for the event vs. non-event follow:
+
+$$
+\text{odds}_i = \frac{p_i}{1 - p_i}.
+$$
+
+## Priors
+
+We use weakly informative priors that stabilize estimation while
+remaining minimally influential in moderate samples. A common default is
+
+-   coefficients:
+    βj∼N(0, 2.52)\beta_j \sim \mathcal{N}(0,\,2.5^2)βj​∼N(0,2.52) (weakly
+    informative shrinkage),
+
+-   intercept:
+    β0∼Student-t(ν=3,μ=0,σ=10)\beta_0 \sim \text{Student-}t(\nu=3,\mu=0,\sigma=10)β0​∼Student-t(ν=3,μ=0,σ=10).
+
+These choices regularize estimates, mitigate separation, and aid
+convergence while preserving interpretability as log-odds effects.
+
+## Bayesian Computation
+
+Posterior inference uses Markov chain Monte Carlo (MCMC), typically
+Hamiltonian Monte Carlo with the No-U-Turn Sampler (NUTS). Multiple
+chains are run with warmup/adaptation, and tuning parameters (e.g.,
+`adapt_delta`) are adjusted to reduce divergent transitions.
+
+## Diagnostics & Model Checking
+
+Convergence and accuracy are assessed via:
+
+-   R^\hat{R}R\^ near 1.00 and large effective sample sizes (ESS),
+
+-   trace plots without drift,
+
+-   Monte Carlo standard errors (MCSE) small relative to posterior SD,
+
+-   posterior predictive checks (e.g., outcome distribution, mean,
+    calibration-style plots),
+
+-   summary fit indices (e.g., Bayesian R2R^2R2).
+
+Sensitivity to prior strength is examined by widening/narrowing prior
+scales and confirming stability of substantive conclusions.
+
+## Missing Data Strategy
+
+When predictors contain missingness, multiple imputation (e.g., MICE)
+can be used to create plausible completed datasets under MAR
+assumptions. Analyses are run within each completed dataset and combined
+(Rubin’s rules) or fully integrated in a joint Bayesian model.
+Categorical predictors should retain at least two observed levels
+post-imputation; if a factor collapses to a single level, it is omitted
+or further coarsened to avoid separation.
+
+## Handling Rare Categories & Separation
+
+To reduce sparsity, low-frequency factor levels can be coarsened
+(lumped) into interpretable groups prior to modeling. Weakly informative
+priors already help mitigate quasi- or complete separation; penalized
+likelihood (e.g., Firth) is a frequentist alternative for comparison.
+
+## Design/Weights
+
+In complex surveys, design elements (strata, PSUs, weights) can be
+addressed by:
+
+1.  **Design-based** modeling (survey-weighted GLM) for frequentist
+    comparison, and/or
+
+2.  **Model-based** Bayesian analysis with importance weights
+    (normalized survey weights) to approximate representativeness, with
+    a note that design-based variance is not fully reproduced unless
+    strata/PSUs are modeled explicitly (e.g., hierarchical structures).
+
+## Reporting
+
+Report posterior medians/means with 95% credible intervals for
+βj\beta_jβj​, and odds ratios via exp⁡(βj)\exp(\beta_j)exp(βj​) with 95%
+CrI. For standardized predictors, interpret effects per 1-SD increase.
+Provide posterior predictive summaries and calibration visuals. Include
+convergence metrics (R^\hat{R}R\^, ESS) and prior sensitivity results.
+
+## Software & Reproducibility
+
+Implementation can be done in **R** (e.g., `brms`/Stan) or equivalent
+probabilistic programming frameworks. Set seeds, record versions, and
+share code/scripts to ensure reproducibility.
+
+# Models
 
 ## Logistic Model
 
@@ -491,7 +603,12 @@ $$
 + \beta_3\,\mathrm{Sex}_i + \sum_{g}\beta_{3+g}\,\mathrm{Race}_{ig}
 $$
 
-BMI and Age are standardized (mean 0, SD 1). Categorical predictors use Male and White as reference levels, and race/ethnicity is modeled with the coarsened three-level factor race3 (White, Black, Hispanic; rare/other levels lumped as “Other” as needed) to reduce sparsity and separation. All analyses respect NHANES design elements (PSU, strata, exam weights).
+BMI and Age are standardized (mean 0, SD 1). Categorical predictors use
+Male and White as reference levels, and race/ethnicity is modeled with
+the coarsened three-level factor race3 (White, Black, Hispanic;
+rare/other levels lumped as “Other” as needed) to reduce sparsity and
+separation. All analyses respect NHANES design elements (PSU, strata,
+exam weights).
 
 ## Frequentist Logistic Regression (Survey-Weighted)
 

@@ -4091,7 +4091,20 @@ window.Quarto = {
   <li><a href="#survey-design" id="toc-survey-design" class="nav-link" data-scroll-target="#survey-design">Survey Design</a></li>
   <li><a href="#exploratory-visualization" id="toc-exploratory-visualization" class="nav-link" data-scroll-target="#exploratory-visualization">Exploratory Visualization</a></li>
   </ul></li>
-  <li><a href="#statistical-methods-and-modeling" id="toc-statistical-methods-and-modeling" class="nav-link" data-scroll-target="#statistical-methods-and-modeling">Statistical Methods and Modeling</a>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
+  <ul class="collapse">
+  <li><a href="#overview-1" id="toc-overview-1" class="nav-link" data-scroll-target="#overview-1">Overview</a></li>
+  <li><a href="#model-specification" id="toc-model-specification" class="nav-link" data-scroll-target="#model-specification">Model Specification</a></li>
+  <li><a href="#priors" id="toc-priors" class="nav-link" data-scroll-target="#priors">Priors</a></li>
+  <li><a href="#bayesian-computation" id="toc-bayesian-computation" class="nav-link" data-scroll-target="#bayesian-computation">Bayesian Computation</a></li>
+  <li><a href="#diagnostics-model-checking" id="toc-diagnostics-model-checking" class="nav-link" data-scroll-target="#diagnostics-model-checking">Diagnostics &amp; Model Checking</a></li>
+  <li><a href="#missing-data-strategy" id="toc-missing-data-strategy" class="nav-link" data-scroll-target="#missing-data-strategy">Missing Data Strategy</a></li>
+  <li><a href="#handling-rare-categories-separation" id="toc-handling-rare-categories-separation" class="nav-link" data-scroll-target="#handling-rare-categories-separation">Handling Rare Categories &amp; Separation</a></li>
+  <li><a href="#designweights" id="toc-designweights" class="nav-link" data-scroll-target="#designweights">Design/Weights</a></li>
+  <li><a href="#reporting" id="toc-reporting" class="nav-link" data-scroll-target="#reporting">Reporting</a></li>
+  <li><a href="#software-reproducibility" id="toc-software-reproducibility" class="nav-link" data-scroll-target="#software-reproducibility">Software &amp; Reproducibility</a></li>
+  </ul></li>
+  <li><a href="#models" id="toc-models" class="nav-link" data-scroll-target="#models">Models</a>
   <ul class="collapse">
   <li><a href="#logistic-model" id="toc-logistic-model" class="nav-link" data-scroll-target="#logistic-model">Logistic Model</a></li>
   <li><a href="#frequentist-logistic-regression-survey-weighted" id="toc-frequentist-logistic-regression-survey-weighted" class="nav-link" data-scroll-target="#frequentist-logistic-regression-survey-weighted">Frequentist Logistic Regression (Survey-Weighted)</a></li>
@@ -4596,8 +4609,77 @@ sex missing by race3 (adult):</code></pre>
 </div>
 </section>
 </section>
-<section id="statistical-methods-and-modeling" class="level1">
-<h1>Statistical Methods and Modeling</h1>
+<section id="methods" class="level1">
+<h1>Methods</h1>
+<section id="overview-1" class="level2">
+<h2 class="anchored" data-anchor-id="overview-1">Overview</h2>
+<p>We model a binary outcome Y∈{0,1}Y{0,1}Y∈{0,1} using <strong>Bayesian logistic regression</strong>, a member of the generalized linear model (GLM) family with logit link. The approach combines a likelihood for the observed binary responses with prior distributions on regression coefficients. Inference proceeds via posterior simulation (e.g., NUTS/HMC), yielding full distributions for parameters and predictive quantities rather than point estimates alone.</p>
+</section>
+<section id="model-specification" class="level2">
+<h2 class="anchored" data-anchor-id="model-specification">Model Specification</h2>
+<p>Let <span class="math inline">\(p_i = \Pr(Y_i = 1 \mid \mathbf{x}_i)\)</span>.<br>
+The model is:</p>
+<p><span class="math display">\[
+\text{logit}(p_i) = \beta_0 + \sum_{j=1}^{p} \beta_j x_{ij},
+\]</span></p>
+<p>where continuous predictors may be standardized (mean 0, SD 1) to improve computation and interpretability (per-SD odds ratios), and categorical predictors are coded with reference levels.<br>
+Odds for the event vs. non-event follow:</p>
+<p><span class="math display">\[
+\text{odds}_i = \frac{p_i}{1 - p_i}.
+\]</span></p>
+</section>
+<section id="priors" class="level2">
+<h2 class="anchored" data-anchor-id="priors">Priors</h2>
+<p>We use weakly informative priors that stabilize estimation while remaining minimally influential in moderate samples. A common default is</p>
+<ul>
+<li><p>coefficients: βj∼N(0, 2.52)_j (0,,2.5^2)βj​∼N(0,2.52) (weakly informative shrinkage),</p></li>
+<li><p>intercept: β0∼Student-t(ν=3,μ=0,σ=10)_0 t(,,)β0​∼Student-t(ν=3,μ=0,σ=10).</p></li>
+</ul>
+<p>These choices regularize estimates, mitigate separation, and aid convergence while preserving interpretability as log-odds effects.</p>
+</section>
+<section id="bayesian-computation" class="level2">
+<h2 class="anchored" data-anchor-id="bayesian-computation">Bayesian Computation</h2>
+<p>Posterior inference uses Markov chain Monte Carlo (MCMC), typically Hamiltonian Monte Carlo with the No-U-Turn Sampler (NUTS). Multiple chains are run with warmup/adaptation, and tuning parameters (e.g., <code>adapt_delta</code>) are adjusted to reduce divergent transitions.</p>
+</section>
+<section id="diagnostics-model-checking" class="level2">
+<h2 class="anchored" data-anchor-id="diagnostics-model-checking">Diagnostics &amp; Model Checking</h2>
+<p>Convergence and accuracy are assessed via:</p>
+<ul>
+<li><p>R^R^ near 1.00 and large effective sample sizes (ESS),</p></li>
+<li><p>trace plots without drift,</p></li>
+<li><p>Monte Carlo standard errors (MCSE) small relative to posterior SD,</p></li>
+<li><p>posterior predictive checks (e.g., outcome distribution, mean, calibration-style plots),</p></li>
+<li><p>summary fit indices (e.g., Bayesian R2R^2R2).</p></li>
+</ul>
+<p>Sensitivity to prior strength is examined by widening/narrowing prior scales and confirming stability of substantive conclusions.</p>
+</section>
+<section id="missing-data-strategy" class="level2">
+<h2 class="anchored" data-anchor-id="missing-data-strategy">Missing Data Strategy</h2>
+<p>When predictors contain missingness, multiple imputation (e.g., MICE) can be used to create plausible completed datasets under MAR assumptions. Analyses are run within each completed dataset and combined (Rubin’s rules) or fully integrated in a joint Bayesian model. Categorical predictors should retain at least two observed levels post-imputation; if a factor collapses to a single level, it is omitted or further coarsened to avoid separation.</p>
+</section>
+<section id="handling-rare-categories-separation" class="level2">
+<h2 class="anchored" data-anchor-id="handling-rare-categories-separation">Handling Rare Categories &amp; Separation</h2>
+<p>To reduce sparsity, low-frequency factor levels can be coarsened (lumped) into interpretable groups prior to modeling. Weakly informative priors already help mitigate quasi- or complete separation; penalized likelihood (e.g., Firth) is a frequentist alternative for comparison.</p>
+</section>
+<section id="designweights" class="level2">
+<h2 class="anchored" data-anchor-id="designweights">Design/Weights</h2>
+<p>In complex surveys, design elements (strata, PSUs, weights) can be addressed by:</p>
+<ol type="1">
+<li><p><strong>Design-based</strong> modeling (survey-weighted GLM) for frequentist comparison, and/or</p></li>
+<li><p><strong>Model-based</strong> Bayesian analysis with importance weights (normalized survey weights) to approximate representativeness, with a note that design-based variance is not fully reproduced unless strata/PSUs are modeled explicitly (e.g., hierarchical structures).</p></li>
+</ol>
+</section>
+<section id="reporting" class="level2">
+<h2 class="anchored" data-anchor-id="reporting">Reporting</h2>
+<p>Report posterior medians/means with 95% credible intervals for βj_jβj​, and odds ratios via exp⁡(βj)(_j)exp(βj​) with 95% CrI. For standardized predictors, interpret effects per 1-SD increase. Provide posterior predictive summaries and calibration visuals. Include convergence metrics (R^R^, ESS) and prior sensitivity results.</p>
+</section>
+<section id="software-reproducibility" class="level2">
+<h2 class="anchored" data-anchor-id="software-reproducibility">Software &amp; Reproducibility</h2>
+<p>Implementation can be done in <strong>R</strong> (e.g., <code>brms</code>/Stan) or equivalent probabilistic programming frameworks. Set seeds, record versions, and share code/scripts to ensure reproducibility.</p>
+</section>
+</section>
+<section id="models" class="level1">
+<h1>Models</h1>
 <section id="logistic-model" class="level2">
 <h2 class="anchored" data-anchor-id="logistic-model">Logistic Model</h2>
 <p>We model the probability of doctor-diagnosed diabetes as:</p>
