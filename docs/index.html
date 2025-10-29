@@ -4841,7 +4841,7 @@ Female   Male
 <div id="tbl-mice" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mice-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table 2: Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals for diabetes diagnosis after imputing missing BMI (m = 5; BMI via predictive mean matching, age via normal regression; outcome not imputed).
+Table 2: Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals after imputing missing BMI (m = 5, predictive mean matching); diabetes status was not imputed.
 </figcaption>
 <div aria-describedby="tbl-mice-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -4960,7 +4960,7 @@ Table 2: Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence
 </figure>
 </div>
 </div>
-<p>MICE addressed missingness in BMI using predictive mean matching (PMM) and in age using normal regression; diabetes status was not imputed (used as a predictor only). Categorical variables (sex, race3) were imputed via logistic/polytomous regression. We generated m = 5 imputations and pooled estimates with Rubin’s rules. The pooled results in <a href="#tbl-mice" class="quarto-xref">Table 2</a> are directionally consistent with the design-based MLE model.</p>
+<p>The multiple imputation (MICE) framework addressed missingness in <strong>BMI</strong> using predictive mean matching (PMM). <strong>Diabetes status (<code>diabetes_ind</code>) was not imputed</strong> (used as a predictor only). Categorical variables (<code>sex</code>, <code>race3</code>) used logitic/polytomous regression. We generated m = 5 imputations and pooled estimates with Rubin’s rules.</p>
 </section>
 <section id="bayesian-logistic-regression" class="level3">
 <h3 class="anchored" data-anchor-id="bayesian-logistic-regression">2.3 Bayesian Logistic Regression</h3>
@@ -5001,42 +5001,28 @@ Table 2: Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence
 <span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a><span class="at">chains  =</span> <span class="dv">4</span>, <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">seed =</span> <span class="dv">123</span>,</span>
 <span id="cb28-33"><a href="#cb28-33" aria-hidden="true" tabindex="-1"></a><span class="at">control =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.95</span>),</span>
 <span id="cb28-34"><a href="#cb28-34" aria-hidden="true" tabindex="-1"></a><span class="at">refresh =</span> <span class="dv">0</span></span>
-<span id="cb28-35"><a href="#cb28-35" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>Running MCMC with 4 sequential chains...
-
-Chain 1 finished in 11.9 seconds.
-Chain 2 finished in 10.0 seconds.
-Chain 3 finished in 10.7 seconds.
-Chain 4 finished in 9.7 seconds.
-
-All 4 chains finished successfully.
-Mean chain execution time: 10.6 seconds.
-Total execution time: 42.9 seconds.</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract posterior summaries and transform to odds ratios</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>bayes_or <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">posterior_summary</span>(bayes_fit, <span class="at">pars =</span> <span class="st">&quot;^b_&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="st">&quot;raw&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="at">term =</span> <span class="fu">gsub</span>(<span class="st">&quot;^b_&quot;</span>, <span class="st">&quot;&quot;</span>, raw),</span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="at">OR   =</span> <span class="fu">exp</span>(Estimate),</span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="at">LCL  =</span> <span class="fu">exp</span>(Q2<span class="fl">.5</span>),</span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="at">UCL  =</span> <span class="fu">exp</span>(Q97<span class="fl">.5</span>)</span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">select</span>(term, OR, LCL, UCL)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb28-35"><a href="#cb28-35" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-36"><a href="#cb28-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-37"><a href="#cb28-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract posterior summaries and transform to odds ratios</span></span>
+<span id="cb28-38"><a href="#cb28-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-39"><a href="#cb28-39" aria-hidden="true" tabindex="-1"></a>bayes_or <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">posterior_summary</span>(bayes_fit, <span class="at">pars =</span> <span class="st">&quot;^b_&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-40"><a href="#cb28-40" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb28-41"><a href="#cb28-41" aria-hidden="true" tabindex="-1"></a>tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="st">&quot;raw&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-42"><a href="#cb28-42" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb28-43"><a href="#cb28-43" aria-hidden="true" tabindex="-1"></a><span class="at">term =</span> <span class="fu">gsub</span>(<span class="st">&quot;^b_&quot;</span>, <span class="st">&quot;&quot;</span>, raw),</span>
+<span id="cb28-44"><a href="#cb28-44" aria-hidden="true" tabindex="-1"></a><span class="at">OR   =</span> <span class="fu">exp</span>(Estimate),</span>
+<span id="cb28-45"><a href="#cb28-45" aria-hidden="true" tabindex="-1"></a><span class="at">LCL  =</span> <span class="fu">exp</span>(Q2<span class="fl">.5</span>),</span>
+<span id="cb28-46"><a href="#cb28-46" aria-hidden="true" tabindex="-1"></a><span class="at">UCL  =</span> <span class="fu">exp</span>(Q97<span class="fl">.5</span>)</span>
+<span id="cb28-47"><a href="#cb28-47" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-48"><a href="#cb28-48" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">select</span>(term, OR, LCL, UCL)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(bayes_or, dplyr<span class="sc">::</span><span class="fu">across</span>(<span class="fu">c</span>(OR, LCL, UCL), <span class="sc">~</span> <span class="fu">round</span>(.x, <span class="dv">2</span>)))</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(bayes_or, dplyr<span class="sc">::</span><span class="fu">across</span>(<span class="fu">c</span>(OR, LCL, UCL), <span class="sc">~</span> <span class="fu">round</span>(.x, <span class="dv">2</span>)))</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div id="tbl-bayes" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -5127,7 +5113,7 @@ Figure 2: Posterior predictive check: observed vs. replicated outcomes.
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">as.data.frame</span>(brms<span class="sc">::</span><span class="fu">bayes_R2</span>(bayes_fit)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">as.data.frame</span>(brms<span class="sc">::</span><span class="fu">bayes_R2</span>(bayes_fit)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div id="tbl-bayesR2" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -5235,34 +5221,34 @@ Table 5: MCMC diagnostics (R-hat and Effective Sample Sizes) for slope paramete
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine results from all three models</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>svy_tbl   <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">&quot;svy_or&quot;</span>) <span class="sc">&amp;&amp;</span> <span class="fu">nrow</span>(svy_or) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(svy_or,   <span class="at">Model =</span> <span class="st">&quot;Survey-weighted (MLE)&quot;</span>) <span class="cf">else</span> <span class="cn">NULL</span></span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>mi_tbl    <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">&quot;mi_or&quot;</span>) <span class="sc">&amp;&amp;</span> <span class="fu">nrow</span>(mi_or) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(mi_or,    <span class="at">Model =</span> <span class="st">&quot;MICE Pooled&quot;</span>) <span class="cf">else</span> <span class="cn">NULL</span></span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>bayes_tbl <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">&quot;bayes_or&quot;</span>) <span class="sc">&amp;&amp;</span> <span class="fu">nrow</span>(bayes_or) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(bayes_or, <span class="at">Model =</span> <span class="st">&quot;Bayesian&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">filter</span>(term <span class="sc">!=</span> <span class="st">&quot;Intercept&quot;</span>) <span class="cf">else</span> <span class="cn">NULL</span></span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>all_tbl <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(<span class="fu">Filter</span>(<span class="fu">Negate</span>(is.null), <span class="fu">list</span>(svy_tbl, mi_tbl, bayes_tbl))) <span class="sc">%&gt;%</span></span>
-<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a><span class="at">term =</span> <span class="fu">case_when</span>(</span>
-<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;bmi&quot;</span>, term, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">&quot;BMI (per 1 SD)&quot;</span>,</span>
-<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;age&quot;</span>, term, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">&quot;Age (per 1 SD)&quot;</span>,</span>
-<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^sexMale$&quot;</span>, term, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">&quot;Male vs Female&quot;</span>,</span>
-<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^race3Hispanic$&quot;</span>, term) <span class="sc">~</span> <span class="st">&quot;Race = Hispanic&quot;</span>,</span>
-<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^race3Black$&quot;</span>, term)    <span class="sc">~</span> <span class="st">&quot;Race = Black&quot;</span>,</span>
-<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^race3Other$&quot;</span>, term)    <span class="sc">~</span> <span class="st">&quot;Race = Other&quot;</span>,</span>
-<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span> <span class="sc">~</span> term</span>
-<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a>),</span>
-<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a><span class="at">OR_CI =</span> <span class="fu">sprintf</span>(<span class="st">&quot;%.2f (%.2f – %.2f)&quot;</span>, OR, LCL, UCL)</span>
-<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">select</span>(Model, term, OR_CI)</span>
-<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-comparison</span></span>
-<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: &quot;Comparison of odds ratios (per 1 SD for age and BMI) and 95% intervals across survey-weighted, MICE, and Bayesian frameworks.&quot;</span></span>
-<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(all_tbl, <span class="at">align =</span> <span class="fu">c</span>(<span class="st">&quot;l&quot;</span>,<span class="st">&quot;l&quot;</span>,<span class="st">&quot;c&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine results from all three models</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>svy_tbl   <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">&quot;svy_or&quot;</span>) <span class="sc">&amp;&amp;</span> <span class="fu">nrow</span>(svy_or) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(svy_or,   <span class="at">Model =</span> <span class="st">&quot;Survey-weighted (MLE)&quot;</span>) <span class="cf">else</span> <span class="cn">NULL</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>mi_tbl    <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">&quot;mi_or&quot;</span>) <span class="sc">&amp;&amp;</span> <span class="fu">nrow</span>(mi_or) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(mi_or,    <span class="at">Model =</span> <span class="st">&quot;MICE Pooled&quot;</span>) <span class="cf">else</span> <span class="cn">NULL</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>bayes_tbl <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">&quot;bayes_or&quot;</span>) <span class="sc">&amp;&amp;</span> <span class="fu">nrow</span>(bayes_or) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(bayes_or, <span class="at">Model =</span> <span class="st">&quot;Bayesian&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">filter</span>(term <span class="sc">!=</span> <span class="st">&quot;Intercept&quot;</span>) <span class="cf">else</span> <span class="cn">NULL</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>all_tbl <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(<span class="fu">Filter</span>(<span class="fu">Negate</span>(is.null), <span class="fu">list</span>(svy_tbl, mi_tbl, bayes_tbl))) <span class="sc">%&gt;%</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a><span class="at">term =</span> <span class="fu">case_when</span>(</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;bmi&quot;</span>, term, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">&quot;BMI (per 1 SD)&quot;</span>,</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;age&quot;</span>, term, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">&quot;Age (per 1 SD)&quot;</span>,</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^sexMale$&quot;</span>, term, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">&quot;Male vs Female&quot;</span>,</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^race3Hispanic$&quot;</span>, term) <span class="sc">~</span> <span class="st">&quot;Race = Hispanic&quot;</span>,</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^race3Black$&quot;</span>, term)    <span class="sc">~</span> <span class="st">&quot;Race = Black&quot;</span>,</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^race3Other$&quot;</span>, term)    <span class="sc">~</span> <span class="st">&quot;Race = Other&quot;</span>,</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span> <span class="sc">~</span> term</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>),</span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a><span class="at">OR_CI =</span> <span class="fu">sprintf</span>(<span class="st">&quot;%.2f (%.2f – %.2f)&quot;</span>, OR, LCL, UCL)</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">select</span>(Model, term, OR_CI)</span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-comparison</span></span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: &quot;Comparison of odds ratios (per 1 SD for age and BMI) and 95% intervals across survey-weighted, MICE, and Bayesian frameworks.&quot;</span></span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(all_tbl, <span class="at">align =</span> <span class="fu">c</span>(<span class="st">&quot;l&quot;</span>,<span class="st">&quot;l&quot;</span>,<span class="st">&quot;c&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">

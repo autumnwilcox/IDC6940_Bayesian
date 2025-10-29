@@ -534,11 +534,12 @@ dplyr::filter(term != "(Intercept)")
 
 ```{r}
 #| label: tbl-mice
-#| tbl-cap: "Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals for diabetes diagnosis after imputing missing BMI (m = 5; BMI via predictive mean matching, age via normal regression; outcome not imputed)."
+#| tbl-cap: "Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals after imputing missing BMI (m = 5, predictive mean matching); diabetes status was not imputed."
+
 knitr::kable(mi_or)
 ```
 
-MICE addressed missingness in BMI using predictive mean matching (PMM) and in age using normal regression; diabetes status was not imputed (used as a predictor only). Categorical variables (sex, race3) were imputed via logistic/polytomous regression. We generated m = 5 imputations and pooled estimates with Rubin’s rules. The pooled results in @tbl-mice are directionally consistent with the design-based MLE model.
+The multiple imputation (MICE) framework addressed missingness in **BMI** using predictive mean matching (PMM). **Diabetes status (`diabetes_ind`) was not imputed** (used as a predictor only). Categorical variables (`sex`, `race3`) used logitic/polytomous regression. We generated m = 5 imputations and pooled estimates with Rubin's rules. 
 
 ### 2.3 Bayesian Logistic Regression
 
@@ -548,6 +549,7 @@ MICE addressed missingness in BMI using predictive mean matching (PMM) and in ag
 #| echo: true
 #| message: false
 #| warning: false
+#| results: 'hide'
 
 # Prepare a single imputed dataset (from MICE results)
 
