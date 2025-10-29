@@ -102,5 +102,22 @@ build_nhanes_h <- function(save_path = "data/merged_2013_2014.rds", verbose = TR
   invisible(merged_data)
 }
 
-# ---- Run builder when sourced ----
-build_nhanes_h()
+# ---- Run builder when sourced (safe offline mode) ----
+suppressPackageStartupMessages(library(curl))
+
+if (curl::has_internet()) {
+  # Online: rebuild dataset from NHANES API
+  message("Internet connection detected: downloading NHANES 2013–2014 (H) tables...")
+  merged_data <- build_nhanes_h()
+} else {
+  # Offline fallback
+  message("Offline mode: loading previously saved dataset...")
+  local_path <- "data/merged_2013_2014.rds"
+  if (file.exists(local_path)) {
+    merged_data <- readRDS(local_path)
+    message("Loaded local copy from: ", local_path)
+  } else {
+    stop("Offline and no local file found at ", local_path,
+         ". Please connect to the internet once to build and save it.")
+  }
+}
