@@ -5109,7 +5109,7 @@ Table 3: Bayesian logistic regression: posterior odds ratios (OR) with 95% cred
 <p>Weakly informative priors (Normal(0, 2.5) for slopes; Student-t(3, 0, 10) for the intercept) help stabilize estimation and prevent overfitting.<br>
 </p>
 <p>Posterior means and 95% credible intervals (CrI) provide full uncertainty quantification for each predictor, enabling direct probabilistic interpretation.</p>
-<p>Note: NHANES exam weights are used as importance weights; design strata/PSUs are not modeled directly in the Bayesian fit.</p>
+<p>Note: The Bayesian model used normalized NHANES exam weights as importance weights, approximating design-based inference; strata and PSUs were not directly modeled.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-ppc" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -5248,23 +5248,21 @@ Table 5: MCMC diagnostics (R-hat and Effective Sample Sizes) for slope paramete
 <span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>all_tbl <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(<span class="fu">Filter</span>(<span class="fu">Negate</span>(is.null), <span class="fu">list</span>(svy_tbl, mi_tbl, bayes_tbl))) <span class="sc">%&gt;%</span></span>
 <span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
 <span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a><span class="at">term =</span> <span class="fu">case_when</span>(</span>
-<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a><span class="fu">grepl</span>(<span class="st">&quot;bmi&quot;</span>, term, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">&quot;BMI (per 1 SD)&quot;</span>,</span>
-<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a><span class="fu">grepl</span>(<span class="st">&quot;age&quot;</span>, term, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">&quot;Age (per 1 SD)&quot;</span>,</span>
-<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a><span class="fu">grepl</span>(<span class="st">&quot;^sexMale$&quot;</span>, term, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">&quot;Male vs Female&quot;</span>,</span>
-<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a><span class="fu">grepl</span>(<span class="st">&quot;^sex&quot;</span>, term, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">&quot;Male vs Female&quot;</span>,</span>
-<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a><span class="fu">grepl</span>(<span class="st">&quot;race3&quot;</span>, term, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="fu">sub</span>(<span class="st">&quot;race3:&quot;</span>,<span class="st">&quot;Race = &quot;</span>,term),</span>
-<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a><span class="fu">grepl</span>(<span class="st">&quot;^race3Hispanic$&quot;</span>, term) <span class="sc">~</span> <span class="st">&quot;Race = Hispanic&quot;</span>,</span>
-<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a><span class="fu">grepl</span>(<span class="st">&quot;^race3Black$&quot;</span>, term)    <span class="sc">~</span> <span class="st">&quot;Race = Black&quot;</span>,</span>
-<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a><span class="fu">grepl</span>(<span class="st">&quot;^race3Other$&quot;</span>, term)    <span class="sc">~</span> <span class="st">&quot;Race = Other&quot;</span>,</span>
-<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a><span class="cn">TRUE</span> <span class="sc">~</span> term</span>
-<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>),</span>
-<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a><span class="at">OR_CI =</span> <span class="fu">sprintf</span>(<span class="st">&quot;%.2f (%.2f – %.2f)&quot;</span>, OR, LCL, UCL)</span>
-<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">select</span>(Model, term, OR_CI)</span>
-<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-comparison</span></span>
-<span id="cb33-29"><a href="#cb33-29" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: &quot;Comparison of odds ratios (per 1 SD for age and BMI) and 95% intervals across survey-weighted, MICE, and Bayesian frameworks.&quot;</span></span>
-<span id="cb33-30"><a href="#cb33-30" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(all_tbl, <span class="at">align =</span> <span class="fu">c</span>(<span class="st">&quot;l&quot;</span>,<span class="st">&quot;l&quot;</span>,<span class="st">&quot;c&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;bmi&quot;</span>, term, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">&quot;BMI (per 1 SD)&quot;</span>,</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;age&quot;</span>, term, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">&quot;Age (per 1 SD)&quot;</span>,</span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^sexMale$&quot;</span>, term, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">&quot;Male vs Female&quot;</span>,</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^race3Hispanic$&quot;</span>, term) <span class="sc">~</span> <span class="st">&quot;Race = Hispanic&quot;</span>,</span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^race3Black$&quot;</span>, term)    <span class="sc">~</span> <span class="st">&quot;Race = Black&quot;</span>,</span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^race3Other$&quot;</span>, term)    <span class="sc">~</span> <span class="st">&quot;Race = Other&quot;</span>,</span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span> <span class="sc">~</span> term</span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a>),</span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a><span class="at">OR_CI =</span> <span class="fu">sprintf</span>(<span class="st">&quot;%.2f (%.2f – %.2f)&quot;</span>, OR, LCL, UCL)</span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">select</span>(Model, term, OR_CI)</span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-comparison</span></span>
+<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: &quot;Comparison of odds ratios (per 1 SD for age and BMI) and 95% intervals across survey-weighted, MICE, and Bayesian frameworks.&quot;</span></span>
+<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(all_tbl, <span class="at">align =</span> <span class="fu">c</span>(<span class="st">&quot;l&quot;</span>,<span class="st">&quot;l&quot;</span>,<span class="st">&quot;c&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -5293,17 +5291,17 @@ Table 5: MCMC diagnostics (R-hat and Effective Sample Sizes) for slope paramete
 </tr>
 <tr class="even">
 <td style="text-align: left;">Survey-weighted (MLE)</td>
-<td style="text-align: left;">race3Hispanic</td>
+<td style="text-align: left;">Race = Hispanic</td>
 <td style="text-align: center;">1.81 (1.43 – 2.29)</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Survey-weighted (MLE)</td>
-<td style="text-align: left;">race3Black</td>
+<td style="text-align: left;">Race = Black</td>
 <td style="text-align: center;">1.60 (1.16 – 2.21)</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Survey-weighted (MLE)</td>
-<td style="text-align: left;">race3Other</td>
+<td style="text-align: left;">Race = Other</td>
 <td style="text-align: center;">2.20 (1.46 – 3.30)</td>
 </tr>
 <tr class="odd">
@@ -5323,17 +5321,17 @@ Table 5: MCMC diagnostics (R-hat and Effective Sample Sizes) for slope paramete
 </tr>
 <tr class="even">
 <td style="text-align: left;">MICE Pooled</td>
-<td style="text-align: left;">race3Hispanic</td>
+<td style="text-align: left;">Race = Hispanic</td>
 <td style="text-align: center;">2.07 (1.66 – 2.58)</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">MICE Pooled</td>
-<td style="text-align: left;">race3Black</td>
+<td style="text-align: left;">Race = Black</td>
 <td style="text-align: center;">1.80 (1.44 – 2.25)</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">MICE Pooled</td>
-<td style="text-align: left;">race3Other</td>
+<td style="text-align: left;">Race = Other</td>
 <td style="text-align: center;">1.99 (1.50 – 2.65)</td>
 </tr>
 <tr class="odd">
@@ -5353,17 +5351,17 @@ Table 5: MCMC diagnostics (R-hat and Effective Sample Sizes) for slope paramete
 </tr>
 <tr class="even">
 <td style="text-align: left;">Bayesian</td>
-<td style="text-align: left;">race3Hispanic</td>
+<td style="text-align: left;">Race = Hispanic</td>
 <td style="text-align: center;">1.81 (1.38 – 2.40)</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Bayesian</td>
-<td style="text-align: left;">race3Black</td>
+<td style="text-align: left;">Race = Black</td>
 <td style="text-align: center;">1.62 (1.22 – 2.12)</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Bayesian</td>
-<td style="text-align: left;">race3Other</td>
+<td style="text-align: left;">Race = Other</td>
 <td style="text-align: center;">2.13 (1.50 – 2.99)</td>
 </tr>
 </tbody>

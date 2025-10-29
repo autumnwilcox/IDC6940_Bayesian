@@ -613,7 +613,7 @@ Weakly informative priors (Normal(0, 2.5) for slopes; Student-t(3, 0, 10) for th
 
 Posterior means and 95% credible intervals (CrI) provide full uncertainty quantification for each predictor, enabling direct probabilistic interpretation.
 
-Note: NHANES exam weights are used as importance weights; design strata/PSUs are not modeled directly in the Bayesian fit.
+Note: The Bayesian model used normalized NHANES exam weights as importance weights, approximating design-based inference; strata and PSUs were not directly modeled.
 
 ```{r}
 #| label: fig-ppc
@@ -674,15 +674,13 @@ dplyr::filter(term != "Intercept") else NULL
 all_tbl <- dplyr::bind_rows(Filter(Negate(is.null), list(svy_tbl, mi_tbl, bayes_tbl))) %>%
 dplyr::mutate(
 term = case_when(
-grepl("bmi", term, ignore.case = TRUE) ~ "BMI (per 1 SD)",
-grepl("age", term, ignore.case = TRUE) ~ "Age (per 1 SD)",
-grepl("^sexMale$", term, ignore.case = TRUE) ~ "Male vs Female",
-grepl("^sex", term, ignore.case = TRUE) ~ "Male vs Female",
-grepl("race3", term, ignore.case = TRUE) ~ sub("race3:","Race = ",term),
-grepl("^race3Hispanic$", term) ~ "Race = Hispanic",
-grepl("^race3Black$", term)    ~ "Race = Black",
-grepl("^race3Other$", term)    ~ "Race = Other",
-TRUE ~ term
+  grepl("bmi", term, ignore.case = TRUE) ~ "BMI (per 1 SD)",
+  grepl("age", term, ignore.case = TRUE) ~ "Age (per 1 SD)",
+  grepl("^sexMale$", term, ignore.case = TRUE) ~ "Male vs Female",
+  grepl("^race3Hispanic$", term) ~ "Race = Hispanic",
+  grepl("^race3Black$", term)    ~ "Race = Black",
+  grepl("^race3Other$", term)    ~ "Race = Other",
+  TRUE ~ term
 ),
 OR_CI = sprintf("%.2f (%.2f – %.2f)", OR, LCL, UCL)
 ) %>%
