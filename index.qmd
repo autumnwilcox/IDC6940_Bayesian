@@ -846,15 +846,17 @@ brms::set_prior("student_t(3, 0, 10)", class = "Intercept")
 
 # Fit Bayesian logistic regression
 
-bayes_fit <- brms::brm(
-formula = fml_bayes,
-data    = adult_imp1,
-family  = bernoulli(link = "logit"),
-prior   = priors,
-chains  = 4, iter = 2000, seed = 123,
-control = list(adapt_delta = 0.95),
-refresh = 0
-)
+invisible(capture.output({
+  bayes_fit <- brms::brm(
+    formula = fml_bayes,
+    data    = adult_imp1,
+    family  = bernoulli(link = "logit"),
+    prior   = priors,
+    chains  = 4, iter = 2000, seed = 123,
+    control = list(adapt_delta = 0.95),
+    refresh = 0
+  )
+}))
 
 # Shared objects for diagnostics/plots
 yobs <- adult_imp1$diabetes_ind
@@ -879,6 +881,47 @@ dplyr::select(term, OR, LCL, UCL)
 #| tbl-cap: "Bayesian logistic regression: posterior odds ratios (OR) with 95% credible intervals for diabetes diagnosis among adults (NHANES 2013–2014)."
 knitr::kable(
   dplyr::mutate(bayes_or, dplyr::across(c(OR, LCL, UCL), ~ round(.x, 2)))
+)
+```
+
+```{r}
+#| label: build-bullets
+#| echo: false
+#| include: false
+
+library(dplyr)
+library(glue)
+
+pull_or <- function(df, term) {
+  row <- df %>% filter(term == !!term)
+  if (nrow(row) == 0) return(list(or=NA, lcl=NA, ucl=NA))
+  list(or = row$OR[1], lcl = row$LCL[1], ucl = row$UCL[1])
+}
+fmt <- function(x) sprintf("%.2f", x)
+excludes1 <- function(lcl,ucl) ifelse(!is.na(lcl) && !is.na(ucl) && (lcl>1 | ucl<1), "CrI excludes 1", "CrI overlaps 1")
+
+age  <- pull_or(bayes_or, "age_c")
+bmi  <- pull_or(bayes_or, "bmi_c")
+fem  <- pull_or(bayes_or, "sexFemale")
+blk  <- pull_or(bayes_or, "race3Black")
+his  <- pull_or(bayes_or, "race3Hispanic")
+oth  <- pull_or(bayes_or, "race3Other")
+
+post <- as.data.frame(brms::as_draws_df(bayes_fit))
+b0   <- mean(post$b_Intercept)
+baseline_p <- plogis(b0)
+baseline_txt <- sprintf("%.1f%%", 100*baseline_p)
+
+bullets <- c(
+  "### Population-level interpretation (posterior, odds ratios)",
+  " - **Convergence.** All R-hat ≈ 1.00; large ESS → excellent mixing.",   # <- no LaTeX, no escaping issues
+  glue(" - **Baseline risk.** Male, White, mean age/BMI: **~{baseline_txt}** predicted diabetes prevalence."),
+  glue(" - **Age.** +1 SD → **{fmt(age$or)}×** (95% CrI {fmt(age$lcl)}–{fmt(age$ucl)}; {excludes1(age$lcl,age$ucl)})."),
+  glue(" - **BMI.** +1 SD → **{fmt(bmi$or)}×** (95% CrI {fmt(bmi$lcl)}–{fmt(bmi$ucl)}; {excludes1(bmi$lcl,bmi$ucl)})."),
+  glue(" - **Female vs Male.** **{fmt(fem$or)}×** (95% CrI {fmt(fem$lcl)}–{fmt(fem$ucl)}; {excludes1(fem$lcl,fem$ucl)})."),
+  glue(" - **Black vs White.** **{fmt(blk$or)}×** (95% CrI {fmt(blk$lcl)}–{fmt(blk$ucl)}; {excludes1(blk$lcl,blk$ucl)})."),
+  glue(" - **Hispanic vs White.** **{fmt(his$or)}×** (95% CrI {fmt(his$lcl)}–{fmt(his$ucl)}; {excludes1(his$lcl,his$ucl)})."),
+  glue(" - **Other/Multi vs White.** **{fmt(oth$or)}×** (95% CrI {fmt(oth$lcl)}–{fmt(oth$ucl)}; {excludes1(oth$lcl,oth$ucl)}).")
 )
 ```
 
@@ -942,17 +985,10 @@ convergence.
 #| warning: false
 
 # Reduced models (let brms compile if needed)
-fit_no_race <- update(
-  bayes_fit,
-  formula = update(fml_bayes, . ~ . - race3),
-  refresh = 0
-)
-
-fit_no_sex <- update(
-  bayes_fit,
-  formula = update(fml_bayes, . ~ . - sex),
-  refresh = 0
-)
+invisible(capture.output({
+  fit_no_race <- update(bayes_fit, formula = update(fml_bayes, . ~ . - race3))
+  fit_no_sex  <- update(bayes_fit, formula = update(fml_bayes, . ~ . - sex))
+}))
 
 # Compute LOO for all three models
 loo_base    <- loo::loo(bayes_fit)
@@ -1126,6 +1162,13 @@ posterior shifts, confirming that inference was data-driven rather than
 dominated by priors.
 
 ## Results
+
+```{r}
+#| label: results-bullets
+#| echo: false
+#| results: 'asis'
+cat(paste(bullets, collapse = "\n"))
+```
 
 ```{r}
 #| label: results-compare

@@ -4067,7 +4067,10 @@ window.Quarto = {
   <li><a href="#multiple-imputation-mice" id="toc-multiple-imputation-mice" class="nav-link" data-scroll-target="#multiple-imputation-mice">Multiple Imputation (MICE)</a></li>
   <li><a href="#bayesian-logistic-regression-1" id="toc-bayesian-logistic-regression-1" class="nav-link" data-scroll-target="#bayesian-logistic-regression-1">Bayesian Logistic Regression</a></li>
   </ul></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
+  <ul class="collapse">
+  <li><a href="#population-level-interpretation-posterior-odds-ratios" id="toc-population-level-interpretation-posterior-odds-ratios" class="nav-link" data-scroll-target="#population-level-interpretation-posterior-odds-ratios">Population-level interpretation (posterior, odds ratios)</a></li>
+  </ul></li>
   <li><a href="#discussion-and-limitations" id="toc-discussion-and-limitations" class="nav-link" data-scroll-target="#discussion-and-limitations">Discussion and Limitations</a>
   <ul class="collapse">
   <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
@@ -5083,30 +5086,6 @@ Table 7: MCMC diagnostics (R-hat and Effective Sample Sizes) for model paramete
 </div>
 <p>Bayesian parameter estimates are consistent with frequentist results, with credible intervals providing direct probability statements. Diagnostics show good chain mixing (<span class="math inline">\(\hat{R} \approx 1.00\)</span>) and effective sample sizes exceeding standard thresholds, confirming convergence.</p>
 <div class="cell" data-tbl-cap="Bayesian model comparison (LOO): base model vs models without race or without sex.">
-<div class="cell-output cell-output-stdout">
-<pre><code>Running MCMC with 4 sequential chains...
-
-Chain 1 finished in 9.4 seconds.
-Chain 2 finished in 7.8 seconds.
-Chain 3 finished in 8.1 seconds.
-Chain 4 finished in 7.8 seconds.
-
-All 4 chains finished successfully.
-Mean chain execution time: 8.3 seconds.
-Total execution time: 33.6 seconds.</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Running MCMC with 4 sequential chains...
-
-Chain 1 finished in 9.2 seconds.
-Chain 2 finished in 9.6 seconds.
-Chain 3 finished in 10.0 seconds.
-Chain 4 finished in 9.8 seconds.
-
-All 4 chains finished successfully.
-Mean chain execution time: 9.6 seconds.
-Total execution time: 39.0 seconds.</code></pre>
-</div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <caption>Bayesian model comparison (LOO): base model vs models without race or without sex.</caption>
@@ -5319,6 +5298,18 @@ Figure 15: Overlay of prior and posterior densities for key predictors (only co
 </section>
 <section id="results" class="level2">
 <h2 class="anchored" data-anchor-id="results">Results</h2>
+<section id="population-level-interpretation-posterior-odds-ratios" class="level3">
+<h3 class="anchored" data-anchor-id="population-level-interpretation-posterior-odds-ratios">Population-level interpretation (posterior, odds ratios)</h3>
+<ul>
+<li><strong>Convergence.</strong> All R-hat ≈ 1.00; large ESS → excellent mixing.</li>
+<li><strong>Baseline risk.</strong> Male, White, mean age/BMI: <strong>~5.2%</strong> predicted diabetes prevalence.</li>
+<li><strong>Age.</strong> +1 SD → <strong>2.93×</strong> (95% CrI 2.62–3.30; CrI excludes 1).</li>
+<li><strong>BMI.</strong> +1 SD → <strong>1.92×</strong> (95% CrI 1.76–2.10; CrI excludes 1).</li>
+<li><strong>Female vs Male.</strong> <strong>NA×</strong> (95% CrI NA–NA; CrI overlaps 1).</li>
+<li><strong>Black vs White.</strong> <strong>1.62×</strong> (95% CrI 1.23–2.12; CrI excludes 1).</li>
+<li><strong>Hispanic vs White.</strong> <strong>1.82×</strong> (95% CrI 1.40–2.38; CrI excludes 1).</li>
+<li><strong>Other/Multi vs White.</strong> <strong>2.11×</strong> (95% CrI 1.46–2.99; CrI excludes 1).</li>
+</ul>
 <div class="cell">
 <div id="tbl-comparison" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -5443,6 +5434,7 @@ Table 8: Comparison of odds ratios (per 1 SD for age and BMI) and 95% intervals
 <p>Across all frameworks, <strong>age</strong> and <strong>BMI</strong> consistently show strong positive associations with diabetes risk, confirming robustness to missing-data handling and modeling assumptions.<br>
 </p>
 <p>The <strong>Bayesian</strong> model’s credible intervals closely align with the frequentist confidence intervals but provide a more direct probabilistic interpretation of uncertainty.</p>
+</section>
 </section>
 <section id="discussion-and-limitations" class="level2">
 <h2 class="anchored" data-anchor-id="discussion-and-limitations">Discussion and Limitations</h2>
