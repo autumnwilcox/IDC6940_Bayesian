@@ -4095,8 +4095,13 @@ window.Quarto = {
   <li><a href="#bayesian-logistic-regression" id="toc-bayesian-logistic-regression" class="nav-link" data-scroll-target="#bayesian-logistic-regression">2.3 Bayesian Logistic Regression</a></li>
   </ul></li>
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">3. Results</a></li>
+  <li><a href="#discussion-and-limitations" id="toc-discussion-and-limitations" class="nav-link" data-scroll-target="#discussion-and-limitations">4. Discussion and Limitations</a>
+  <ul class="collapse">
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">4.1 Interpretation</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations">4.2 Limitations</a></li>
   </ul></li>
-  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">5. Conclusion</a></li>
+  </ul></li>
   <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography">References</a></li>
   </ul>
 </nav>
@@ -5361,36 +5366,33 @@ Table 5: MCMC diagnostics (R-hat and Effective Sample Sizes) for model paramete
 </p>
 <p>The <strong>Bayesian</strong> model’s credible intervals closely align with the frequentist confidence intervals but provide a more direct probabilistic interpretation of uncertainty.</p>
 </section>
+<section id="discussion-and-limitations" class="level2">
+<h2 class="anchored" data-anchor-id="discussion-and-limitations">4. Discussion and Limitations</h2>
+<section id="interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation">4.1 Interpretation</h3>
+<p>The Bayesian logistic regression framework produced results that were highly consistent with both the survey-weighted and MICE-pooled frequentist models. Age and BMI remained the most influential predictors of doctor-diagnosed diabetes, each showing a strong and positive association with diabetes risk. Posterior credible intervals were slightly narrower than frequentist confidence intervals, reflecting the stabilizing influence of weakly informative priors.</p>
+<p>Unlike classical maximum likelihood estimation, the Bayesian approach directly quantified uncertainty through posterior distributions, offering richer interpretability and more transparent probability statements. The alignment between Bayesian and design-based estimates supports the robustness of these associations and highlights the practicality of Bayesian modeling for complex, weighted population data. Moreover, the Bayesian framework allowed diagnostic evaluation through posterior predictive checks and Bayesian R², confirming that model fit and predictive adequacy were acceptable.</p>
+<p>Overall, this study demonstrates how Bayesian inference complements traditional epidemiologic methods—maintaining interpretability while improving stability under missing data and modest sample imbalance.</p>
 </section>
-<section id="conclusion" class="level1">
-<h1>Conclusion</h1>
-<p>The results across all modeling frameworks—survey-weighted, multiple imputation, and Bayesian—were remarkably consistent, reinforcing the robustness of associations between key demographic and anthropometric factors and diabetes prevalence in the U.S. adult population.</p>
-<p>Age and body mass index (BMI) emerged as the most influential predictors of doctor-diagnosed diabetes, each showing positive and statistically credible effects across models.<br>
-</p>
-<p>These findings align with prior NHANES-based and epidemiologic literature demonstrating the dose-dependent relationship between adiposity, aging, and metabolic disease risk <span class="citation" data-cites="liu2013 nchs2014">(<a href="#ref-liu2013" role="doc-biblioref">Liu et al. 2013</a>; <a href="#ref-nchs2014" role="doc-biblioref">National Center for Health Statistics (NCHS) 2014</a>)</span>.</p>
-<p>The <strong>survey-weighted model</strong> captured the NHANES complex sampling design, producing population-representative estimates.<br>
-</p>
-<p>The <strong>MICE-pooled model</strong> confirmed that handling missing data via multiple imputation yielded similar effect sizes, suggesting that missingness did not meaningfully bias results.<br>
-</p>
-<p>The <strong>Bayesian logistic regression</strong> model, while using normalized weights as importance weights rather than explicit strata/PSUs, produced odds ratios nearly identical in magnitude and direction to the design-based estimates.<br>
-</p>
-<p>Bayesian credible intervals were slightly narrower, reflecting regularization by weakly informative priors and richer posterior uncertainty quantification.</p>
-<p>From a methodological standpoint, Bayesian logistic regression offered several advantages:<br>
-</p>
-<ol type="1">
-<li><p>flexibility in incorporating prior information,<br>
-</p></li>
-<li><p>interpretability through posterior probabilities, and<br>
-</p></li>
-<li><p>improved stability under sparse or imbalanced data.<br>
-</p></li>
-</ol>
-<p>The close agreement between Bayesian and traditional frameworks underscores the reliability of these associations while demonstrating the practical value of Bayesian inference in public health modeling.</p>
-<p>In conclusion, these results reaffirm that <strong>age</strong> and <strong>BMI</strong> remain dominant, independent predictors of diabetes risk among U.S. adults, with sex and race contributing additional variation.<br>
-</p>
-<p>The consistency across analytic approaches highlights the robustness of the findings and supports Bayesian logistic regression as a modern, interpretable, and computationally feasible method for complex survey data when uncertainty quantification is central to inference.</p>
+<section id="limitations" class="level3">
+<h3 class="anchored" data-anchor-id="limitations">4.2 Limitations</h3>
+<p>While this analysis demonstrates the value of Bayesian logistic regression for epidemiologic modeling, several limitations should be acknowledged.</p>
+<p>First, the use of a single imputed dataset for the Bayesian model—rather than full joint modeling of imputation uncertainty—may understate total variance.</p>
+<p>Second, NHANES exam weights were normalized and treated as importance weights, which approximate but do not fully reproduce design-based inference.</p>
+<p>Third, the weakly informative priors <em>Normal(0, 2.5)</em> for slopes and <em>Student-t(3, 0, 10)</em> for the intercept were not empirically tuned; alternative prior specifications could slightly alter posterior intervals.</p>
+<p>Finally, although convergence diagnostics (R̂ ≈ 1, sufficient effective sample sizes, and stable posterior predictive checks) indicated good model performance, results are conditional on the 2013–2014 NHANES cycle and may not generalize to later datasets or longitudinal analyses.</p>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">5. Conclusion</h2>
+<p>The Bayesian, survey-weighted, and imputed logistic regression frameworks all identified consistent predictors of diabetes risk in U.S. adults: advancing age, higher BMI, male sex, and non-White race/ethnicity.</p>
+<p>The Bayesian model produced estimates nearly identical in direction and magnitude to the frequentist results while providing a more comprehensive assessment of uncertainty through posterior distributions and credible intervals.</p>
+<p>By incorporating prior information and using MCMC to sample from the full posterior distribution, Bayesian inference enhances model transparency and interpretability.</p>
+<p>Its agreement with traditional approaches underscores that Bayesian methods can be applied confidently in large-scale public health datasets such as NHANES.</p>
+<p>Future extensions could integrate hierarchical priors, longitudinal NHANES cycles, or Bayesian model averaging to better capture population heterogeneity and evolving diabetes risk patterns over time.</p>
 
 
+</section>
 </section>
 <section id="bibliography" class="level1 unnumbered">
 
