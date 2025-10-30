@@ -202,7 +202,7 @@ imposing strong assumptions:
 
 -   **Regression coefficients:** Normal(0, 2.5), providing gentle
     regularization while allowing substantial variation in plausible
-    effects (van de Schoot et al., 2021).\
+    effects [@vandeschoot2021].\
 -   **Intercept:** Student’s t-distribution prior, Student_t(3, 0, 10),
     which has
     -   3 degrees of freedom (heavy tails to allow occasional large

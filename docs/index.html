@@ -4201,7 +4201,7 @@ After incorporating the observed evidence, the priors are updated through Bayes�
 <h2 class="anchored" data-anchor-id="prior-specification">Prior Specification</h2>
 <p>Weakly informative priors were used to regularize estimation without imposing strong assumptions:</p>
 <ul>
-<li><strong>Regression coefficients:</strong> Normal(0, 2.5), providing gentle regularization while allowing substantial variation in plausible effects (van de Schoot et al., 2021).<br>
+<li><strong>Regression coefficients:</strong> Normal(0, 2.5), providing gentle regularization while allowing substantial variation in plausible effects <span class="citation" data-cites="vandeschoot2021">(<a href="#ref-vandeschoot2021" role="doc-biblioref">Vande Schoot et al. 2021</a>)</span>.<br>
 </li>
 <li><strong>Intercept:</strong> Student’s t-distribution prior, Student_t(3, 0, 10), which has
 <ul>
@@ -5414,13 +5414,13 @@ Table 6: MCMC diagnostics (R-hat and Effective Sample Sizes) for model paramete
 <pre><code>Running MCMC with 4 sequential chains...
 
 Chain 1 finished in 9.3 seconds.
-Chain 2 finished in 7.9 seconds.
-Chain 3 finished in 7.9 seconds.
+Chain 2 finished in 7.8 seconds.
+Chain 3 finished in 7.8 seconds.
 Chain 4 finished in 7.7 seconds.
 
 All 4 chains finished successfully.
 Mean chain execution time: 8.2 seconds.
-Total execution time: 33.2 seconds.</code></pre>
+Total execution time: 33.1 seconds.</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -5434,13 +5434,13 @@ Total execution time: 33.2 seconds.</code></pre>
 <pre><code>Running MCMC with 4 sequential chains...
 
 Chain 1 finished in 9.2 seconds.
-Chain 2 finished in 9.8 seconds.
-Chain 3 finished in 10.1 seconds.
-Chain 4 finished in 9.7 seconds.
+Chain 2 finished in 9.5 seconds.
+Chain 3 finished in 10.0 seconds.
+Chain 4 finished in 9.6 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 9.7 seconds.
-Total execution time: 39.2 seconds.</code></pre>
+Mean chain execution time: 9.6 seconds.
+Total execution time: 38.5 seconds.</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
