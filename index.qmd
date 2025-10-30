@@ -599,8 +599,7 @@ Odds ratios are expressed per one standard deviation (SD) increase in
 **age** and **BMI**, quantifying the association between each predictor
 and the probability of a doctor-diagnosed diabetes outcome.
 
-Notes: Reference categories are **Male** for sex and **White** for
-race3. **Age** and **BMI** ORs are per **1 SD** increase.
+Notes: Reference categories are **Male** for sex and **White** for race3. **Age** and **BMI** odds ratios are reported per one standard deviation (1 SD) increase.
 
 ### 2.2 Multiple Imputation (MICE)
 
@@ -895,16 +894,18 @@ library(ggplot2)
 library(stringr)
 
 or_plot <- bayes_or %>%
-  dplyr::filter(!is.na(term), term != "Intercept") %>%
+  dplyr::filter(term != "Intercept") %>%
   dplyr::mutate(
-    term_clean = term |>
-      as.character() |>
-      stringr::str_replace("^age_c$",        "Age (per 1 SD)") |>
-      stringr::str_replace("^bmi_c$",        "BMI (per 1 SD)") |>
-      stringr::str_replace("^sexFemale$",    "Female vs Male") |>
-      stringr::str_replace("^race3Black$",   "Race: Black (vs White)") |>
-      stringr::str_replace("^race3Hispanic$","Race: Hispanic (vs White)") |>
-      stringr::str_replace("^race3Other$",   "Race: Other (vs White)")
+    term_clean = dplyr::case_when(
+      term == "age_c"            ~ "Age (per 1 SD)",
+      term == "bmi_c"            ~ "BMI (per 1 SD)",
+      term == "sexFemale"        ~ "Female (vs Male)",
+      term == "sexMale"          ~ "Male (vs Female)",
+      term == "race3Black"       ~ "Black (vs White)",
+      term == "race3Hispanic"    ~ "Hispanic (vs White)",
+      term == "race3Other"       ~ "Other (vs White)",
+      TRUE                       ~ term
+    )
   )
 
 ggplot(or_plot, aes(x = OR, y = reorder(term_clean, OR))) +
@@ -1016,13 +1017,14 @@ dplyr::filter(term != "Intercept") else NULL
 
 all_tbl <- dplyr::bind_rows(Filter(Negate(is.null), list(svy_tbl, mi_tbl, bayes_tbl))) %>%
 dplyr::mutate(
-term = case_when(
-  grepl("bmi", term,  ignore.case = TRUE) ~ "BMI (per 1 SD)",
-  grepl("age", term,  ignore.case = TRUE) ~ "Age (per 1 SD)",
-  grepl("^sexFemale$", term)              ~ "Female vs Male",
-  grepl("^race3Hispanic$", term)          ~ "Race = Hispanic",
-  grepl("^race3Black$", term)             ~ "Race = Black",
-  grepl("^race3Other$", term)             ~ "Race = Other",
+term = dplyr::case_when(
+  grepl("^bmi", term,  ignore.case = TRUE) ~ "BMI (per 1 SD)",
+  grepl("^age", term,  ignore.case = TRUE) ~ "Age (per 1 SD)",
+  grepl("^sexFemale$", term)               ~ "Female (vs Male)",
+  grepl("^sexMale$", term)                 ~ "Male (vs Female)",
+  grepl("^race3Hispanic$", term)           ~ "Hispanic (vs White)",
+  grepl("^race3Black$", term)              ~ "Black (vs White)",
+  grepl("^race3Other$", term)              ~ "Other (vs White)",
   TRUE ~ term
 ),
 OR_CI = sprintf("%.2f (%.2f – %.2f)", OR, LCL, UCL)
