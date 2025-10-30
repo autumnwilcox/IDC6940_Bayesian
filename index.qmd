@@ -80,7 +80,7 @@ combined as “Other.” Three analytic frameworks were compared: (1)
 survey-weighted maximum likelihood estimation (MLE) using the NHANES
 complex design, (2) multiple imputation (MICE) with predictive mean
 matching and Rubin’s rules, and (3) Bayesian inference with weakly
-informative priors \[N(0, 2.5)\] implemented via `brms`. The Bayesian
+informative priors $N(0, 2.5)$ implemented via `brms`. The Bayesian
 model incorporated normalized NHANES exam weights as importance weights,
 approximating design-based inference. Across all methods, age and BMI
 were positively associated with diabetes odds, female sex tended to have
@@ -110,7 +110,7 @@ Bayesian modeling generates robust estimates when data are missing at
 random (MAR) or not at random (MNAR) [@austin2021].
 
 The broader Bayesian literature emphasizes the role of priors and model
-checking. Weakly informative priors, such as Normal(0, 2.5) for
+checking. Weakly informative priors, such as $N(0, 2.5)$ for
 coefficients, regularize estimation and reduce variance in small samples
 [@gelman2008; @vandeschoot2021]. Tutorials using R packages like `brms`
 and `blavaan` illustrate how MCMC enables posterior inference and
@@ -200,10 +200,10 @@ the model, producing full posterior distributions for each coefficient.
 Weakly informative priors were used to regularize estimation without
 imposing strong assumptions:
 
--   **Regression coefficients:** Normal(0, 2.5), providing gentle
+-   **Regression coefficients:** $N(0, 2.5)$, providing gentle
     regularization while allowing substantial variation in plausible
     effects [@vandeschoot2021].\
--   **Intercept:** Student’s t-distribution prior, Student_t(3, 0, 10),
+-   **Intercept:** Student’s t-distribution prior, $t(3, 0, 10)$,
     which has
     -   3 degrees of freedom (heavy tails to allow occasional large
         effects),\
@@ -279,7 +279,7 @@ columns suitable for survey analysis and modeling.
 
 ```{r}
 #| label: load-merged
-#| echo: true
+#| echo: false
 #| message: false
 #| warning: false
 
@@ -300,6 +300,8 @@ knitr::kable(
   caption = "Preview of merged NHANES 2013–2014 dataset limited to analysis variables (source columns only)."
 )
 ```
+
+This preview shows the raw NHANES columns before transformation. Each variable is retained for later use in analysis and renamed or standardized as appropriate.
 
 ```{r}
 #| label: merged-n
@@ -408,6 +410,8 @@ miss_diab <- mean(is.na(adult_eda$diabetes_ind)) * 100
 sprintf("Missing BMI: %.1f%%; Missing diabetes_ind: %.1f%%", miss_bmi, miss_diab)
 ```
 
+These summaries confirm that only BMI and diabetes indicators contain missing values, supporting the need for multiple imputation while keeping other variables complete.
+
 ```{r}
 #| label: adult-cohort
 #| echo: true
@@ -454,10 +458,6 @@ adult <- merged_data %>%
 #| message: false
 #| warning: false
 #| tbl-cap: "Table 1. Analytic variables for the NHANES 2013–2014 adult cohort (age ≥ 20). Design variables (WTMEC2YR, SDMVPSU, SDMVSTRA) are excluded from this table."
-
-library(dplyr)
-library(tidyr)
-library(knitr)
 
 # Keep only analytic variables for Table 1
 tbl1_dat <- adult %>%
@@ -543,6 +543,10 @@ DataExplorer::plot_missing(
 )
 ```
 
+The missingness plot visually confirms that BMI and diabetes status have modest proportions of missing data, with no evident systematic pattern across records.
+
+The following histograms and bar charts describe the adult analytic cohort. Most participants are middle-aged, with a normal-to-overweight BMI distribution and majority White race composition. This visualization helps contextualize the predictors used in the models.
+
 ```{r}
 #| label: fig-cohort-age
 #| fig-cap: "Age distribution (age ≥ 20)."
@@ -613,7 +617,7 @@ Each model used the same outcome (`diabetes_ind`) and predictors
 
 ```{r}
 #| label: data-clean
-#| echo: true
+#| echo: false
 #| message: false
 #| warning: false
 
@@ -671,12 +675,16 @@ UCL = exp(conf.high)
 ) %>%
 dplyr::select(term, OR, LCL, UCL, p.value) %>%
 dplyr::filter(term != "(Intercept)")
+```
 
+```{r}
 #| label: tbl-survey
 #| echo: false
 #| tbl-cap: "Survey-weighted logistic regression: odds ratios (OR) and 95% confidence intervals for diabetes diagnosis among adults (NHANES 2013–2014)."
 knitr::kable(svy_or)
 ```
+
+The design-based model accounts for NHANES sampling weights and clustering. Positive coefficients for age and BMI indicate higher diabetes odds per one-SD increase, while categorical contrasts show elevated odds among non-White groups.
 
 The NHANES 2013–2014 data use a complex, multistage probability design
 involving **strata** (`SDMVSTRA`), **primary sampling units (PSUs;
@@ -753,6 +761,8 @@ dplyr::rename(OR = estimate, LCL = `2.5 %`, UCL = `97.5 %`) %>%
 dplyr::filter(term != "(Intercept)")
 ```
 
+Multiple imputation preserves sample size and reduces bias from missing BMI values. Results closely mirror the survey-weighted model, confirming robustness to imputation.
+
 ```{r}
 #| label: tbl-mice
 #| echo: false 
@@ -760,11 +770,11 @@ miss_age  <- sum(is.na(mi_dat$age))
 miss_bmiN <- sum(is.na(mi_dat$bmi))
 
 mi_caption <- if (miss_age > 0 && miss_bmiN > 0) {
-  "Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals after imputing missing age (normal) and BMI (PMM) (m = 5); diabetes status was not imputed."
+  "Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals after imputing missing age (normal) and BMI (PMM) (m = 20); diabetes status was not imputed."
 } else if (miss_bmiN > 0) {
-  "Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals after imputing missing BMI (PMM) (m = 5); diabetes status was not imputed."
+  "Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals after imputing missing BMI (PMM) (m = 20); diabetes status was not imputed."
 } else if (miss_age > 0) {
-  "Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals after imputing missing age (normal) (m = 5); diabetes status was not imputed."
+  "Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals after imputing missing age (normal) (m = 20); diabetes status was not imputed."
 } else {
   "Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals (no variables required imputation); diabetes status was not imputed."
 }
@@ -777,7 +787,7 @@ The multiple imputation (MICE) framework addressed missingness in
 **BMI** using predictive mean matching (PMM). **Diabetes status
 (`diabetes_ind`) was not imputed** (used as a predictor only).
 Categorical variables (`sex`, `race3`) used logistic/polytomous
-regression. We generated m = 5 imputations and pooled estimates with
+regression. We generated m = 20 imputations and pooled estimates with
 Rubin’s rules. Odds ratios are reported per one standard deviation (1
 SD) increase in age and BMI.
 
@@ -856,7 +866,7 @@ knitr::kable(
 As shown in @tbl-bayes, this Bayesian logistic regression model
 estimates the log-odds of diabetes using standardized predictors.\
 
-Weakly informative priors (Normal(0, 2.5) for slopes; Student-t(3, 0,
+Weakly informative priors ($N(0, 2.5)$ for slopes; Student-t(3, 0,
 10) for the intercept) help stabilize estimation and prevent
 overfitting.\
 
@@ -870,6 +880,7 @@ PSUs were not directly modeled.
 
 ```{r}
 #| label: tbl-bayesR2
+#| echo: false
 #| tbl-cap: "Bayesian R² summary."
 knitr::kable(as.data.frame(brms::bayes_R2(bayes_fit)))
 ```
@@ -899,10 +910,12 @@ diag_b <- diag |>
 knitr::kable(diag_b, digits = 1)
 ```
 
+Bayesian parameter estimates are consistent with frequentist results, with credible intervals providing direct probability statements. Diagnostics show good chain mixing ($\hat{R} \approx 1.00$) and effective sample sizes exceeding standard thresholds, confirming convergence.
+
 ```{r}
 #| label: model-comparison
 #| tbl-cap: "Bayesian model comparison (LOO): base model vs models without race or without sex."
-#| echo: true
+#| echo: false
 #| message: false
 #| warning: false
 
@@ -938,9 +951,7 @@ knitr::kable(
 )
 ```
 
-The base model shows the best expected out-of-sample fit (LOO), while
-removing race or sex degrades predictive performance, indicating these
-terms contribute to prediction.
+Leave-one-out (LOO) cross-validation indicates that removing race or sex reduces model fit, confirming that both variables meaningfully contribute to predictive performance.
 
 ```{r}
 #| label: fig-mcmc-areas
@@ -985,11 +996,6 @@ bayesplot::ppc_stat(y = yobs, yrep = yrep, stat = "sd")
 #| label: fig-or-forest
 #| fig-cap: "Posterior odds ratios (points) with 95% credible intervals (lines)."
 #| echo: false
-library(dplyr)
-library(ggplot2)
-library(dplyr)
-library(ggplot2)
-library(stringr)
 
 or_plot <- bayes_or %>%
   dplyr::filter(term != "Intercept") %>%
@@ -1185,7 +1191,7 @@ Second, NHANES exam weights were normalized and treated as importance
 weights, which approximate but do not fully reproduce design-based
 inference.
 
-Third, the weakly informative priors *Normal(0, 2.5)* for slopes and
+Third, the weakly informative priors *$N(0, 2.5)$* for slopes and
 *Student-t(3, 0, 10)* for the intercept were not empirically tuned;
 alternative prior specifications could slightly alter posterior
 intervals.

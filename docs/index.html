@@ -4154,10 +4154,10 @@ window.Quarto = {
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
 <p>Diabetes mellitus (DM) remains a major public health challenge, and identifying key risk factors—such as obesity, age, sex, and race/ethnicity—is essential for prevention and targeted intervention. Logistic regression is widely used to estimate associations between such factors and binary outcomes like diabetes diagnosis. However, classical maximum likelihood estimation (MLE) can produce unstable estimates in the presence of missing data, quasi-separation, or small samples. Bayesian logistic regression offers a robust alternative by integrating prior information, regularizing estimates, and quantifying uncertainty more transparently than frequentist approaches.</p>
-<p>This study applies Bayesian logistic regression to estimate the risk of doctor-diagnosed diabetes among adults in the 2013–2014 National Health and Nutrition Examination Survey (NHANES). Predictors include age, body mass index (BMI), sex, and a coarsened race/ethnicity factor (race3) comprising White, Black, and Hispanic groups, with low-frequency levels combined as “Other.” Three analytic frameworks were compared: (1) survey-weighted maximum likelihood estimation (MLE) using the NHANES complex design, (2) multiple imputation (MICE) with predictive mean matching and Rubin’s rules, and (3) Bayesian inference with weakly informative priors [N(0, 2.5)] implemented via <code>brms</code>. The Bayesian model incorporated normalized NHANES exam weights as importance weights, approximating design-based inference. Across all methods, age and BMI were positively associated with diabetes odds, female sex tended to have lower odds than male, and Black and Hispanic adults showed higher odds relative to White. Agreement across modeling frameworks supports the robustness of these associations and highlights the interpretability and uncertainty quantification advantages offered by Bayesian analysis for population health modeling.</p>
+<p>This study applies Bayesian logistic regression to estimate the risk of doctor-diagnosed diabetes among adults in the 2013–2014 National Health and Nutrition Examination Survey (NHANES). Predictors include age, body mass index (BMI), sex, and a coarsened race/ethnicity factor (race3) comprising White, Black, and Hispanic groups, with low-frequency levels combined as “Other.” Three analytic frameworks were compared: (1) survey-weighted maximum likelihood estimation (MLE) using the NHANES complex design, (2) multiple imputation (MICE) with predictive mean matching and Rubin’s rules, and (3) Bayesian inference with weakly informative priors <span class="math inline">\(N(0, 2.5)\)</span> implemented via <code>brms</code>. The Bayesian model incorporated normalized NHANES exam weights as importance weights, approximating design-based inference. Across all methods, age and BMI were positively associated with diabetes odds, female sex tended to have lower odds than male, and Black and Hispanic adults showed higher odds relative to White. Agreement across modeling frameworks supports the robustness of these associations and highlights the interpretability and uncertainty quantification advantages offered by Bayesian analysis for population health modeling.</p>
 <p>Bayesian hierarchical models, implemented via Markov Chain Monte Carlo (MCMC), have been successfully applied in predicting patient health status across diseases such as pneumonia, prostate cancer, and mental disorders <span class="citation" data-cites="zeger2020">(<a href="#ref-zeger2020" role="doc-biblioref">Zeger et al. 2020</a>)</span>. By representing predictive uncertainty alongside point estimates, Bayesian inference offers a practical advantage in epidemiologic modeling where decisions hinge on probabilistic thresholds. Beyond stability, Bayesian methods support model checking, variable selection, and uncertainty quantification under missingness or imputation frameworks <span class="citation" data-cites="baldwin2017 kruschke2017">(<a href="#ref-baldwin2017" role="doc-biblioref">Baldwin and Larson 2017</a>; <a href="#ref-kruschke2017" role="doc-biblioref">Kruschke and Liddell 2017</a>)</span>.</p>
 <p>Recent work has expanded Bayesian applications to disease diagnostics and health risk modeling. For instance, Bayesian approaches have been used to evaluate NHANES diagnostic data <span class="citation" data-cites="chatzimichail2023">(<a href="#ref-chatzimichail2023" role="doc-biblioref">Chatzimichail and Hatjimihail 2023</a>)</span>, to model cardiovascular and metabolic risk <span class="citation" data-cites="liu2013">(<a href="#ref-liu2013" role="doc-biblioref">Liu et al. 2013</a>)</span>, and to integrate multiple data modalities such as imaging and laboratory measures <span class="citation" data-cites="abdullah2022bdlhealth">(<a href="#ref-abdullah2022bdlhealth" role="doc-biblioref">Abdullah, Hassan, and Mustafa 2022</a>)</span>. Moreover, multiple imputation combined with Bayesian modeling generates robust estimates when data are missing at random (MAR) or not at random (MNAR) <span class="citation" data-cites="austin2021">(<a href="#ref-austin2021" role="doc-biblioref">Austin et al. 2021</a>)</span>.</p>
-<p>The broader Bayesian literature emphasizes the role of priors and model checking. Weakly informative priors, such as Normal(0, 2.5) for coefficients, regularize estimation and reduce variance in small samples <span class="citation" data-cites="gelman2008 vandeschoot2021">(<a href="#ref-gelman2008" role="doc-biblioref">Gelman et al. 2008</a>; <a href="#ref-vandeschoot2021" role="doc-biblioref">Vande Schoot et al. 2021</a>)</span>. Tutorials using R packages like <code>brms</code> and <code>blavaan</code> illustrate how MCMC enables posterior inference and empirical Bayes analysis <span class="citation" data-cites="klauenberg2015">(<a href="#ref-klauenberg2015" role="doc-biblioref">Klauenberg et al. 2015</a>)</span>.</p>
+<p>The broader Bayesian literature emphasizes the role of priors and model checking. Weakly informative priors, such as <span class="math inline">\(N(0, 2.5)\)</span> for coefficients, regularize estimation and reduce variance in small samples <span class="citation" data-cites="gelman2008 vandeschoot2021">(<a href="#ref-gelman2008" role="doc-biblioref">Gelman et al. 2008</a>; <a href="#ref-vandeschoot2021" role="doc-biblioref">Vande Schoot et al. 2021</a>)</span>. Tutorials using R packages like <code>brms</code> and <code>blavaan</code> illustrate how MCMC enables posterior inference and empirical Bayes analysis <span class="citation" data-cites="klauenberg2015">(<a href="#ref-klauenberg2015" role="doc-biblioref">Klauenberg et al. 2015</a>)</span>.</p>
 <p>Beyond standard generalized linear models, Bayesian nonparametric regression flexibly captures nonlinearity and zero inflation common in health data <span class="citation" data-cites="richardson2018bnr">(<a href="#ref-richardson2018bnr" role="doc-biblioref">Richardson and Hartman 2018</a>)</span>. Bayesian Additive Regression Trees (BART) improve variable selection in mixed-type data <span class="citation" data-cites="luo2024bartvs">(<a href="#ref-luo2024bartvs" role="doc-biblioref">Luo et al. 2024</a>)</span>, while state-space and dynamic Bayesian models incorporate time-varying biomarkers for longitudinal prediction <span class="citation" data-cites="momeni2021covidbayes">(<a href="#ref-momeni2021covidbayes" role="doc-biblioref">Momeni et al. 2021</a>)</span>. Bayesian model averaging (BMA) further addresses model uncertainty by weighting across multiple specifications <span class="citation" data-cites="hoeting1999bma">(<a href="#ref-hoeting1999bma" role="doc-biblioref">Hoeting et al. 1999</a>)</span>. Together, these approaches demonstrate the versatility and growing importance of Bayesian inference in clinical and epidemiologic modeling.</p>
 <p>The objective of this project is to evaluate whether Bayesian inference provides more stable and interpretable estimates of diabetes risk than frequentist and imputation-based approaches, particularly when data complexity or separation challenges arise. Agreement across modeling frameworks supports the robustness of these associations and highlights the interpretability and uncertainty quantification advantages offered by Bayesian analysis in population health modeling <span class="citation" data-cites="nchs2014">(<a href="#ref-nchs2014" role="doc-biblioref">National Center for Health Statistics (NCHS) 2014</a>)</span>.</p>
 <p>The analytical framework for this study is grounded in Bayesian logistic regression, providing a probabilistic approach for estimating diabetes risk and quantifying uncertainty in population health modeling.</p>
@@ -4201,9 +4201,9 @@ After incorporating the observed evidence, the priors are updated through Bayes�
 <h2 class="anchored" data-anchor-id="prior-specification">Prior Specification</h2>
 <p>Weakly informative priors were used to regularize estimation without imposing strong assumptions:</p>
 <ul>
-<li><strong>Regression coefficients:</strong> Normal(0, 2.5), providing gentle regularization while allowing substantial variation in plausible effects <span class="citation" data-cites="vandeschoot2021">(<a href="#ref-vandeschoot2021" role="doc-biblioref">Vande Schoot et al. 2021</a>)</span>.<br>
+<li><strong>Regression coefficients:</strong> <span class="math inline">\(N(0, 2.5)\)</span>, providing gentle regularization while allowing substantial variation in plausible effects <span class="citation" data-cites="vandeschoot2021">(<a href="#ref-vandeschoot2021" role="doc-biblioref">Vande Schoot et al. 2021</a>)</span>.<br>
 </li>
-<li><strong>Intercept:</strong> Student’s t-distribution prior, Student_t(3, 0, 10), which has
+<li><strong>Intercept:</strong> Student’s t-distribution prior, <span class="math inline">\(t(3, 0, 10)\)</span>, which has
 <ul>
 <li>3 degrees of freedom (heavy tails to allow occasional large effects),<br>
 </li>
@@ -4265,25 +4265,6 @@ This allows statements such as:<br>
 <section id="import-and-merge-datasets" class="level3">
 <h3 class="anchored" data-anchor-id="import-and-merge-datasets">Import and Merge Datasets</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>merged_data <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/merged_2013_2014.rds&quot;</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># A compact preview with ONLY analysis variables (no design vars here)</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>merged_preview <span class="ot">&lt;-</span> merged_data <span class="sc">%&gt;%</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    RIDAGEYR,           <span class="co"># age (raw; will become age / age_c later)</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    BMXBMI,             <span class="co"># BMI  (raw; will become bmi / bmi_c later)</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    RIAGENDR,           <span class="co"># sex (source)</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    RIDRETH1,           <span class="co"># race (source)</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    DIQ010              <span class="co"># diabetes indicator (source)</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(merged_preview, <span class="dv">10</span>),</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;Preview of merged NHANES 2013–2014 dataset limited to analysis variables (source columns only).&quot;</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <caption>Preview of merged NHANES 2013–2014 dataset limited to analysis variables (source columns only).</caption>
@@ -4371,6 +4352,7 @@ This allows statements such as:<br>
 </table>
 </div>
 </div>
+<p>This preview shows the raw NHANES columns before transformation. Each variable is retained for later use in analysis and renamed or standardized as appropriate.</p>
 <blockquote class="blockquote">
 <p>The merged dataset contains 10,175 participants.</p>
 </blockquote>
@@ -4442,50 +4424,50 @@ Table 1: Variable Descriptions: Adult Analytic Dataset (NHANES 2013–2014)
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep NAs (no droplevels, no NA filtering); make NA an explicit level for factors</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>adult_eda <span class="ot">&lt;-</span> merged_data <span class="sc">%&gt;%</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(RIDAGEYR <span class="sc">&gt;=</span> <span class="dv">20</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">transmute</span>(</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    SDMVPSU, SDMVSTRA, WTMEC2YR,</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">diabetes_ind =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(DIQ010 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                                    DIQ010 <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="dv">0</span>,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                                    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_real_</span>),</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">bmi  =</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.numeric</span>(BMXBMI)),</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">age  =</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.numeric</span>(RIDAGEYR)),</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">sex  =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(RIAGENDR <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;Male&quot;</span>,</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                            RIAGENDR <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="st">&quot;Female&quot;</span>,</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                            <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span>),</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">race =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;Mexican American&quot;</span>,</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="st">&quot;Other Hispanic&quot;</span>,</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">3</span> <span class="sc">~</span> <span class="st">&quot;NH White&quot;</span>,</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">4</span> <span class="sc">~</span> <span class="st">&quot;NH Black&quot;</span>,</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">5</span> <span class="sc">~</span> <span class="st">&quot;Other/Multi&quot;</span>,</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">age_c =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(age)),</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">bmi_c =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(bmi)),</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">race3 =</span> forcats<span class="sc">::</span><span class="fu">fct_collapse</span>(</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>              <span class="fu">factor</span>(race),</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>              <span class="at">White    =</span> <span class="st">&quot;NH White&quot;</span>,</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>              <span class="at">Black    =</span> <span class="st">&quot;NH Black&quot;</span>,</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>              <span class="at">Hispanic =</span> <span class="fu">c</span>(<span class="st">&quot;Mexican American&quot;</span>,<span class="st">&quot;Other Hispanic&quot;</span>),</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>              <span class="at">Other    =</span> <span class="st">&quot;Other/Multi&quot;</span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>            ) <span class="sc">|&gt;</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>            forcats<span class="sc">::</span><span class="fu">fct_relevel</span>(<span class="st">&quot;White&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>            forcats<span class="sc">::</span><span class="fu">fct_explicit_na</span>(<span class="at">na_level =</span> <span class="st">&quot;(Missing)&quot;</span>),</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">sex   =</span> <span class="fu">factor</span>(sex, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;Male&quot;</span>,<span class="st">&quot;Female&quot;</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>            forcats<span class="sc">::</span><span class="fu">fct_explicit_na</span>(<span class="at">na_level =</span> <span class="st">&quot;(Missing)&quot;</span>)</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep NAs (no droplevels, no NA filtering); make NA an explicit level for factors</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>adult_eda <span class="ot">&lt;-</span> merged_data <span class="sc">%&gt;%</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(RIDAGEYR <span class="sc">&gt;=</span> <span class="dv">20</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">transmute</span>(</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    SDMVPSU, SDMVSTRA, WTMEC2YR,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">diabetes_ind =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(DIQ010 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                                    DIQ010 <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="dv">0</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                                    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_real_</span>),</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">bmi  =</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.numeric</span>(BMXBMI)),</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">age  =</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.numeric</span>(RIDAGEYR)),</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">sex  =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(RIAGENDR <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;Male&quot;</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                            RIAGENDR <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="st">&quot;Female&quot;</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                            <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span>),</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">race =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;Mexican American&quot;</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="st">&quot;Other Hispanic&quot;</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">3</span> <span class="sc">~</span> <span class="st">&quot;NH White&quot;</span>,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">4</span> <span class="sc">~</span> <span class="st">&quot;NH Black&quot;</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">5</span> <span class="sc">~</span> <span class="st">&quot;Other/Multi&quot;</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">age_c =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(age)),</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">bmi_c =</span> <span class="fu">as.numeric</span>(<span class="fu">scale</span>(bmi)),</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">race3 =</span> forcats<span class="sc">::</span><span class="fu">fct_collapse</span>(</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>              <span class="fu">factor</span>(race),</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>              <span class="at">White    =</span> <span class="st">&quot;NH White&quot;</span>,</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>              <span class="at">Black    =</span> <span class="st">&quot;NH Black&quot;</span>,</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>              <span class="at">Hispanic =</span> <span class="fu">c</span>(<span class="st">&quot;Mexican American&quot;</span>,<span class="st">&quot;Other Hispanic&quot;</span>),</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>              <span class="at">Other    =</span> <span class="st">&quot;Other/Multi&quot;</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>            ) <span class="sc">|&gt;</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>            forcats<span class="sc">::</span><span class="fu">fct_relevel</span>(<span class="st">&quot;White&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>            forcats<span class="sc">::</span><span class="fu">fct_explicit_na</span>(<span class="at">na_level =</span> <span class="st">&quot;(Missing)&quot;</span>),</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">sex   =</span> <span class="fu">factor</span>(sex, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;Male&quot;</span>,<span class="st">&quot;Female&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>            forcats<span class="sc">::</span><span class="fu">fct_explicit_na</span>(<span class="at">na_level =</span> <span class="st">&quot;(Missing)&quot;</span>)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># How many NAs in each column?</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(adult_eda))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># How many NAs in each column?</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(adult_eda))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>     SDMVPSU     SDMVSTRA     WTMEC2YR diabetes_ind          bmi          age 
@@ -4495,8 +4477,8 @@ Table 1: Variable Descriptions: Adult Analytic Dataset (NHANES 2013–2014)
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Focus on the key variables we expect NAs in</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(adult_eda[, <span class="fu">c</span>(<span class="st">&quot;diabetes_ind&quot;</span>,<span class="st">&quot;bmi&quot;</span>,<span class="st">&quot;bmi_c&quot;</span>,<span class="st">&quot;age&quot;</span>)], <span class="cf">function</span>(x) <span class="fu">sum</span>(<span class="fu">is.na</span>(x)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Focus on the key variables we expect NAs in</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(adult_eda[, <span class="fu">c</span>(<span class="st">&quot;diabetes_ind&quot;</span>,<span class="st">&quot;bmi&quot;</span>,<span class="st">&quot;bmi_c&quot;</span>,<span class="st">&quot;age&quot;</span>)], <span class="cf">function</span>(x) <span class="fu">sum</span>(<span class="fu">is.na</span>(x)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>diabetes_ind          bmi        bmi_c          age 
@@ -4504,8 +4486,8 @@ Table 1: Variable Descriptions: Adult Analytic Dataset (NHANES 2013–2014)
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Do the source columns actually contain NAs / non-(1,2) codes?</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(merged_data<span class="sc">$</span>DIQ010, <span class="at">useNA =</span> <span class="st">&quot;ifany&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Do the source columns actually contain NAs / non-(1,2) codes?</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(merged_data<span class="sc">$</span>DIQ010, <span class="at">useNA =</span> <span class="st">&quot;ifany&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -4514,7 +4496,7 @@ Table 1: Variable Descriptions: Adult Analytic Dataset (NHANES 2013–2014)
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(merged_data<span class="sc">$</span>BMXBMI))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(merged_data<span class="sc">$</span>BMXBMI))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1120</code></pre>
@@ -4523,49 +4505,50 @@ Table 1: Variable Descriptions: Adult Analytic Dataset (NHANES 2013–2014)
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>miss_bmi <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">is.na</span>(adult_eda<span class="sc">$</span>bmi)) <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>miss_diab <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">is.na</span>(adult_eda<span class="sc">$</span>diabetes_ind)) <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sprintf</span>(<span class="st">&quot;Missing BMI: %.1f%%; Missing diabetes_ind: %.1f%%&quot;</span>, miss_bmi, miss_diab)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>miss_bmi <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">is.na</span>(adult_eda<span class="sc">$</span>bmi)) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>miss_diab <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">is.na</span>(adult_eda<span class="sc">$</span>diabetes_ind)) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sprintf</span>(<span class="st">&quot;Missing BMI: %.1f%%; Missing diabetes_ind: %.1f%%&quot;</span>, miss_bmi, miss_diab)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] &quot;Missing BMI: 4.3%; Missing diabetes_ind: 3.1%&quot;</code></pre>
 </div>
 </div>
+<p>These summaries confirm that only BMI and diabetes indicators contain missing values, supporting the need for multiple imputation while keeping other variables complete.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define adult analytic cohort (age &gt;= 20)</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>adult <span class="ot">&lt;-</span> merged_data <span class="sc">%&gt;%</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(RIDAGEYR <span class="sc">&gt;=</span> <span class="dv">20</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    SDMVPSU, SDMVSTRA, WTMEC2YR,</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">diabetes_ind =</span> <span class="fu">case_when</span>(DIQ010 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>, DIQ010 <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="dv">0</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_real_</span>),</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">bmi =</span> <span class="fu">as.numeric</span>(BMXBMI),</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">age =</span> <span class="fu">as.numeric</span>(RIDAGEYR),</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">sex =</span> <span class="fu">factor</span>(<span class="fu">case_when</span>(</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>      RIAGENDR <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;Male&quot;</span>,</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>      RIAGENDR <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="st">&quot;Female&quot;</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    )),</span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">race =</span> <span class="fu">factor</span>(<span class="fu">case_when</span>(</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;Mexican American&quot;</span>,</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="st">&quot;Other Hispanic&quot;</span>,</span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">3</span> <span class="sc">~</span> <span class="st">&quot;NH White&quot;</span>,</span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">4</span> <span class="sc">~</span> <span class="st">&quot;NH Black&quot;</span>,</span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">5</span> <span class="sc">~</span> <span class="st">&quot;Other/Multi&quot;</span></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    ))</span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">age_c =</span> <span class="fu">scale</span>(age),</span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">bmi_c =</span> <span class="fu">scale</span>(bmi),</span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">race3 =</span> forcats<span class="sc">::</span><span class="fu">fct_collapse</span>(</span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>      race,</span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">White =</span> <span class="st">&quot;NH White&quot;</span>,</span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">Black =</span> <span class="st">&quot;NH Black&quot;</span>,</span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>      <span class="at">Hispanic =</span> <span class="fu">c</span>(<span class="st">&quot;Mexican American&quot;</span>, <span class="st">&quot;Other Hispanic&quot;</span>),</span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>      <span class="at">Other =</span> <span class="st">&quot;Other/Multi&quot;</span></span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span> forcats<span class="sc">::</span><span class="fu">fct_relevel</span>(<span class="st">&quot;White&quot;</span>)</span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">droplevels</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define adult analytic cohort (age &gt;= 20)</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>adult <span class="ot">&lt;-</span> merged_data <span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(RIDAGEYR <span class="sc">&gt;=</span> <span class="dv">20</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    SDMVPSU, SDMVSTRA, WTMEC2YR,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">diabetes_ind =</span> <span class="fu">case_when</span>(DIQ010 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>, DIQ010 <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="dv">0</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_real_</span>),</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">bmi =</span> <span class="fu">as.numeric</span>(BMXBMI),</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">age =</span> <span class="fu">as.numeric</span>(RIDAGEYR),</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">sex =</span> <span class="fu">factor</span>(<span class="fu">case_when</span>(</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>      RIAGENDR <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;Male&quot;</span>,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>      RIAGENDR <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="st">&quot;Female&quot;</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    )),</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">race =</span> <span class="fu">factor</span>(<span class="fu">case_when</span>(</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;Mexican American&quot;</span>,</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="st">&quot;Other Hispanic&quot;</span>,</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">3</span> <span class="sc">~</span> <span class="st">&quot;NH White&quot;</span>,</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">4</span> <span class="sc">~</span> <span class="st">&quot;NH Black&quot;</span>,</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>      RIDRETH1 <span class="sc">==</span> <span class="dv">5</span> <span class="sc">~</span> <span class="st">&quot;Other/Multi&quot;</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">age_c =</span> <span class="fu">scale</span>(age),</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">bmi_c =</span> <span class="fu">scale</span>(bmi),</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">race3 =</span> forcats<span class="sc">::</span><span class="fu">fct_collapse</span>(</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>      race,</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">White =</span> <span class="st">&quot;NH White&quot;</span>,</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">Black =</span> <span class="st">&quot;NH Black&quot;</span>,</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>      <span class="at">Hispanic =</span> <span class="fu">c</span>(<span class="st">&quot;Mexican American&quot;</span>, <span class="st">&quot;Other Hispanic&quot;</span>),</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>      <span class="at">Other =</span> <span class="st">&quot;Other/Multi&quot;</span></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span> forcats<span class="sc">::</span><span class="fu">fct_relevel</span>(<span class="st">&quot;White&quot;</span>)</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">droplevels</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div class="cell" data-tbl-cap="Table 1. Analytic variables for the NHANES 2013–2014 adult cohort (age ≥ 20). Design variables (WTMEC2YR, SDMVPSU, SDMVSTRA) are excluded from this table.">
@@ -4679,7 +4662,7 @@ Table 1: Variable Descriptions: Adult Analytic Dataset (NHANES 2013–2014)
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(adult))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(adult))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div id="tbl-adult" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -4821,6 +4804,8 @@ Figure 1: Missing data pattern for analytic variables (outcome and predictors o
 </div>
 </div>
 </div>
+<p>The missingness plot visually confirms that BMI and diabetes status have modest proportions of missing data, with no evident systematic pattern across records.</p>
+<p>The following histograms and bar charts describe the adult analytic cohort. Most participants are middle-aged, with a normal-to-overweight BMI distribution and majority White race composition. This visualization helps contextualize the predictors used in the models.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-cohort-age" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -4891,20 +4876,6 @@ Each model used the same outcome (<code>diabetes_ind</code>) and predictors (sta
 <section id="survey-weighted-logistic-regression-design-based-mle" class="level3">
 <h3 class="anchored" data-anchor-id="survey-weighted-logistic-regression-design-based-mle">Survey-Weighted Logistic Regression (Design-Based MLE)</h3>
 <div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>adult_clean <span class="ot">&lt;-</span> adult <span class="sc">%&gt;%</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">sex   =</span> forcats<span class="sc">::</span><span class="fu">fct_drop</span>(sex),</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">race3 =</span> forcats<span class="sc">::</span><span class="fu">fct_drop</span>(race3),</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">age_c =</span> <span class="fu">as.numeric</span>(age_c),</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">bmi_c =</span> <span class="fu">as.numeric</span>(bmi_c)</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(diabetes_ind), <span class="sc">!</span><span class="fu">is.na</span>(age_c), <span class="sc">!</span><span class="fu">is.na</span>(bmi_c)) <span class="sc">%&gt;%</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">droplevels</span>()</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(adult_clean[, <span class="fu">c</span>(<span class="st">&quot;diabetes_ind&quot;</span>,<span class="st">&quot;sex&quot;</span>,<span class="st">&quot;race3&quot;</span>,<span class="st">&quot;age_c&quot;</span>,<span class="st">&quot;bmi_c&quot;</span>)])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>&#39;data.frame&#39;:   5349 obs. of  5 variables:
  $ diabetes_ind: num  1 1 1 0 0 0 0 0 0 1 ...
@@ -4925,8 +4896,16 @@ Female   Male
    White Hispanic    Black    Other 
     2293     1183     1101      772 </code></pre>
 </div>
+</div>
+<div class="cell">
+<div id="tbl-survey" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-survey-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 3: Survey-weighted logistic regression: odds ratios (OR) and 95% confidence intervals for diabetes diagnosis among adults (NHANES 2013–2014).
+</figcaption>
+<div aria-describedby="tbl-survey-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;">term</th>
@@ -4983,6 +4962,10 @@ Female   Male
 </table>
 </div>
 </div>
+</figure>
+</div>
+</div>
+<p>The design-based model accounts for NHANES sampling weights and clustering. Positive coefficients for age and BMI indicate higher diabetes odds per one-SD increase, while categorical contrasts show elevated odds among non-White groups.</p>
 <p>The NHANES 2013–2014 data use a complex, multistage probability design involving <strong>strata</strong> (<code>SDMVSTRA</code>), <strong>primary sampling units (PSUs; SDMVPSU)</strong>, and <strong>examination weights (<code>WTMEC2YR</code>)</strong> to ensure nationally representative estimates <span class="citation" data-cites="nchs2014">(<a href="#ref-nchs2014" role="doc-biblioref">National Center for Health Statistics (NCHS) 2014</a>)</span>.</p>
 <p>This model incorporates those design elements via the <code>svydesign()</code> function to produce population-weighted logistic regression estimates that reflect the U.S. civilian, noninstitutionalized population.</p>
 <p>Odds ratios are expressed per one standard deviation (SD) increase in <strong>age</strong> and <strong>BMI</strong>, quantifying the association between each predictor and the probability of a doctor-diagnosed diabetes outcome.</p>
@@ -5096,11 +5079,12 @@ Female   Male
   5   20  bmi</code></pre>
 </div>
 </div>
+<p>Multiple imputation preserves sample size and reduces bias from missing BMI values. Results closely mirror the survey-weighted model, confirming robustness to imputation.</p>
 <div class="cell">
 <div id="tbl-mice" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mice-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table 3: Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals after imputing missing BMI (PMM) (m = 5); diabetes status was not imputed. Odds ratios are per 1 SD for age and BMI.
+Table 4: Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals after imputing missing BMI (PMM) (m = 20); diabetes status was not imputed. Odds ratios are per 1 SD for age and BMI.
 </figcaption>
 <div aria-describedby="tbl-mice-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -5219,7 +5203,7 @@ Table 3: Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence
 </figure>
 </div>
 </div>
-<p>The multiple imputation (MICE) framework addressed missingness in <strong>BMI</strong> using predictive mean matching (PMM). <strong>Diabetes status (<code>diabetes_ind</code>) was not imputed</strong> (used as a predictor only). Categorical variables (<code>sex</code>, <code>race3</code>) used logistic/polytomous regression. We generated m = 5 imputations and pooled estimates with Rubin’s rules. Odds ratios are reported per one standard deviation (1 SD) increase in age and BMI.</p>
+<p>The multiple imputation (MICE) framework addressed missingness in <strong>BMI</strong> using predictive mean matching (PMM). <strong>Diabetes status (<code>diabetes_ind</code>) was not imputed</strong> (used as a predictor only). Categorical variables (<code>sex</code>, <code>race3</code>) used logistic/polytomous regression. We generated m = 20 imputations and pooled estimates with Rubin’s rules. Odds ratios are reported per one standard deviation (1 SD) increase in age and BMI.</p>
 </section>
 <section id="bayesian-logistic-regression-1" class="level3">
 <h3 class="anchored" data-anchor-id="bayesian-logistic-regression-1">Bayesian Logistic Regression</h3>
@@ -5227,7 +5211,7 @@ Table 3: Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence
 <div id="tbl-bayes" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-bayes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table 4: Bayesian logistic regression: posterior odds ratios (OR) with 95% credible intervals for diabetes diagnosis among adults (NHANES 2013–2014).
+Table 5: Bayesian logistic regression: posterior odds ratios (OR) with 95% credible intervals for diabetes diagnosis among adults (NHANES 2013–2014).
 </figcaption>
 <div aria-describedby="tbl-bayes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -5290,21 +5274,17 @@ Table 4: Bayesian logistic regression: posterior odds ratios (OR) with 95% cred
 </figure>
 </div>
 </div>
-<p>As shown in <a href="#tbl-bayes" class="quarto-xref">Table 4</a>, this Bayesian logistic regression model estimates the log-odds of diabetes using standardized predictors.<br>
+<p>As shown in <a href="#tbl-bayes" class="quarto-xref">Table 5</a>, this Bayesian logistic regression model estimates the log-odds of diabetes using standardized predictors.<br>
 </p>
-<p>Weakly informative priors (Normal(0, 2.5) for slopes; Student-t(3, 0, 10) for the intercept) help stabilize estimation and prevent overfitting.<br>
+<p>Weakly informative priors (<span class="math inline">\(N(0, 2.5)\)</span> for slopes; Student-t(3, 0, 10) for the intercept) help stabilize estimation and prevent overfitting.<br>
 </p>
 <p>Posterior means and 95% credible intervals (CrI) provide full uncertainty quantification for each predictor, enabling direct probabilistic interpretation.</p>
 <p>Note: The Bayesian model used normalized NHANES exam weights as importance weights, approximating design-based inference; strata and PSUs were not directly modeled.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">as.data.frame</span>(brms<span class="sc">::</span><span class="fu">bayes_R2</span>(bayes_fit)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 <div id="tbl-bayesR2" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-bayesR2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table 5: Bayesian R² summary.
+Table 6: Bayesian R² summary.
 </figcaption>
 <div aria-describedby="tbl-bayesR2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -5337,7 +5317,7 @@ Table 5: Bayesian R² summary.
 <div id="tbl-mcmc-diagnostics" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mcmc-diagnostics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table 6: MCMC diagnostics (R-hat and Effective Sample Sizes) for model parameters (including intercept).
+Table 7: MCMC diagnostics (R-hat and Effective Sample Sizes) for model parameters (including intercept).
 </figcaption>
 <div aria-describedby="tbl-mcmc-diagnostics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -5400,68 +5380,32 @@ Table 6: MCMC diagnostics (R-hat and Effective Sample Sizes) for model paramete
 </figure>
 </div>
 </div>
+<p>Bayesian parameter estimates are consistent with frequentist results, with credible intervals providing direct probability statements. Diagnostics show good chain mixing (<span class="math inline">\(\hat{R} \approx 1.00\)</span>) and effective sample sizes exceeding standard thresholds, confirming convergence.</p>
 <div class="cell" data-tbl-cap="Bayesian model comparison (LOO): base model vs models without race or without sex.">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reduced models (let brms compile if needed)</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>fit_no_race <span class="ot">&lt;-</span> <span class="fu">update</span>(</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  bayes_fit,</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> <span class="fu">update</span>(fml_bayes, . <span class="sc">~</span> . <span class="sc">-</span> race3),</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">refresh =</span> <span class="dv">0</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 sequential chains...
 
 Chain 1 finished in 9.3 seconds.
 Chain 2 finished in 7.8 seconds.
-Chain 3 finished in 7.8 seconds.
+Chain 3 finished in 8.0 seconds.
 Chain 4 finished in 7.7 seconds.
 
 All 4 chains finished successfully.
 Mean chain execution time: 8.2 seconds.
-Total execution time: 33.1 seconds.</code></pre>
+Total execution time: 33.2 seconds.</code></pre>
 </div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>fit_no_sex <span class="ot">&lt;-</span> <span class="fu">update</span>(</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  bayes_fit,</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> <span class="fu">update</span>(fml_bayes, . <span class="sc">~</span> . <span class="sc">-</span> sex),</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">refresh =</span> <span class="dv">0</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 sequential chains...
 
 Chain 1 finished in 9.2 seconds.
-Chain 2 finished in 9.5 seconds.
-Chain 3 finished in 10.0 seconds.
+Chain 2 finished in 9.6 seconds.
+Chain 3 finished in 9.9 seconds.
 Chain 4 finished in 9.6 seconds.
 
 All 4 chains finished successfully.
 Mean chain execution time: 9.6 seconds.
-Total execution time: 38.5 seconds.</code></pre>
+Total execution time: 38.7 seconds.</code></pre>
 </div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute LOO for all three models</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>loo_base    <span class="ot">&lt;-</span> loo<span class="sc">::</span><span class="fu">loo</span>(bayes_fit)</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>loo_no_race <span class="ot">&lt;-</span> loo<span class="sc">::</span><span class="fu">loo</span>(fit_no_race)</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>loo_no_sex  <span class="ot">&lt;-</span> loo<span class="sc">::</span><span class="fu">loo</span>(fit_no_sex)</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare (pass objects positionally)</span></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>cmp <span class="ot">&lt;-</span> loo<span class="sc">::</span><span class="fu">loo_compare</span>(loo_base, loo_no_race, loo_no_sex)</span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Make row names explicit and sort best-to-worst already by loo_compare</span></span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>cmp_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(cmp)</span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>cmp_df<span class="sc">$</span>Model <span class="ot">&lt;-</span> <span class="fu">rownames</span>(cmp_df)</span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>cmp_df <span class="ot">&lt;-</span> cmp_df[, <span class="fu">c</span>(<span class="st">&quot;Model&quot;</span>, <span class="fu">setdiff</span>(<span class="fu">names</span>(cmp_df), <span class="st">&quot;Model&quot;</span>))]</span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>  cmp_df,</span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;LOO comparison (higher elpd_loo is better; table sorted best to worst).&quot;</span></span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <caption>Bayesian model comparison (LOO): base model vs models without race or without sex.</caption>
@@ -5532,7 +5476,7 @@ Total execution time: 38.5 seconds.</code></pre>
 </table>
 </div>
 </div>
-<p>The base model shows the best expected out-of-sample fit (LOO), while removing race or sex degrades predictive performance, indicating these terms contribute to prediction.</p>
+<p>Leave-one-out (LOO) cross-validation indicates that removing race or sex reduces model fit, confirming that both variables meaningfully contribute to predictive performance.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-mcmc-areas" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -5677,35 +5621,35 @@ Figure 15: Overlay of prior and posterior densities for key predictors (only co
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine results from all three models</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>svy_tbl   <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">&quot;svy_or&quot;</span>) <span class="sc">&amp;&amp;</span> <span class="fu">nrow</span>(svy_or) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(svy_or,   <span class="at">Model =</span> <span class="st">&quot;Survey-weighted (MLE)&quot;</span>) <span class="cf">else</span> <span class="cn">NULL</span></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>mi_tbl    <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">&quot;mi_or&quot;</span>) <span class="sc">&amp;&amp;</span> <span class="fu">nrow</span>(mi_or) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(mi_or,    <span class="at">Model =</span> <span class="st">&quot;MICE Pooled&quot;</span>) <span class="cf">else</span> <span class="cn">NULL</span></span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>bayes_tbl <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">&quot;bayes_or&quot;</span>) <span class="sc">&amp;&amp;</span> <span class="fu">nrow</span>(bayes_or) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(bayes_or, <span class="at">Model =</span> <span class="st">&quot;Bayesian&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">filter</span>(term <span class="sc">!=</span> <span class="st">&quot;Intercept&quot;</span>) <span class="cf">else</span> <span class="cn">NULL</span></span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>all_tbl <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(<span class="fu">Filter</span>(<span class="fu">Negate</span>(is.null), <span class="fu">list</span>(svy_tbl, mi_tbl, bayes_tbl))) <span class="sc">%&gt;%</span></span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a><span class="at">term =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^bmi&quot;</span>, term,  <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">&quot;BMI (per 1 SD)&quot;</span>,</span>
-<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^age&quot;</span>, term,  <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">&quot;Age (per 1 SD)&quot;</span>,</span>
-<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^sexFemale$&quot;</span>, term)               <span class="sc">~</span> <span class="st">&quot;Female (vs Male)&quot;</span>,</span>
-<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^sexMale$&quot;</span>, term)                 <span class="sc">~</span> <span class="st">&quot;Male (vs Female)&quot;</span>,</span>
-<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^race3Hispanic$&quot;</span>, term)           <span class="sc">~</span> <span class="st">&quot;Hispanic (vs White)&quot;</span>,</span>
-<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^race3Black$&quot;</span>, term)              <span class="sc">~</span> <span class="st">&quot;Black (vs White)&quot;</span>,</span>
-<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^race3Other$&quot;</span>, term)              <span class="sc">~</span> <span class="st">&quot;Other (vs White)&quot;</span>,</span>
-<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span> <span class="sc">~</span> term</span>
-<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>),</span>
-<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a><span class="at">OR_CI =</span> <span class="fu">sprintf</span>(<span class="st">&quot;%.2f (%.2f – %.2f)&quot;</span>, OR, LCL, UCL)</span>
-<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">select</span>(Model, term, OR_CI)</span>
-<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-comparison</span></span>
-<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: &quot;Comparison of odds ratios (per 1 SD for age and BMI) and 95% intervals across survey-weighted, MICE, and Bayesian frameworks.&quot;</span></span>
-<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(all_tbl, <span class="at">align =</span> <span class="fu">c</span>(<span class="st">&quot;l&quot;</span>,<span class="st">&quot;l&quot;</span>,<span class="st">&quot;c&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine results from all three models</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>svy_tbl   <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">&quot;svy_or&quot;</span>) <span class="sc">&amp;&amp;</span> <span class="fu">nrow</span>(svy_or) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(svy_or,   <span class="at">Model =</span> <span class="st">&quot;Survey-weighted (MLE)&quot;</span>) <span class="cf">else</span> <span class="cn">NULL</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>mi_tbl    <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">&quot;mi_or&quot;</span>) <span class="sc">&amp;&amp;</span> <span class="fu">nrow</span>(mi_or) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(mi_or,    <span class="at">Model =</span> <span class="st">&quot;MICE Pooled&quot;</span>) <span class="cf">else</span> <span class="cn">NULL</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>bayes_tbl <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">&quot;bayes_or&quot;</span>) <span class="sc">&amp;&amp;</span> <span class="fu">nrow</span>(bayes_or) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(bayes_or, <span class="at">Model =</span> <span class="st">&quot;Bayesian&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">filter</span>(term <span class="sc">!=</span> <span class="st">&quot;Intercept&quot;</span>) <span class="cf">else</span> <span class="cn">NULL</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>all_tbl <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(<span class="fu">Filter</span>(<span class="fu">Negate</span>(is.null), <span class="fu">list</span>(svy_tbl, mi_tbl, bayes_tbl))) <span class="sc">%&gt;%</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="at">term =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^bmi&quot;</span>, term,  <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">&quot;BMI (per 1 SD)&quot;</span>,</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^age&quot;</span>, term,  <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">&quot;Age (per 1 SD)&quot;</span>,</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^sexFemale$&quot;</span>, term)               <span class="sc">~</span> <span class="st">&quot;Female (vs Male)&quot;</span>,</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^sexMale$&quot;</span>, term)                 <span class="sc">~</span> <span class="st">&quot;Male (vs Female)&quot;</span>,</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^race3Hispanic$&quot;</span>, term)           <span class="sc">~</span> <span class="st">&quot;Hispanic (vs White)&quot;</span>,</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^race3Black$&quot;</span>, term)              <span class="sc">~</span> <span class="st">&quot;Black (vs White)&quot;</span>,</span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">&quot;^race3Other$&quot;</span>, term)              <span class="sc">~</span> <span class="st">&quot;Other (vs White)&quot;</span>,</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span> <span class="sc">~</span> term</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>),</span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a><span class="at">OR_CI =</span> <span class="fu">sprintf</span>(<span class="st">&quot;%.2f (%.2f – %.2f)&quot;</span>, OR, LCL, UCL)</span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">select</span>(Model, term, OR_CI)</span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: tbl-comparison</span></span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a><span class="co">#| tbl-cap: &quot;Comparison of odds ratios (per 1 SD for age and BMI) and 95% intervals across survey-weighted, MICE, and Bayesian frameworks.&quot;</span></span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(all_tbl, <span class="at">align =</span> <span class="fu">c</span>(<span class="st">&quot;l&quot;</span>,<span class="st">&quot;l&quot;</span>,<span class="st">&quot;c&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -5835,7 +5779,7 @@ Figure 15: Overlay of prior and posterior densities for key predictors (only co
 <p>While this analysis demonstrates the value of Bayesian logistic regression for epidemiologic modeling, several limitations should be acknowledged.</p>
 <p>First, the use of a single imputed dataset for the Bayesian model—rather than full joint modeling of imputation uncertainty—may understate total variance.</p>
 <p>Second, NHANES exam weights were normalized and treated as importance weights, which approximate but do not fully reproduce design-based inference.</p>
-<p>Third, the weakly informative priors <em>Normal(0, 2.5)</em> for slopes and <em>Student-t(3, 0, 10)</em> for the intercept were not empirically tuned; alternative prior specifications could slightly alter posterior intervals.</p>
+<p>Third, the weakly informative priors <em><span class="math inline">\(N(0, 2.5)\)</span></em> for slopes and <em>Student-t(3, 0, 10)</em> for the intercept were not empirically tuned; alternative prior specifications could slightly alter posterior intervals.</p>
 <p>Finally, although convergence diagnostics (R̂ ≈ 1, sufficient effective sample sizes, and stable posterior predictive checks) indicated good model performance, results are conditional on the 2013–2014 NHANES cycle and may not generalize to later datasets or longitudinal analyses.</p>
 </section>
 </section>
