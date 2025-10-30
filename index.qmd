@@ -190,6 +190,10 @@ associated with a one-unit increase in the predictor. All computation
 was implemented in a probabilistic programming environment using the
 `brms` interface to Stan.
 
+For interpretability, age and BMI were standardized to mean 0 and SD 1 prior
+to modeling; consequently, odds ratios for these predictors are reported per
+one standard deviation (1 SD) increase in age and BMI across all models.
+
 # Analysis and Results
 
 ## 1. Data Preparation
@@ -635,7 +639,7 @@ pred[, c("WTMEC2YR","SDMVPSU","SDMVSTRA")] <- 1
 
 # Run imputation
 
-imp <- mice::mice(mi_dat, m = 5, method = meth, predictorMatrix = pred, seed = 123)
+imp <- mice::mice(mi_dat, m = 20, method = meth, predictorMatrix = pred, seed = 123)
 
 # Fit logistic regression within each imputed dataset
 
@@ -805,36 +809,36 @@ knitr::kable(diag_b, digits = 1)
 #| message: false
 #| warning: false
 
-# Reduced models (reuse compiled Stan where possible)
+# Reduced models (let brms compile if needed)
 fit_no_race <- update(
   bayes_fit,
   formula = update(fml_bayes, . ~ . - race3),
-  recompile = FALSE,
   refresh = 0
 )
 
 fit_no_sex <- update(
   bayes_fit,
   formula = update(fml_bayes, . ~ . - sex),
-  recompile = FALSE,
   refresh = 0
 )
 
+# Compute LOO for all three models
 loo_base    <- loo::loo(bayes_fit)
 loo_no_race <- loo::loo(fit_no_race)
 loo_no_sex  <- loo::loo(fit_no_sex)
 
+# Compare (pass objects positionally)
 cmp <- loo::loo_compare(loo_base, loo_no_race, loo_no_sex)
 
+# Make row names explicit and sort best-to-worst already by loo_compare
 cmp_df <- as.data.frame(cmp)
-cmp_df$model <- rownames(cmp_df)
-cmp_df <- dplyr::relocate(cmp_df, model)
+cmp_df$Model <- rownames(cmp_df)
+cmp_df <- cmp_df[, c("Model", setdiff(names(cmp_df), "Model"))]
+
 knitr::kable(
   cmp_df,
-  caption = "LOO comparison (rows sorted best→worst by elpd_loo; more positive = better)."
+  caption = "LOO comparison (higher elpd_loo is better; table sorted best to worst)."
 )
-
-knitr::kable(as.data.frame(cmp), caption = "LOO comparison (lower expected log predictive density is worse).")
 ```
 
 The base model shows the best expected out-of-sample fit (LOO), while
@@ -927,59 +931,62 @@ ggplot(data.frame(pred = pred_mean, obs = yobs),
 #| fig-cap: "Posterior predictive distribution of diabetes prevalence compared to observed NHANES prevalence."
 #| echo: false
 
-# Posterior draws of individual-level predicted probabilities (draws x observations)
 post_pred <- brms::posterior_epred(bayes_fit, summary = FALSE)
-
-# Collapse to posterior prevalence (mean across observations for each draw)
-post_prev <- rowMeans(post_pred)  # numeric vector (iterations)
-
-# Observed prevalence in the (imputed) analysis data
+post_prev <- rowMeans(post_pred)
 obs_prev  <- mean(adult_imp1$diabetes_ind, na.rm = TRUE)
-
-# bayesplot expects a matrix/array; convert vector to 2D matrix (iters x 1 param)
 post_prev_mat <- matrix(post_prev, ncol = 1, dimnames = list(NULL, "Prevalence"))
 
-# Density plot with ggplot-style labels and an observed-prevalence reference line
-p <- bayesplot::mcmc_dens(post_prev_mat) +
-  ggplot2::labs(
-    title = "Posterior diabetes prevalence",
-    x = "Predicted prevalence",
-    y = NULL
-  ) +
-  ggplot2::geom_vline(xintercept = obs_prev, linetype = 2)
+p <- bayesplot::mcmc_dens(post_prev_mat)
+p + ggplot2::labs(title = "Posterior diabetes prevalence",
+                  x = "Predicted prevalence", y = NULL) +
+    ggplot2::geom_vline(xintercept = obs_prev, linetype = 2)
 
 p
 ```
 
 ```{r}
 #| label: fig-prior-posterior-overlay
-#| fig-cap: "Overlay of posterior densities for key predictors (Age, BMI, Sex, Race)."
+#| fig-cap: "Overlay of prior and posterior densities for key predictors (only coefficients present in the model are plotted)."
 #| echo: false
+# Auto-detect available parameter names and intersect with what we want
 
-# Get available coefficient names from model
-avail_b <- grep("^b_", brms::parnames(bayes_fit), value = TRUE)
+# Convert to draws array and get parameter names
+draws_arr <- posterior::as_draws_array(bayes_fit)
+vars      <- dimnames(draws_arr)$variable
 
-# Specify the ones we *want* to plot
-target <- c("b_age_c", "b_bmi_c", "b_sexFemale", "b_race3Black", "b_race3Hispanic", "b_race3Other")
+# Build desired coefficient names from your model structure
+# Continuous
+want <- c("b_age_c", "b_bmi_c")
 
-# Keep only those that actually exist in the model
-pars_ok <- intersect(target, avail_b)
+# Categorical: build names from factor levels with reference dropped
+# (Assumes 'Male' and 'White' are references; adjusts automatically if not.)
+sex_levels   <- levels(adult_imp1$sex)
+race3_levels <- levels(adult_imp1$race3)
 
-# Stop gracefully if none are found
-if (length(pars_ok) == 0) {
-  stop("No matching slope parameters found for overlay. Check available names via brms::parnames(bayes_fit).")
+if (!is.null(sex_levels) && length(sex_levels) > 1) {
+  ref_sex <- sex_levels[1]     # brms uses first level as reference
+  others  <- setdiff(sex_levels, ref_sex)
+  want <- c(want, paste0("b_sex", others))     # e.g., "b_sexFemale"
 }
 
-# Plot posterior density overlays for the available parameters
-bayesplot::mcmc_dens_overlay(
-  as.array(bayes_fit),
-  pars = pars_ok
-) +
-  ggplot2::labs(
-    title = "Posterior distributions for key predictors",
-    x = "Coefficient value (log-odds scale)",
-    y = NULL
+if (!is.null(race3_levels) && length(race3_levels) > 1) {
+  ref_race <- race3_levels[1]  # brms uses first level as reference
+  others   <- setdiff(race3_levels, ref_race)
+  want <- c(want, paste0("b_race3", others))   # e.g., "b_race3Black"
+}
+
+# Keep only those that actually exist in the posterior draws
+present <- intersect(want, vars)
+
+# If none found, give a friendly message instead of erroring
+if (length(present) == 0) {
+  message("No matching b_* coefficients found to plot. Check factor level references and variable names.")
+} else {
+  bayesplot::mcmc_dens_overlay(
+    draws_arr,
+    pars = present
   )
+}
 ```
 
 The posterior predictive distribution of diabetes prevalence closely
