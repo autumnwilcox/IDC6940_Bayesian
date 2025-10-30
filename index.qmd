@@ -135,89 +135,130 @@ frameworks supports the robustness of these associations and highlights
 the interpretability and uncertainty quantification advantages offered
 by Bayesian analysis in population health modeling [@nchs2014].
 
-The analytical framework for this study is grounded in Bayesian logistic regression, providing a probabilistic approach for estimating diabetes risk and quantifying uncertainty in population health modeling.
+The analytical framework for this study is grounded in Bayesian logistic
+regression, providing a probabilistic approach for estimating diabetes
+risk and quantifying uncertainty in population health modeling.
 
 # Method
 
 ## Bayesian Logistic Regression
 
-This study employs **Bayesian logistic regression** to estimate the association between predictors and a binary outcome.  
+This study employs Bayesian logistic regression to estimate the
+association between predictors and a binary outcome.
 
-The **Bayesian framework** integrates prior knowledge with observed data to generate posterior distributions, allowing direct probabilistic interpretation of model parameters.  
+The Bayesian framework integrates prior knowledge with observed data to
+generate posterior distributions, allowing direct probabilistic
+interpretation of model parameters.
 
-Unlike traditional frequentist approaches that yield single-point estimates and p-values, Bayesian methods represent parameters as random variables with full probability distributions. 
+Unlike traditional frequentist approaches that yield single-point
+estimates and p-values, Bayesian methods represent parameters as random
+variables with full probability distributions.
 
-This provides greater flexibility, incorporates parameter uncertainty, and produces **credible intervals** that directly quantify the probability that a parameter lies within a given range.
+This provides greater flexibility, incorporates parameter uncertainty,
+and produces credible intervals that directly quantify the probability
+that a parameter lies within a given range.
 
 ## Model Structure
 
-**Bayesian logistic regression** models the log-odds of a binary outcome as a linear combination of predictors:
+Bayesian logistic regression models the log-odds of a binary outcome as
+a linear combination of predictors:
 
-\[
+$$
 \text{logit}(P(Y = 1)) = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_k X_k
-\]
+$$
 
-where  
+where
 
-- \( P(Y = 1) \) is the probability of the event of interest,  
-- \( \beta_0 \) is the intercept (log-odds when all predictors are zero), and  
-- \( \beta_j \) represents the effect of predictor \( X_j \) on the log-odds of the outcome, holding other predictors constant.
+- $P(Y = 1)$ is the probability of the event of interest,
+- $\beta_0$ is the intercept (log-odds when all predictors are zero), and
+- $\beta_j$ represents the effect of predictor $X_j$ on the log-odds of the outcome, holding other predictors constant.
 
-In the **Bayesian framework**, the coefficients \( \boldsymbol{\beta} \) are assigned prior distributions that reflect existing knowledge or plausible ranges before observing the data.  
-After incorporating the observed evidence, the priors are updated through **Bayes’ theorem**:
+In the Bayesian framework, the coefficients ($\boldsymbol{\beta}$) are assigned prior distributions that reflect existing knowledge or plausible ranges before observing the data.\
+After incorporating the observed evidence, the priors are updated
+through Bayes’ theorem:
 
-\[
+$$
 \text{Posterior} \propto \text{Likelihood} \times \text{Prior}
-\]
+$$
 
-- **Likelihood:** the probability of the observed data given model parameters (as in classical regression).  
-- **Prior:** expresses beliefs or information about parameter values before observing data.  
-- **Posterior:** represents updated beliefs about parameter values after observing data.
+-   **Likelihood:** the probability of the observed data given model
+    parameters (as in classical regression).\
+-   **Prior:** expresses beliefs or information about parameter values
+    before observing data.\
+-   **Posterior:** represents updated beliefs about parameter values
+    after observing data.
 
-This formulation allows uncertainty to be naturally propagated through the model, producing full posterior distributions for each coefficient.
+This formulation allows uncertainty to be naturally propagated through
+the model, producing full posterior distributions for each coefficient.
 
 ## Prior Specification
 
-Weakly informative priors were used to regularize estimation without imposing strong assumptions:  
+Weakly informative priors were used to regularize estimation without
+imposing strong assumptions:
 
-- **Regression coefficients:** Normal(0, 2.5), providing gentle regularization while allowing substantial variation in plausible effects (van de Schoot et al., 2021).  
-- **Intercept:** Student’s t-distribution prior, Student_t(3, 0, 10), which has  
-  - 3 degrees of freedom (heavy tails to allow occasional large effects),  
-  - mean 0 (no bias toward positive or negative effects), and  
-  - scale 10 (broad range of possible values).  
+-   **Regression coefficients:** Normal(0, 2.5), providing gentle
+    regularization while allowing substantial variation in plausible
+    effects (van de Schoot et al., 2021).\
+-   **Intercept:** Student’s t-distribution prior, Student_t(3, 0, 10),
+    which has
+    -   3 degrees of freedom (heavy tails to allow occasional large
+        effects),\
+    -   mean 0 (no bias toward positive or negative effects), and\
+    -   scale 10 (broad range of possible values).
 
-Such priors stabilize estimation in the presence of multicollinearity, limited sample size, or potential outliers.
+Such priors stabilize estimation in the presence of multicollinearity,
+limited sample size, or potential outliers.
 
 ## Advantages of Bayesian Logistic Regression
 
-- **Uncertainty quantification:** Produces full posterior distributions instead of single estimates.  
-- **Credible intervals:** Provide the range within which a parameter lies with a specified probability (e.g., 95%).  
-- **Flexible priors:** Allow integration of expert knowledge or findings from prior studies.  
-- **Probabilistic predictions:** Posterior predictive distributions yield direct probabilities for new or future observations.  
-- **Model evaluation:** Posterior predictive checks (PPCs) assess how well simulated outcomes reproduce observed data.
+-   **Uncertainty quantification:** Produces full posterior
+    distributions instead of single estimates.\
+-   **Credible intervals:** Provide the range within which a parameter
+    lies with a specified probability (e.g., 95%).\
+-   **Flexible priors:** Allow integration of expert knowledge or
+    findings from prior studies.\
+-   **Probabilistic predictions:** Posterior predictive distributions
+    yield direct probabilities for new or future observations.\
+-   **Model evaluation:** Posterior predictive checks (PPCs) assess how
+    well simulated outcomes reproduce observed data.
 
 ## Posterior Predictions
 
-Posterior distributions of regression coefficients were used to estimate the probability of the outcome for given predictor values.  
-This allows statements such as:  
-> “Given the predictors, the probability of the outcome lies between X% and Y%.”
+Posterior distributions of regression coefficients were used to estimate
+the probability of the outcome for given predictor values.\
+This allows statements such as:\
+\> “Given the predictors, the probability of the outcome lies between X%
+and Y%.”
 
 Posterior predictions account for two key sources of uncertainty:
 
-1. **Parameter uncertainty:** Variability in estimated model coefficients.  
-2. **Predictive uncertainty:** Variability in possible future outcomes given those parameters.  
+1.  **Parameter uncertainty:** Variability in estimated model
+    coefficients.\
+2.  **Predictive uncertainty:** Variability in possible future outcomes
+    given those parameters.
 
-In Bayesian analysis, all unknown quantities—coefficients, means, variances, or probabilities—are treated as random variables described by their posterior distributions.
+In Bayesian analysis, all unknown quantities—coefficients, means,
+variances, or probabilities—are treated as random variables described by
+their posterior distributions.
 
 ## Model Evaluation and Diagnostics
 
-Model quality and convergence were assessed using standard Bayesian diagnostics:
+Model quality and convergence were assessed using standard Bayesian
+diagnostics:
 
-- **Posterior sampling:** Conducted via Markov Chain Monte Carlo (MCMC) using the No-U-Turn Sampler (NUTS), a variant of Hamiltonian Monte Carlo (HMC) (Austin, 2021). Four chains were run with sufficient warm-up iterations to ensure convergence.  
-- **Convergence metrics:** The potential scale reduction factor (\(\hat{R}\)) and effective sample size (ESS) were used to verify stability and mixing across chains.  
-- **Autocorrelation checks:** Ensured independence between successive draws.  
-- **Posterior predictive checks (PPCs):** Compared simulated outcomes to observed data to evaluate fit.  
-- **Bayesian \(R^2\):** Quantified the proportion of variance explained by predictors, incorporating posterior uncertainty.
+-   **Posterior sampling:** Conducted via Markov Chain Monte
+    Carlo (MCMC) using the No-U-Turn Sampler (NUTS), a variant of
+    Hamiltonian Monte Carlo (HMC) (Austin, 2021). Four chains were run
+    with sufficient warm-up iterations to ensure convergence.\
+-   **Convergence metrics:** The potential scale reduction factor
+    ((\hat{R})) and effective sample size (ESS) were used to verify
+    stability and mixing across chains.\
+-   **Autocorrelation checks:** Ensured independence between successive
+    draws.\
+-   **Posterior predictive checks (PPCs):** Compared simulated outcomes
+    to observed data to evaluate fit.\
+-   **Bayesian (R\^2):** Quantified the proportion of variance explained
+    by predictors, incorporating posterior uncertainty.
 
 # Analysis and Results
 
@@ -625,7 +666,9 @@ Odds ratios are expressed per one standard deviation (SD) increase in
 **age** and **BMI**, quantifying the association between each predictor
 and the probability of a doctor-diagnosed diabetes outcome.
 
-Notes: Reference categories are **Male** for sex and **White** for race3. **Age** and **BMI** odds ratios are reported per one standard deviation (1 SD) increase.
+Notes: Reference categories are **Male** for sex and **White** for
+race3. **Age** and **BMI** odds ratios are reported per one standard
+deviation (1 SD) increase.
 
 ### Multiple Imputation (MICE)
 
@@ -709,7 +752,9 @@ The multiple imputation (MICE) framework addressed missingness in
 **BMI** using predictive mean matching (PMM). **Diabetes status
 (`diabetes_ind`) was not imputed** (used as a predictor only).
 Categorical variables (`sex`, `race3`) used logistic/polytomous
-regression. We generated m = 5 imputations and pooled estimates with Rubin’s rules. Odds ratios are reported per one standard deviation (1 SD) increase in age and BMI.
+regression. We generated m = 5 imputations and pooled estimates with
+Rubin’s rules. Odds ratios are reported per one standard deviation (1
+SD) increase in age and BMI.
 
 ### Bayesian Logistic Regression
 
