@@ -341,7 +341,7 @@ knitr::kable(var_desc, align = "l")
 
 ```{r}
 #| label: adult-eda
-#| echo: true
+#| echo: false
 #| include: false
 #| message: false
 #| warning: false
@@ -386,7 +386,7 @@ adult_eda <- merged_data %>%
 
 ```{r}
 #| label: missing-checks
-#| echo: true
+#| echo: false
 #| include: false
 #| message: false
 #| warning: false
@@ -404,7 +404,7 @@ sum(is.na(merged_data$BMXBMI))
 
 ```{r}
 #| label: miss-pcts-print
-#| echo: true
+#| echo: false
 miss_bmi <- mean(is.na(adult_eda$bmi)) * 100
 miss_diab <- mean(is.na(adult_eda$diabetes_ind)) * 100
 sprintf("Missing BMI: %.1f%%; Missing diabetes_ind: %.1f%%", miss_bmi, miss_diab)
@@ -416,7 +416,7 @@ keeping other variables complete.
 
 ```{r}
 #| label: adult-cohort
-#| echo: true
+#| echo: false
 #| include: false
 #| message: false
 #| warning: false
@@ -1127,7 +1127,7 @@ dominated by priors.
 
 ```{r}
 #| label: results-compare
-#| echo: true
+#| echo: false
 #| message: false
 #| warning: false
 
