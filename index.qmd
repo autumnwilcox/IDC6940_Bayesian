@@ -481,6 +481,8 @@ ratios, expressed per one standard deviation (SD) increase in **age**
 and **BMI**, quantify the association between each predictor and the
 probability of a doctor-diagnosed diabetes outcome.
 
+Notes: Reference categories are **Male** for sex and **White** for race3. **Age** and **BMI** ORs are per **1 SD** increase.
+
 ### 2.2 Multiple Imputation (MICE)
 
 ```{r}
@@ -539,7 +541,7 @@ dplyr::filter(term != "(Intercept)")
 knitr::kable(mi_or)
 ```
 
-The multiple imputation (MICE) framework addressed missingness in **BMI** using predictive mean matching (PMM). **Diabetes status (`diabetes_ind`) was not imputed** (used as a predictor only). Categorical variables (`sex`, `race3`) used logitic/polytomous regression. We generated m = 5 imputations and pooled estimates with Rubin's rules. 
+The multiple imputation (MICE) framework addressed missingness in **BMI** using predictive mean matching (PMM). **Diabetes status (`diabetes_ind`) was not imputed** (used as a predictor only). Categorical variables (`sex`, `race3`) used logistic/polytomous regression. We generated m = 5 imputations and pooled estimates with Rubin's rules. 
 
 ### 2.3 Bayesian Logistic Regression
 
@@ -632,7 +634,7 @@ knitr::kable(as.data.frame(brms::bayes_R2(bayes_fit)))
 
 ```{r}
 #| label: tbl-mcmc-diagnostics
-#| tbl-cap: "MCMC diagnostics (R-hat and Effective Sample Sizes) for slope parameters."
+#| tbl-cap: "MCMC diagnostics (R-hat and Effective Sample Sizes) for model parameters (including intercept)."
 #| echo: false
 
 # Get diagnostics as plain columns (use metric names as strings)

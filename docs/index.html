@@ -4753,6 +4753,7 @@ Female   Male
 </div>
 </div>
 <p>This model incorporates NHANES sampling <strong>strata</strong>, <strong>clusters</strong>, and <strong>exam weights</strong> to produce population-representative estimates. Odds ratios, expressed per one standard deviation (SD) increase in <strong>age</strong> and <strong>BMI</strong>, quantify the association between each predictor and the probability of a doctor-diagnosed diabetes outcome.</p>
+<p>Notes: Reference categories are <strong>Male</strong> for sex and <strong>White</strong> for race3. <strong>Age</strong> and <strong>BMI</strong> ORs are per <strong>1 SD</strong> increase.</p>
 </section>
 <section id="multiple-imputation-mice" class="level3">
 <h3 class="anchored" data-anchor-id="multiple-imputation-mice">2.2 Multiple Imputation (MICE)</h3>
@@ -4960,7 +4961,7 @@ Table 2: Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence
 </figure>
 </div>
 </div>
-<p>The multiple imputation (MICE) framework addressed missingness in <strong>BMI</strong> using predictive mean matching (PMM). <strong>Diabetes status (<code>diabetes_ind</code>) was not imputed</strong> (used as a predictor only). Categorical variables (<code>sex</code>, <code>race3</code>) used logitic/polytomous regression. We generated m = 5 imputations and pooled estimates with Rubin’s rules.</p>
+<p>The multiple imputation (MICE) framework addressed missingness in <strong>BMI</strong> using predictive mean matching (PMM). <strong>Diabetes status (<code>diabetes_ind</code>) was not imputed</strong> (used as a predictor only). Categorical variables (<code>sex</code>, <code>race3</code>) used logistic/polytomous regression. We generated m = 5 imputations and pooled estimates with Rubin’s rules.</p>
 </section>
 <section id="bayesian-logistic-regression" class="level3">
 <h3 class="anchored" data-anchor-id="bayesian-logistic-regression">2.3 Bayesian Logistic Regression</h3>
@@ -5151,7 +5152,7 @@ Table 4: Bayesian R² summary.
 <div id="tbl-mcmc-diagnostics" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mcmc-diagnostics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table 5: MCMC diagnostics (R-hat and Effective Sample Sizes) for slope parameters.
+Table 5: MCMC diagnostics (R-hat and Effective Sample Sizes) for model parameters (including intercept).
 </figcaption>
 <div aria-describedby="tbl-mcmc-diagnostics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
