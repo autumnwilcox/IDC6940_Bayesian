@@ -405,6 +405,7 @@ sum(is.na(merged_data$BMXBMI))
 ```{r}
 #| label: miss-pcts-print
 #| echo: false
+#| include: false
 miss_bmi <- mean(is.na(adult_eda$bmi)) * 100
 miss_diab <- mean(is.na(adult_eda$diabetes_ind)) * 100
 sprintf("Missing BMI: %.1f%%; Missing diabetes_ind: %.1f%%", miss_bmi, miss_diab)
@@ -629,6 +630,7 @@ Each model used the same outcome (`diabetes_ind`) and predictors
 #| echo: false
 #| message: false
 #| warning: false
+#| include: false
 
 adult_clean <- adult %>%
   dplyr::mutate(
@@ -1156,7 +1158,9 @@ term = dplyr::case_when(
 OR_CI = sprintf("%.2f (%.2f – %.2f)", OR, LCL, UCL)
 ) %>%
 dplyr::select(Model, term, OR_CI)
+```
 
+```{r}
 #| label: tbl-comparison
 #| tbl-cap: "Comparison of odds ratios (per 1 SD for age and BMI) and 95% intervals across survey-weighted, MICE, and Bayesian frameworks."
 knitr::kable(all_tbl, align = c("l","l","c"))

@@ -4383,11 +4383,6 @@ Table 1: Variable Descriptions: Adult Analytic Dataset (NHANES 2013–2014)
 </figure>
 </div>
 </div>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] &quot;Missing BMI: 4.3%; Missing diabetes_ind: 3.1%&quot;</code></pre>
-</div>
-</div>
 <p>These summaries confirm that only BMI and diabetes indicators contain missing values, supporting the need for multiple imputation while keeping other variables complete.</p>
 <div class="cell" data-tbl-cap="Table 1. Analytic variables for the NHANES 2013–2014 adult cohort (age ≥ 20). Design variables (WTMEC2YR, SDMVPSU, SDMVSTRA) are excluded from this table.">
 <div class="cell-output-display">
@@ -4709,16 +4704,6 @@ Figure 5: Race/ethnicity composition (race3).
 Each model used the same outcome (<code>diabetes_ind</code>) and predictors (standardized age, standardized BMI, sex, and race3).</p>
 <section id="survey-weighted-logistic-regression-design-based-mle" class="level3">
 <h3 class="anchored" data-anchor-id="survey-weighted-logistic-regression-design-based-mle">Survey-Weighted Logistic Regression (Design-Based MLE)</h3>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>&#39;data.frame&#39;:   5349 obs. of  5 variables:
- $ diabetes_ind: num  1 1 1 0 0 0 0 0 0 1 ...
- $ sex         : Factor w/ 2 levels &quot;Female&quot;,&quot;Male&quot;: 2 2 2 1 2 1 1 2 1 2 ...
- $ race3       : Factor w/ 4 levels &quot;White&quot;,&quot;Hispanic&quot;,..: 3 1 1 1 2 1 1 1 1 1 ...
- $ age_c       : num  1.132 0.278 1.303 1.36 0.392 ...
- $ bmi_c       : num  -0.3359 -0.0703 -0.0283 -1.3144 1.761 ...</code></pre>
-</div>
-</div>
 <div class="cell">
 <div id="tbl-survey" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -5101,26 +5086,26 @@ Table 7: MCMC diagnostics (R-hat and Effective Sample Sizes) for model paramete
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 sequential chains...
 
-Chain 1 finished in 9.3 seconds.
+Chain 1 finished in 9.4 seconds.
 Chain 2 finished in 7.8 seconds.
-Chain 3 finished in 7.8 seconds.
-Chain 4 finished in 7.7 seconds.
+Chain 3 finished in 8.1 seconds.
+Chain 4 finished in 7.8 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 8.2 seconds.
-Total execution time: 33.2 seconds.</code></pre>
+Mean chain execution time: 8.3 seconds.
+Total execution time: 33.6 seconds.</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 sequential chains...
 
 Chain 1 finished in 9.2 seconds.
-Chain 2 finished in 9.5 seconds.
-Chain 3 finished in 10.1 seconds.
-Chain 4 finished in 9.7 seconds.
+Chain 2 finished in 9.6 seconds.
+Chain 3 finished in 10.0 seconds.
+Chain 4 finished in 9.8 seconds.
 
 All 4 chains finished successfully.
 Mean chain execution time: 9.6 seconds.
-Total execution time: 39.1 seconds.</code></pre>
+Total execution time: 39.0 seconds.</code></pre>
 </div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -5335,8 +5320,14 @@ Figure 15: Overlay of prior and posterior densities for key predictors (only co
 <section id="results" class="level2">
 <h2 class="anchored" data-anchor-id="results">Results</h2>
 <div class="cell">
+<div id="tbl-comparison" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 8: Comparison of odds ratios (per 1 SD for age and BMI) and 95% intervals across survey-weighted, MICE, and Bayesian frameworks.
+</figcaption>
+<div aria-describedby="tbl-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 29%">
 <col style="width: 43%">
@@ -5442,6 +5433,9 @@ Figure 15: Overlay of prior and posterior densities for key predictors (only co
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+</figure>
 </div>
 </div>
 <p>This table summarizes results from the survey-weighted (design-based), multiple-imputation, and Bayesian models.<br>
