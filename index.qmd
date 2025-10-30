@@ -8,19 +8,19 @@ advisor: "Dr. Ashraf Cohen"
 date: '`r Sys.Date()`'
 course: Capstone Projects in Data Science
 
+execute:
+  echo: false       # Hide all code by default
+  warning: false
+  message: false
+  
 format:
   html:
-    code-fold: true
-    toc: true
+    code-fold: true # Allow readers to expand code if they want
 
 bibliography: references.bib
 reference-section-title: "References"
 link-citations: true
 self-contained: true
-
-execute:
-  warning: false
-  message: false
 
 editor:
   markdown:
@@ -304,6 +304,7 @@ knitr::kable(
 ```{r}
 #| label: merged-n
 #| echo: false
+#| include: false
 merged_n <- nrow(merged_data)
 ```
 
@@ -341,6 +342,7 @@ knitr::kable(var_desc, align = "l")
 ```{r}
 #| label: adult-eda
 #| echo: true
+#| include: false
 #| message: false
 #| warning: false
 # Keep NAs (no droplevels, no NA filtering); make NA an explicit level for factors
@@ -385,6 +387,7 @@ adult_eda <- merged_data %>%
 ```{r}
 #| label: missing-checks
 #| echo: true
+#| include: false
 #| message: false
 #| warning: false
 
@@ -414,6 +417,7 @@ keeping other variables complete.
 ```{r}
 #| label: adult-cohort
 #| echo: true
+#| include: false
 #| message: false
 #| warning: false
 
@@ -509,6 +513,7 @@ kable(cat_sum,  caption = "Table 1b. Categorical variables (sex, race3, diabetes
 ```{r}
 #| label: adult-n
 #| echo: false
+#| include: false
 adult_n <- nrow(adult)
 ```
 
@@ -641,6 +646,7 @@ str(adult_clean[, c("diabetes_ind","sex","race3","age_c","bmi_c")])
 ```{r}
 #| label: model-survey
 #| echo: false
+#| include: false
 #| message: false
 #| warning: false
 
@@ -715,6 +721,7 @@ deviation (1 SD) increase.
 ```{r}
 #| label: model-mice
 #| echo: false
+#| include: false
 #| message: false
 #| warning: false
 
@@ -806,6 +813,7 @@ SD) increase in age and BMI.
 #| label: model-bayesian
 #| cache: true
 #| echo: false
+#| include: false
 #| message: false
 #| warning: false
 #| results: 'hide'
