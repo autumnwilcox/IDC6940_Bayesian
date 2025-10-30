@@ -4245,15 +4245,15 @@ This allows statements such as:<br>
 <h2 class="anchored" data-anchor-id="model-evaluation-and-diagnostics">Model Evaluation and Diagnostics</h2>
 <p>Model quality and convergence were assessed using standard Bayesian diagnostics:</p>
 <ul>
-<li><strong>Posterior sampling:</strong> Conducted via Markov Chain Monte Carlo (MCMC) using the No-U-Turn Sampler (NUTS), a variant of Hamiltonian Monte Carlo (HMC) (Austin, 2021). Four chains were run with sufficient warm-up iterations to ensure convergence.<br>
+<li><strong>Posterior sampling:</strong> Conducted via Markov Chain Monte Carlo (MCMC) using the No-U-Turn Sampler (NUTS), a variant of Hamiltonian Monte Carlo (HMC) <span class="citation" data-cites="austin2021">(<a href="#ref-austin2021" role="doc-biblioref">Austin et al. 2021</a>)</span>. Four chains were run with sufficient warm-up iterations to ensure convergence.<br>
 </li>
-<li><strong>Convergence metrics:</strong> The potential scale reduction factor (()) and effective sample size (ESS) were used to verify stability and mixing across chains.<br>
+<li><strong>Convergence metrics:</strong> The potential scale reduction factor (<span class="math inline">\(\hat{R}\)</span>) and effective sample size (ESS) were used to verify stability and mixing across chains.<br>
 </li>
 <li><strong>Autocorrelation checks:</strong> Ensured independence between successive draws.<br>
 </li>
 <li><strong>Posterior predictive checks (PPCs):</strong> Compared simulated outcomes to observed data to evaluate fit.<br>
 </li>
-<li><strong>Bayesian (R^2):</strong> Quantified the proportion of variance explained by predictors, incorporating posterior uncertainty.</li>
+<li><strong>Bayesian</strong> <span class="math inline">\(R^2\)</span>: Quantified the proportion of variance explained by predictors, incorporating posterior uncertainty.</li>
 </ul>
 </section>
 </section>
@@ -4378,6 +4378,67 @@ This allows statements such as:<br>
 </section>
 <section id="adult-cohort-definition" class="level3">
 <h3 class="anchored" data-anchor-id="adult-cohort-definition">Adult Cohort Definition</h3>
+<div class="cell">
+<div id="tbl-variable-descriptions" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-variable-descriptions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 1: Variable Descriptions: Adult Analytic Dataset (NHANES 2013–2014)
+</figcaption>
+<div aria-describedby="tbl-variable-descriptions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 11%">
+<col style="width: 67%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Variable</th>
+<th style="text-align: left;">NHANES_Source</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">age</td>
+<td style="text-align: left;">RIDAGEYR</td>
+<td style="text-align: left;">Participant age in years (adults aged 20 years and older)</td>
+<td style="text-align: left;">Continuous</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">bmi</td>
+<td style="text-align: left;">BMXBMI</td>
+<td style="text-align: left;">Body Mass Index (BMI, kg/m²) measured during examination</td>
+<td style="text-align: left;">Continuous</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sex</td>
+<td style="text-align: left;">RIAGENDR</td>
+<td style="text-align: left;">Sex of participant (Male or Female)</td>
+<td style="text-align: left;">Categorical</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">race3</td>
+<td style="text-align: left;">RIDRETH1</td>
+<td style="text-align: left;">Race/ethnicity collapsed into White, Black, Hispanic, and Other/Multi categories</td>
+<td style="text-align: left;">Categorical</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">diabetes_ind</td>
+<td style="text-align: left;">DIQ010</td>
+<td style="text-align: left;">Doctor-diagnosed diabetes indicator (1 = Yes, 0 = No)</td>
+<td style="text-align: left;">Binary</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -4623,7 +4684,7 @@ This allows statements such as:<br>
 <div id="tbl-adult" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-adult-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table 1: Excerpt of the NHANES 2013–2014 adult cohort (age ≥ 20; N = 5,769) with derived and standardized variables.
+Table 2: Excerpt of the NHANES 2013–2014 adult cohort (age ≥ 20; N = 5,769) with derived and standardized variables.
 </figcaption>
 <div aria-describedby="tbl-adult-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -4742,7 +4803,7 @@ Table 1: Excerpt of the NHANES 2013–2014 adult cohort (age ≥ 20; N = 5,769)
 </figure>
 </div>
 </div>
-<p>As shown in <a href="#tbl-adult" class="quarto-xref">Table 1</a>, the analytic adult cohort (N = 5,769) includes standardized variables for age and BMI (<code>age_c</code>, <code>bmi_c</code>), categorical indicators for sex and race/ethnicity (<code>race3</code>), and a binary doctor-diagnosed diabetes variable (<code>diabetes_ind</code>).</p>
+<p>As shown in <a href="#tbl-adult" class="quarto-xref">Table 2</a>, the analytic adult cohort (N = 5,769) includes standardized variables for age and BMI (<code>age_c</code>, <code>bmi_c</code>), categorical indicators for sex and race/ethnicity (<code>race3</code>), and a binary doctor-diagnosed diabetes variable (<code>diabetes_ind</code>).</p>
 </section>
 <section id="missing-data-summary" class="level3">
 <h3 class="anchored" data-anchor-id="missing-data-summary">Missing Data Summary</h3>
@@ -5039,7 +5100,7 @@ Female   Male
 <div id="tbl-mice" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mice-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table 2: Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals after imputing missing BMI (PMM) (m = 5); diabetes status was not imputed. Odds ratios are per 1 SD for age and BMI.
+Table 3: Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals after imputing missing BMI (PMM) (m = 5); diabetes status was not imputed. Odds ratios are per 1 SD for age and BMI.
 </figcaption>
 <div aria-describedby="tbl-mice-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -5166,7 +5227,7 @@ Table 2: Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence
 <div id="tbl-bayes" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-bayes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table 3: Bayesian logistic regression: posterior odds ratios (OR) with 95% credible intervals for diabetes diagnosis among adults (NHANES 2013–2014).
+Table 4: Bayesian logistic regression: posterior odds ratios (OR) with 95% credible intervals for diabetes diagnosis among adults (NHANES 2013–2014).
 </figcaption>
 <div aria-describedby="tbl-bayes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -5229,7 +5290,7 @@ Table 3: Bayesian logistic regression: posterior odds ratios (OR) with 95% cred
 </figure>
 </div>
 </div>
-<p>As shown in <a href="#tbl-bayes" class="quarto-xref">Table 3</a>, this Bayesian logistic regression model estimates the log-odds of diabetes using standardized predictors.<br>
+<p>As shown in <a href="#tbl-bayes" class="quarto-xref">Table 4</a>, this Bayesian logistic regression model estimates the log-odds of diabetes using standardized predictors.<br>
 </p>
 <p>Weakly informative priors (Normal(0, 2.5) for slopes; Student-t(3, 0, 10) for the intercept) help stabilize estimation and prevent overfitting.<br>
 </p>
@@ -5243,7 +5304,7 @@ Table 3: Bayesian logistic regression: posterior odds ratios (OR) with 95% cred
 <div id="tbl-bayesR2" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-bayesR2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table 4: Bayesian R² summary.
+Table 5: Bayesian R² summary.
 </figcaption>
 <div aria-describedby="tbl-bayesR2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -5276,7 +5337,7 @@ Table 4: Bayesian R² summary.
 <div id="tbl-mcmc-diagnostics" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mcmc-diagnostics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table 5: MCMC diagnostics (R-hat and Effective Sample Sizes) for model parameters (including intercept).
+Table 6: MCMC diagnostics (R-hat and Effective Sample Sizes) for model parameters (including intercept).
 </figcaption>
 <div aria-describedby="tbl-mcmc-diagnostics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -5353,13 +5414,13 @@ Table 5: MCMC diagnostics (R-hat and Effective Sample Sizes) for model paramete
 <pre><code>Running MCMC with 4 sequential chains...
 
 Chain 1 finished in 9.3 seconds.
-Chain 2 finished in 7.8 seconds.
+Chain 2 finished in 7.9 seconds.
 Chain 3 finished in 7.9 seconds.
 Chain 4 finished in 7.7 seconds.
 
 All 4 chains finished successfully.
 Mean chain execution time: 8.2 seconds.
-Total execution time: 33.0 seconds.</code></pre>
+Total execution time: 33.2 seconds.</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -5372,14 +5433,14 @@ Total execution time: 33.0 seconds.</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 sequential chains...
 
-Chain 1 finished in 9.3 seconds.
-Chain 2 finished in 9.5 seconds.
-Chain 3 finished in 10.0 seconds.
-Chain 4 finished in 9.8 seconds.
+Chain 1 finished in 9.2 seconds.
+Chain 2 finished in 9.8 seconds.
+Chain 3 finished in 10.1 seconds.
+Chain 4 finished in 9.7 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 9.6 seconds.
-Total execution time: 38.9 seconds.</code></pre>
+Mean chain execution time: 9.7 seconds.
+Total execution time: 39.2 seconds.</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>

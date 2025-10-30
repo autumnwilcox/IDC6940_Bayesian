@@ -169,11 +169,15 @@ $$
 
 where
 
-- $P(Y = 1)$ is the probability of the event of interest,
-- $\beta_0$ is the intercept (log-odds when all predictors are zero), and
-- $\beta_j$ represents the effect of predictor $X_j$ on the log-odds of the outcome, holding other predictors constant.
+-   $P(Y = 1)$ is the probability of the event of interest,
+-   $\beta_0$ is the intercept (log-odds when all predictors are zero),
+    and
+-   $\beta_j$ represents the effect of predictor $X_j$ on the log-odds
+    of the outcome, holding other predictors constant.
 
-In the Bayesian framework, the coefficients ($\boldsymbol{\beta}$) are assigned prior distributions that reflect existing knowledge or plausible ranges before observing the data.\
+In the Bayesian framework, the coefficients ($\boldsymbol{\beta}$) are
+assigned prior distributions that reflect existing knowledge or
+plausible ranges before observing the data.\
 After incorporating the observed evidence, the priors are updated
 through Bayes’ theorem:
 
@@ -227,7 +231,7 @@ limited sample size, or potential outliers.
 Posterior distributions of regression coefficients were used to estimate
 the probability of the outcome for given predictor values.\
 This allows statements such as:\
-\> “Given the predictors, the probability of the outcome lies between X%
+> “Given the predictors, the probability of the outcome lies between X%
 and Y%.”
 
 Posterior predictions account for two key sources of uncertainty:
@@ -248,16 +252,16 @@ diagnostics:
 
 -   **Posterior sampling:** Conducted via Markov Chain Monte
     Carlo (MCMC) using the No-U-Turn Sampler (NUTS), a variant of
-    Hamiltonian Monte Carlo (HMC) (Austin, 2021). Four chains were run
+    Hamiltonian Monte Carlo (HMC) [@austin2021]. Four chains were run
     with sufficient warm-up iterations to ensure convergence.\
 -   **Convergence metrics:** The potential scale reduction factor
-    ((\hat{R})) and effective sample size (ESS) were used to verify
+    ($\hat{R}$) and effective sample size (ESS) were used to verify
     stability and mixing across chains.\
 -   **Autocorrelation checks:** Ensured independence between successive
     draws.\
 -   **Posterior predictive checks (PPCs):** Compared simulated outcomes
     to observed data to evaluate fit.\
--   **Bayesian (R\^2):** Quantified the proportion of variance explained
+-   **Bayesian** $R^2$: Quantified the proportion of variance explained
     by predictors, incorporating posterior uncertainty.
 
 # Analysis and Results
@@ -313,6 +317,27 @@ and diabetes questionnaire data. We next restrict to **adults (age ≥
 later via multiple imputation.
 
 ### Adult Cohort Definition
+
+```{r}
+#| label: tbl-variable-descriptions
+#| tbl-cap: "Variable Descriptions: Adult Analytic Dataset (NHANES 2013–2014)"
+#| echo: false
+
+var_desc <- data.frame(
+Variable = c("age", "bmi", "sex", "race3", "diabetes_ind"),
+NHANES_Source = c("RIDAGEYR", "BMXBMI", "RIAGENDR", "RIDRETH1", "DIQ010"),
+Description = c(
+"Participant age in years (adults aged 20 years and older)",
+"Body Mass Index (BMI, kg/m²) measured during examination",
+"Sex of participant (Male or Female)",
+"Race/ethnicity collapsed into White, Black, Hispanic, and Other/Multi categories",
+"Doctor-diagnosed diabetes indicator (1 = Yes, 0 = No)"
+),
+Type = c("Continuous", "Continuous", "Categorical", "Categorical", "Binary")
+)
+
+knitr::kable(var_desc, align = "l")
+```
 
 ```{r}
 #| label: adult-eda
