@@ -28,6 +28,9 @@ editor:
 ---
 
 ```{r}
+#| label: Libraries
+#| include: false
+
 # Install
 need <- c(
   "nhanesA","dplyr","readr","DataExplorer","forcats","survey",
@@ -132,71 +135,93 @@ frameworks supports the robustness of these associations and highlights
 the interpretability and uncertainty quantification advantages offered
 by Bayesian analysis in population health modeling [@nchs2014].
 
-# Methods
+The analytical framework for this study is grounded in Bayesian logistic regression, providing a probabilistic approach for estimating diabetes risk and quantifying uncertainty in population health modeling.
 
-Bayesian logistic regression extends the classical logistic model by
-treating model parameters as random variables with prior probability
-distributions [@deleeuw2012; @baldwin2017; @kruschke2017]. Let $Y_i$
-denote a binary outcome for observation $i$ and $\mathbf{x}_i$ the
-corresponding vector of predictors. The probability of the event is
-modeled as
+# Method
 
-$$
-p_i = \Pr(Y_i = 1 \mid \mathbf{x}_i),
-\qquad
-\text{logit}(p_i) = \beta_0 + \sum_{j=1}^{p} \beta_j x_{ij},
-$$
+## Bayesian Logistic Regression
 
-where $\beta_0$ is the intercept and $\beta_j$ are regression
-coefficients for predictors $x_{ij}$ [@liu2013]. The logit link
-transforms probabilities to the real line, ensuring $0 < p_i < 1$.
+This study employs **Bayesian logistic regression** to estimate the association between predictors and a binary outcome.  
 
-In the Bayesian framework, prior distributions are specified for all
-unknown parameters. Weakly informative priors—typically Normal$(0, 2.5)$
-for regression coefficients—provide gentle regularization, constraining
-extreme values without overpowering the data [@vandeschoot2021]. The
-joint posterior distribution of parameters is proportional to the
-product of the likelihood and the priors:
+The **Bayesian framework** integrates prior knowledge with observed data to generate posterior distributions, allowing direct probabilistic interpretation of model parameters.  
 
-$$
-p(\boldsymbol{\beta} \mid \mathbf{y}, \mathbf{X}) \propto
-\mathcal{L}(\mathbf{y} \mid \mathbf{X}, \boldsymbol{\beta}) \;
-p(\boldsymbol{\beta}),
-$$
+Unlike traditional frequentist approaches that yield single-point estimates and p-values, Bayesian methods represent parameters as random variables with full probability distributions. 
 
-where $\mathcal{L}(\mathbf{y} \mid \mathbf{X}, \boldsymbol{\beta})$
-denotes the binomial likelihood.
+This provides greater flexibility, incorporates parameter uncertainty, and produces **credible intervals** that directly quantify the probability that a parameter lies within a given range.
 
-Posterior inference was performed using Markov Chain Monte Carlo (MCMC)
-sampling via the No-U-Turn Sampler (NUTS), a variant of Hamiltonian
-Monte Carlo (HMC). Four chains were run with sufficient warm-up
-iterations to ensure convergence. Diagnostic checks included trace
-plots, the potential scale-reduction factor ($\hat{R}$), and posterior
-predictive checks comparing simulated and observed outcomes
-[@austin2021].
+## Model Structure
 
-Point estimates were summarized by posterior means and medians, and
-uncertainty was quantified through 95% credible intervals derived from
-the posterior distribution. Model adequacy was evaluated using posterior
-predictive diagnostics and Bayesian $R^2$ statistics. Odds ratios (ORs)
-were obtained by exponentiating the posterior samples of $\beta_j$:
+**Bayesian logistic regression** models the log-odds of a binary outcome as a linear combination of predictors:
 
-$$
-\text{OR}_j = \exp(\beta_j),
-$$
+\[
+\text{logit}(P(Y = 1)) = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_k X_k
+\]
 
-representing the multiplicative change in the odds of the outcome
-associated with a one-unit increase in the predictor. All computation
-was implemented in a probabilistic programming environment using the
-`brms` interface to Stan.
+where  
 
-For interpretability, age and BMI were standardized to mean 0 and SD 1 prior
-to modeling; consequently, odds ratios for these predictors are reported per
-one standard deviation (1 SD) increase in age and BMI across all models.
+- \( P(Y = 1) \) is the probability of the event of interest,  
+- \( \beta_0 \) is the intercept (log-odds when all predictors are zero), and  
+- \( \beta_j \) represents the effect of predictor \( X_j \) on the log-odds of the outcome, holding other predictors constant.
+
+In the **Bayesian framework**, the coefficients \( \boldsymbol{\beta} \) are assigned prior distributions that reflect existing knowledge or plausible ranges before observing the data.  
+After incorporating the observed evidence, the priors are updated through **Bayes’ theorem**:
+
+\[
+\text{Posterior} \propto \text{Likelihood} \times \text{Prior}
+\]
+
+- **Likelihood:** the probability of the observed data given model parameters (as in classical regression).  
+- **Prior:** expresses beliefs or information about parameter values before observing data.  
+- **Posterior:** represents updated beliefs about parameter values after observing data.
+
+This formulation allows uncertainty to be naturally propagated through the model, producing full posterior distributions for each coefficient.
+
+## Prior Specification
+
+Weakly informative priors were used to regularize estimation without imposing strong assumptions:  
+
+- **Regression coefficients:** Normal(0, 2.5), providing gentle regularization while allowing substantial variation in plausible effects (van de Schoot et al., 2021).  
+- **Intercept:** Student’s t-distribution prior, Student_t(3, 0, 10), which has  
+  - 3 degrees of freedom (heavy tails to allow occasional large effects),  
+  - mean 0 (no bias toward positive or negative effects), and  
+  - scale 10 (broad range of possible values).  
+
+Such priors stabilize estimation in the presence of multicollinearity, limited sample size, or potential outliers.
+
+## Advantages of Bayesian Logistic Regression
+
+- **Uncertainty quantification:** Produces full posterior distributions instead of single estimates.  
+- **Credible intervals:** Provide the range within which a parameter lies with a specified probability (e.g., 95%).  
+- **Flexible priors:** Allow integration of expert knowledge or findings from prior studies.  
+- **Probabilistic predictions:** Posterior predictive distributions yield direct probabilities for new or future observations.  
+- **Model evaluation:** Posterior predictive checks (PPCs) assess how well simulated outcomes reproduce observed data.
+
+## Posterior Predictions
+
+Posterior distributions of regression coefficients were used to estimate the probability of the outcome for given predictor values.  
+This allows statements such as:  
+> “Given the predictors, the probability of the outcome lies between X% and Y%.”
+
+Posterior predictions account for two key sources of uncertainty:
+
+1. **Parameter uncertainty:** Variability in estimated model coefficients.  
+2. **Predictive uncertainty:** Variability in possible future outcomes given those parameters.  
+
+In Bayesian analysis, all unknown quantities—coefficients, means, variances, or probabilities—are treated as random variables described by their posterior distributions.
+
+## Model Evaluation and Diagnostics
+
+Model quality and convergence were assessed using standard Bayesian diagnostics:
+
+- **Posterior sampling:** Conducted via Markov Chain Monte Carlo (MCMC) using the No-U-Turn Sampler (NUTS), a variant of Hamiltonian Monte Carlo (HMC) (Austin, 2021). Four chains were run with sufficient warm-up iterations to ensure convergence.  
+- **Convergence metrics:** The potential scale reduction factor (\(\hat{R}\)) and effective sample size (ESS) were used to verify stability and mixing across chains.  
+- **Autocorrelation checks:** Ensured independence between successive draws.  
+- **Posterior predictive checks (PPCs):** Compared simulated outcomes to observed data to evaluate fit.  
+- **Bayesian \(R^2\):** Quantified the proportion of variance explained by predictors, incorporating posterior uncertainty.
 
 # Analysis and Results
 
-## 1. Data Preparation
+## Data Preparation
 
 We analyzed NHANES 2013–2014 public-use data from the CDC’s National
 Center for Health Statistics [@nchs2014]. Three component files were
@@ -205,7 +230,7 @@ diabetes questionnaire (**DIQ_H**). All variables were coerced to
 consistent numeric or factor types prior to merging to ensure atomic
 columns suitable for survey analysis and modeling.
 
-### 1.1 Import and Merge Datasets
+### Import and Merge Datasets
 
 ```{r}
 #| label: load-merged
@@ -246,7 +271,7 @@ and diabetes questionnaire data. We next restrict to **adults (age ≥
 (BMI and diabetes indicator) contain modest missingness that we address
 later via multiple imputation.
 
-### 1.2 Adult Cohort Definition
+### Adult Cohort Definition
 
 ```{r}
 #| label: adult-eda
@@ -434,7 +459,7 @@ age and BMI (`age_c`, `bmi_c`), categorical indicators for sex and
 race/ethnicity (`race3`), and a binary doctor-diagnosed diabetes
 variable (`diabetes_ind`).
 
-### 1.3 Missing Data Summary
+### Missing Data Summary
 
 ```{r}
 #| label: miss-pcts
@@ -508,7 +533,7 @@ These low missingness rates support the use of **multiple imputation
 (MICE)** to preserve the analytic sample and reduce bias associated with
 listwise deletion.
 
-## 2. Modeling Frameworks
+## Modeling Frameworks
 
 We evaluated three complementary modeling frameworks:\
 (1) a **survey-weighted logistic regression** to account for NHANES
@@ -518,7 +543,7 @@ design elements,\
 Each model used the same outcome (`diabetes_ind`) and predictors
 (standardized age, standardized BMI, sex, and race3).
 
-### 2.1 Survey-Weighted Logistic Regression (Design-Based MLE)
+### Survey-Weighted Logistic Regression (Design-Based MLE)
 
 ```{r}
 #| label: data-clean
@@ -541,7 +566,7 @@ str(adult_clean[, c("diabetes_ind","sex","race3","age_c","bmi_c")])
 
 ```{r}
 #| label: model-survey
-#| echo: true
+#| echo: false
 #| message: false
 #| warning: false
 
@@ -582,6 +607,7 @@ dplyr::select(term, OR, LCL, UCL, p.value) %>%
 dplyr::filter(term != "(Intercept)")
 
 #| label: tbl-survey
+#| echo: false
 #| tbl-cap: "Survey-weighted logistic regression: odds ratios (OR) and 95% confidence intervals for diabetes diagnosis among adults (NHANES 2013–2014)."
 knitr::kable(svy_or)
 ```
@@ -601,11 +627,11 @@ and the probability of a doctor-diagnosed diabetes outcome.
 
 Notes: Reference categories are **Male** for sex and **White** for race3. **Age** and **BMI** odds ratios are reported per one standard deviation (1 SD) increase.
 
-### 2.2 Multiple Imputation (MICE)
+### Multiple Imputation (MICE)
 
 ```{r}
 #| label: model-mice
-#| echo: true
+#| echo: false
 #| message: false
 #| warning: false
 
@@ -661,6 +687,7 @@ dplyr::filter(term != "(Intercept)")
 
 ```{r}
 #| label: tbl-mice
+#| echo: false 
 miss_age  <- sum(is.na(mi_dat$age))
 miss_bmiN <- sum(is.na(mi_dat$bmi))
 
@@ -684,12 +711,12 @@ The multiple imputation (MICE) framework addressed missingness in
 Categorical variables (`sex`, `race3`) used logistic/polytomous
 regression. We generated m = 5 imputations and pooled estimates with Rubin’s rules. Odds ratios are reported per one standard deviation (1 SD) increase in age and BMI.
 
-### 2.3 Bayesian Logistic Regression
+### Bayesian Logistic Regression
 
 ```{r}
 #| label: model-bayesian
 #| cache: true
-#| echo: true
+#| echo: false
 #| message: false
 #| warning: false
 #| results: 'hide'
@@ -749,6 +776,7 @@ dplyr::select(term, OR, LCL, UCL)
 
 ```{r}
 #| label: tbl-bayes
+#| echo: false
 #| tbl-cap: "Bayesian logistic regression: posterior odds ratios (OR) with 95% credible intervals for diabetes diagnosis among adults (NHANES 2013–2014)."
 knitr::kable(
   dplyr::mutate(bayes_or, dplyr::across(c(OR, LCL, UCL), ~ round(.x, 2)))
@@ -997,7 +1025,7 @@ predictors, while strong effects (BMI, age, race) showed distinct
 posterior shifts, confirming that inference was data-driven rather than
 dominated by priors.
 
-## 3. Results
+## Results
 
 ```{r}
 #| label: results-compare
@@ -1047,9 +1075,9 @@ The **Bayesian** model’s credible intervals closely align with the
 frequentist confidence intervals but provide a more direct probabilistic
 interpretation of uncertainty.
 
-## 4. Discussion and Limitations
+## Discussion and Limitations
 
-### 4.1 Interpretation
+### Interpretation
 
 The Bayesian logistic regression framework produced results that were
 highly consistent with both the survey-weighted and MICE-pooled
@@ -1073,7 +1101,7 @@ Overall, this study demonstrates how Bayesian inference complements
 traditional epidemiologic methods—maintaining interpretability while
 improving stability under missing data and modest sample imbalance.
 
-### 4.2 Limitations
+### Limitations
 
 While this analysis demonstrates the value of Bayesian logistic
 regression for epidemiologic modeling, several limitations should be
@@ -1097,7 +1125,7 @@ sample sizes, and stable posterior predictive checks) indicated good
 model performance, results are conditional on the 2013–2014 NHANES cycle
 and may not generalize to later datasets or longitudinal analyses.
 
-## 5. Conclusion
+## Conclusion
 
 The Bayesian, survey-weighted, and imputed logistic regression
 frameworks all identified consistent predictors of diabetes risk in U.S.
