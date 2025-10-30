@@ -4353,10 +4353,7 @@ This allows statements such as:<br>
 </div>
 </div>
 <p>This preview shows the raw NHANES columns before transformation. Each variable is retained for later use in analysis and renamed or standardized as appropriate.</p>
-<blockquote class="blockquote">
-<p>The merged dataset contains 10,175 participants.</p>
-</blockquote>
-<p>The merged NHANES 2013–2014 dataset integrates demographic, examination, and diabetes questionnaire data. We next restrict to <strong>adults (age ≥ 20)</strong>, yielding the analytic cohort used below. Several key variables (BMI and diabetes indicator) contain modest missingness that we address later via multiple imputation.</p>
+<p>The merged dataset contains 10,175 participants. It integrates demographic, examination, and diabetes questionnaire data. We then restrict the sample to <strong>adults (age ≥ 20)</strong> to define the analytic cohort used in subsequent analyses. A small proportion of records have missing values in <strong>BMI</strong> and <strong>diabetes status</strong>, which will be addressed later through multiple imputation.</p>
 </section>
 <section id="adult-cohort-definition" class="level3">
 <h3 class="anchored" data-anchor-id="adult-cohort-definition">Adult Cohort Definition</h3>
@@ -5385,26 +5382,26 @@ Table 7: MCMC diagnostics (R-hat and Effective Sample Sizes) for model paramete
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 sequential chains...
 
-Chain 1 finished in 9.3 seconds.
-Chain 2 finished in 7.8 seconds.
-Chain 3 finished in 8.0 seconds.
+Chain 1 finished in 9.4 seconds.
+Chain 2 finished in 8.0 seconds.
+Chain 3 finished in 7.9 seconds.
 Chain 4 finished in 7.7 seconds.
 
 All 4 chains finished successfully.
 Mean chain execution time: 8.2 seconds.
-Total execution time: 33.2 seconds.</code></pre>
+Total execution time: 33.4 seconds.</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 sequential chains...
 
-Chain 1 finished in 9.2 seconds.
-Chain 2 finished in 9.6 seconds.
-Chain 3 finished in 9.9 seconds.
-Chain 4 finished in 9.6 seconds.
+Chain 1 finished in 9.3 seconds.
+Chain 2 finished in 9.7 seconds.
+Chain 3 finished in 10.0 seconds.
+Chain 4 finished in 9.7 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 9.6 seconds.
-Total execution time: 38.7 seconds.</code></pre>
+Mean chain execution time: 9.7 seconds.
+Total execution time: 39.1 seconds.</code></pre>
 </div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -5779,7 +5776,7 @@ Figure 15: Overlay of prior and posterior densities for key predictors (only co
 <p>While this analysis demonstrates the value of Bayesian logistic regression for epidemiologic modeling, several limitations should be acknowledged.</p>
 <p>First, the use of a single imputed dataset for the Bayesian model—rather than full joint modeling of imputation uncertainty—may understate total variance.</p>
 <p>Second, NHANES exam weights were normalized and treated as importance weights, which approximate but do not fully reproduce design-based inference.</p>
-<p>Third, the weakly informative priors <em><span class="math inline">\(N(0, 2.5)\)</span></em> for slopes and <em>Student-t(3, 0, 10)</em> for the intercept were not empirically tuned; alternative prior specifications could slightly alter posterior intervals.</p>
+<p>Third, the weakly informative priors <span class="math inline">\(N(0, 2.5)\)</span> for slopes and <em>Student-t(3, 0, 10)</em> for the intercept were not empirically tuned; alternative prior specifications could slightly alter posterior intervals.</p>
 <p>Finally, although convergence diagnostics (R̂ ≈ 1, sufficient effective sample sizes, and stable posterior predictive checks) indicated good model performance, results are conditional on the 2013–2014 NHANES cycle and may not generalize to later datasets or longitudinal analyses.</p>
 </section>
 </section>

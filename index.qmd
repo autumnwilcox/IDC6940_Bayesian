@@ -203,8 +203,8 @@ imposing strong assumptions:
 -   **Regression coefficients:** $N(0, 2.5)$, providing gentle
     regularization while allowing substantial variation in plausible
     effects [@vandeschoot2021].\
--   **Intercept:** Student’s t-distribution prior, $t(3, 0, 10)$,
-    which has
+-   **Intercept:** Student’s t-distribution prior, $t(3, 0, 10)$, which
+    has
     -   3 degrees of freedom (heavy tails to allow occasional large
         effects),\
     -   mean 0 (no bias toward positive or negative effects), and\
@@ -231,7 +231,7 @@ limited sample size, or potential outliers.
 Posterior distributions of regression coefficients were used to estimate
 the probability of the outcome for given predictor values.\
 This allows statements such as:\
-> “Given the predictors, the probability of the outcome lies between X%
+\> “Given the predictors, the probability of the outcome lies between X%
 and Y%.”
 
 Posterior predictions account for two key sources of uncertainty:
@@ -301,22 +301,19 @@ knitr::kable(
 )
 ```
 
-This preview shows the raw NHANES columns before transformation. Each variable is retained for later use in analysis and renamed or standardized as appropriate.
-
 ```{r}
 #| label: merged-n
 #| echo: false
 merged_n <- nrow(merged_data)
 ```
 
-> The merged dataset contains `r format(merged_n, big.mark=",")`
-> participants.
+This preview shows the raw NHANES columns before transformation. Each
+variable is retained for later use in analysis and renamed or
+standardized as appropriate.
 
-The merged NHANES 2013–2014 dataset integrates demographic, examination,
-and diabetes questionnaire data. We next restrict to **adults (age ≥
-20)**, yielding the analytic cohort used below. Several key variables
-(BMI and diabetes indicator) contain modest missingness that we address
-later via multiple imputation.
+The merged dataset contains `r format(merged_n, big.mark = ",")`
+participants. It integrates demographic, examination, and
+diabetes questionnaire data. We then restrict the sample to **adults (age ≥ 20)** to define the analytic cohort used in subsequent analyses. A small proportion of records have missing values in **BMI** and **diabetes status**, which will be addressed later through multiple imputation.
 
 ### Adult Cohort Definition
 
@@ -410,7 +407,9 @@ miss_diab <- mean(is.na(adult_eda$diabetes_ind)) * 100
 sprintf("Missing BMI: %.1f%%; Missing diabetes_ind: %.1f%%", miss_bmi, miss_diab)
 ```
 
-These summaries confirm that only BMI and diabetes indicators contain missing values, supporting the need for multiple imputation while keeping other variables complete.
+These summaries confirm that only BMI and diabetes indicators contain
+missing values, supporting the need for multiple imputation while
+keeping other variables complete.
 
 ```{r}
 #| label: adult-cohort
@@ -543,9 +542,14 @@ DataExplorer::plot_missing(
 )
 ```
 
-The missingness plot visually confirms that BMI and diabetes status have modest proportions of missing data, with no evident systematic pattern across records.
+The missingness plot visually confirms that BMI and diabetes status have
+modest proportions of missing data, with no evident systematic pattern
+across records.
 
-The following histograms and bar charts describe the adult analytic cohort. Most participants are middle-aged, with a normal-to-overweight BMI distribution and majority White race composition. This visualization helps contextualize the predictors used in the models.
+The following histograms and bar charts describe the adult analytic
+cohort. Most participants are middle-aged, with a normal-to-overweight
+BMI distribution and majority White race composition. This visualization
+helps contextualize the predictors used in the models.
 
 ```{r}
 #| label: fig-cohort-age
@@ -684,7 +688,10 @@ dplyr::filter(term != "(Intercept)")
 knitr::kable(svy_or)
 ```
 
-The design-based model accounts for NHANES sampling weights and clustering. Positive coefficients for age and BMI indicate higher diabetes odds per one-SD increase, while categorical contrasts show elevated odds among non-White groups.
+The design-based model accounts for NHANES sampling weights and
+clustering. Positive coefficients for age and BMI indicate higher
+diabetes odds per one-SD increase, while categorical contrasts show
+elevated odds among non-White groups.
 
 The NHANES 2013–2014 data use a complex, multistage probability design
 involving **strata** (`SDMVSTRA`), **primary sampling units (PSUs;
@@ -761,7 +768,9 @@ dplyr::rename(OR = estimate, LCL = `2.5 %`, UCL = `97.5 %`) %>%
 dplyr::filter(term != "(Intercept)")
 ```
 
-Multiple imputation preserves sample size and reduces bias from missing BMI values. Results closely mirror the survey-weighted model, confirming robustness to imputation.
+Multiple imputation preserves sample size and reduces bias from missing
+BMI values. Results closely mirror the survey-weighted model, confirming
+robustness to imputation.
 
 ```{r}
 #| label: tbl-mice
@@ -866,9 +875,8 @@ knitr::kable(
 As shown in @tbl-bayes, this Bayesian logistic regression model
 estimates the log-odds of diabetes using standardized predictors.\
 
-Weakly informative priors ($N(0, 2.5)$ for slopes; Student-t(3, 0,
-10) for the intercept) help stabilize estimation and prevent
-overfitting.\
+Weakly informative priors ($N(0, 2.5)$ for slopes; Student-t(3, 0, 10)
+for the intercept) help stabilize estimation and prevent overfitting.\
 
 Posterior means and 95% credible intervals (CrI) provide full
 uncertainty quantification for each predictor, enabling direct
@@ -910,7 +918,11 @@ diag_b <- diag |>
 knitr::kable(diag_b, digits = 1)
 ```
 
-Bayesian parameter estimates are consistent with frequentist results, with credible intervals providing direct probability statements. Diagnostics show good chain mixing ($\hat{R} \approx 1.00$) and effective sample sizes exceeding standard thresholds, confirming convergence.
+Bayesian parameter estimates are consistent with frequentist results,
+with credible intervals providing direct probability statements.
+Diagnostics show good chain mixing ($\hat{R} \approx 1.00$) and
+effective sample sizes exceeding standard thresholds, confirming
+convergence.
 
 ```{r}
 #| label: model-comparison
@@ -951,7 +963,9 @@ knitr::kable(
 )
 ```
 
-Leave-one-out (LOO) cross-validation indicates that removing race or sex reduces model fit, confirming that both variables meaningfully contribute to predictive performance.
+Leave-one-out (LOO) cross-validation indicates that removing race or sex
+reduces model fit, confirming that both variables meaningfully
+contribute to predictive performance.
 
 ```{r}
 #| label: fig-mcmc-areas
@@ -1191,7 +1205,7 @@ Second, NHANES exam weights were normalized and treated as importance
 weights, which approximate but do not fully reproduce design-based
 inference.
 
-Third, the weakly informative priors *$N(0, 2.5)$* for slopes and
+Third, the weakly informative priors $N(0, 2.5)$ for slopes and
 *Student-t(3, 0, 10)* for the intercept were not empirically tuned;
 alternative prior specifications could slightly alter posterior
 intervals.
