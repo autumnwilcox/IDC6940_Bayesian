@@ -174,7 +174,7 @@ In the Bayesian framework, the coefficients ($\boldsymbol{\beta}$) are
 assigned prior distributions that reflect existing knowledge or
 plausible ranges before observing the data.\
 After incorporating the observed evidence, the priors are updated
-through Bayes’ theorem:
+through Bayes’ theorem [@deleeuw2012; @klauenberg2015]:
 
 $$
 \text{Posterior} \propto \text{Likelihood} \times \text{Prior}
@@ -197,8 +197,8 @@ imposing strong assumptions:
 
 -   **Regression coefficients:** $N(0, 2.5)$, providing gentle
     regularization while allowing substantial variation in plausible
-    effects [@vandeschoot2021].\
--   **Intercept:** Student’s t-distribution prior, $t(3, 0, 10)$, which
+    effects [@gelman2008; @vandeschoot2021].\
+-   **Intercept:** Student’s t-distribution prior, $t(3, 0, 10)$ [@vandeschoot2013; @vandeschoot2021], which
     has
     -   3 degrees of freedom (heavy tails to allow occasional large
         effects),\
