@@ -73,14 +73,9 @@ more transparently than frequentist approaches.
 
 This study applies Bayesian logistic regression to estimate the risk of
 doctor-diagnosed diabetes among adults in the 2013–2014 National Health
-and Nutrition Examination Survey (NHANES). Predictors include age, body
-mass index (BMI), sex, and a coarsened race/ethnicity factor (race3)
-comprising White, Black, and Hispanic groups, with low-frequency levels
-combined as “Other.” Three analytic frameworks were compared: (1)
-survey-weighted maximum likelihood estimation (MLE) using the NHANES
-complex design, (2) multiple imputation (MICE) with predictive mean
-matching and Rubin’s rules, and (3) Bayesian inference with weakly
-informative priors $N(0, 2.5)$ implemented via `brms`. The Bayesian
+and Nutrition Examination Survey (NHANES). Predictors include age, body mass index (BMI), sex, and a coarsened race/ethnicity factor (`race3`) comprising White, Black, and Hispanic groups, with low-frequency levels combined as “Other.” The NHANES variable `race3` classifies participants into six categories: Mexican American, Other Hispanic, Non-Hispanic White, Non-Hispanic Black, Non-Hispanic Asian, and Other race (including multi-racial). For this analysis, these categories were collapsed into four groups—White, Black, Hispanic, and Other—to ensure adequate representation across groups and improve model stability.
+
+Three analytic frameworks were compared: (1) survey-weighted maximum likelihood estimation (MLE) using the NHANES complex design, (2) multiple imputation (MICE) with predictive mean matching and Rubin’s rules, and (3) Bayesian inference with weakly informative priors $N(0, 2.5)$ implemented via `brms`. The Bayesian
 model incorporated normalized NHANES exam weights as importance weights,
 approximating design-based inference. Across all methods, age and BMI
 were positively associated with diabetes odds, female sex tended to have
@@ -630,7 +625,7 @@ Each model used the same outcome (`diabetes_ind`) and predictors
 #| echo: false
 #| message: false
 #| warning: false
-#| include: false
+#| include: true
 
 adult_clean <- adult %>%
   dplyr::mutate(
