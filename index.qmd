@@ -142,8 +142,7 @@ This study employs Bayesian logistic regression to estimate the
 association between predictors and a binary outcome.
 
 The Bayesian framework integrates prior knowledge with observed data to
-generate posterior distributions, allowing direct probabilistic
-interpretation of model parameters.
+generate posterior distributions, allowing parameters to be interpreted directly in probabilistic terms.
 
 Unlike traditional frequentist approaches that yield single-point
 estimates and p-values, Bayesian methods represent parameters as random
@@ -170,25 +169,17 @@ where
 -   $\beta_j$ represents the effect of predictor $X_j$ on the log-odds
     of the outcome, holding other predictors constant.
 
-In the Bayesian framework, the coefficients ($\boldsymbol{\beta}$) are
-assigned prior distributions that reflect existing knowledge or
-plausible ranges before observing the data.\
-After incorporating the observed evidence, the priors are updated
-through Bayes’ theorem [@deleeuw2012; @klauenberg2015]:
+In the Bayesian framework, model parameters ($\boldsymbol{\beta}$) are treated as random variables and assigned prior distributions that reflect existing knowledge or plausible ranges before observing the data. After incorporating the observed evidence, the priors are updated through Bayes’ theorem [@deleeuw2012; @klauenberg2015]:
 
 $$
 \text{Posterior} \propto \text{Likelihood} \times \text{Prior}
 $$
 
--   **Likelihood:** the probability of the observed data given model
-    parameters (as in classical regression).\
--   **Prior:** expresses beliefs or information about parameter values
-    before observing data.\
--   **Posterior:** represents updated beliefs about parameter values
-    after observing data.
+-   **Likelihood:** represents the probability of the observed data given the model parameters—it captures how well different parameter values explain the data.\
+-   **Prior:** expresses beliefs or existing information about the parameters before observing the data.\
+-   **Posterior:** combines both, representing the updated distribution of parameter values after accounting for the data.
 
-This formulation allows uncertainty to be naturally propagated through
-the model, producing full posterior distributions for each coefficient.
+This formulation allows uncertainty to propagate naturally through the model, producing posterior distributions for each coefficient that can be directly interpreted as probabilities.
 
 ## Prior Specification
 
@@ -205,7 +196,7 @@ imposing strong assumptions:
     -   mean 0 (no bias toward positive or negative effects), and\
     -   scale 10 (broad range of possible values).
 
-Such priors stabilize estimation in the presence of multicollinearity,
+Such priors help stabilize estimation in the presence of multicollinearity,
 limited sample size, or potential outliers.
 
 ## Advantages of Bayesian Logistic Regression
