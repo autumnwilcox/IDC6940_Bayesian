@@ -8,7 +8,7 @@
 
 <meta name="author" content="Namita Mishra">
 <meta name="author" content="Autumn Wilcox">
-<meta name="dcterms.date" content="2025-10-30">
+<meta name="dcterms.date" content="2025-10-31">
 
 <title>Bayesian Logistic Regression for Predicting Diabetes Risk Using NHANES 2013–2014 Data – Bayesian Logistic Regression Capstone</title>
 <style>
@@ -4106,7 +4106,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">October 30, 2025</p>
+      <p class="date">October 31, 2025</p>
     </div>
   </div>
   
@@ -4122,7 +4122,8 @@ window.Quarto = {
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
 <p>Diabetes mellitus (DM) remains a major public health challenge, and identifying key risk factors—such as obesity, age, sex, and race/ethnicity—is essential for prevention and targeted intervention. Logistic regression is widely used to estimate associations between such factors and binary outcomes like diabetes diagnosis. However, classical maximum likelihood estimation (MLE) can produce unstable estimates in the presence of missing data, quasi-separation, or small samples. Bayesian logistic regression offers a robust alternative by integrating prior information, regularizing estimates, and quantifying uncertainty more transparently than frequentist approaches.</p>
-<p>This study applies Bayesian logistic regression to estimate the risk of doctor-diagnosed diabetes among adults in the 2013–2014 National Health and Nutrition Examination Survey (NHANES). Predictors include age, body mass index (BMI), sex, and a coarsened race/ethnicity factor (race3) comprising White, Black, and Hispanic groups, with low-frequency levels combined as “Other.” Three analytic frameworks were compared: (1) survey-weighted maximum likelihood estimation (MLE) using the NHANES complex design, (2) multiple imputation (MICE) with predictive mean matching and Rubin’s rules, and (3) Bayesian inference with weakly informative priors <span class="math inline">\(N(0, 2.5)\)</span> implemented via <code>brms</code>. The Bayesian model incorporated normalized NHANES exam weights as importance weights, approximating design-based inference. Across all methods, age and BMI were positively associated with diabetes odds, female sex tended to have lower odds than male, and Black and Hispanic adults showed higher odds relative to White. Agreement across modeling frameworks supports the robustness of these associations and highlights the interpretability and uncertainty quantification advantages offered by Bayesian analysis for population health modeling.</p>
+<p>This study applies Bayesian logistic regression to estimate the risk of doctor-diagnosed diabetes among adults in the 2013–2014 National Health and Nutrition Examination Survey (NHANES). Predictors include age, body mass index (BMI), sex, and a coarsened race/ethnicity factor (<code>race3</code>) comprising White, Black, and Hispanic groups, with low-frequency levels combined as “Other.” The NHANES variable <code>race3</code> classifies participants into six categories: Mexican American, Other Hispanic, Non-Hispanic White, Non-Hispanic Black, Non-Hispanic Asian, and Other race (including multi-racial). For this analysis, these categories were collapsed into four groups—White, Black, Hispanic, and Other—to ensure adequate representation across groups and improve model stability.</p>
+<p>Three analytic frameworks were compared: (1) survey-weighted maximum likelihood estimation (MLE) using the NHANES complex design, (2) multiple imputation (MICE) with predictive mean matching and Rubin’s rules, and (3) Bayesian inference with weakly informative priors <span class="math inline">\(N(0, 2.5)\)</span> implemented via <code>brms</code>. The Bayesian model incorporated normalized NHANES exam weights as importance weights, approximating design-based inference. Across all methods, age and BMI were positively associated with diabetes odds, female sex tended to have lower odds than male, and Black and Hispanic adults showed higher odds relative to White. Agreement across modeling frameworks supports the robustness of these associations and highlights the interpretability and uncertainty quantification advantages offered by Bayesian analysis for population health modeling.</p>
 <p>Bayesian hierarchical models, implemented via Markov Chain Monte Carlo (MCMC), have been successfully applied in predicting patient health status across diseases such as pneumonia, prostate cancer, and mental disorders <span class="citation" data-cites="zeger2020">(<a href="#ref-zeger2020" role="doc-biblioref">Zeger et al. 2020</a>)</span>. By representing predictive uncertainty alongside point estimates, Bayesian inference offers a practical advantage in epidemiologic modeling where decisions hinge on probabilistic thresholds. Beyond stability, Bayesian methods support model checking, variable selection, and uncertainty quantification under missingness or imputation frameworks <span class="citation" data-cites="baldwin2017 kruschke2017">(<a href="#ref-baldwin2017" role="doc-biblioref">Baldwin and Larson 2017</a>; <a href="#ref-kruschke2017" role="doc-biblioref">Kruschke and Liddell 2017</a>)</span>.</p>
 <p>Recent work has expanded Bayesian applications to disease diagnostics and health risk modeling. For instance, Bayesian approaches have been used to evaluate NHANES diagnostic data <span class="citation" data-cites="chatzimichail2023">(<a href="#ref-chatzimichail2023" role="doc-biblioref">Chatzimichail and Hatjimihail 2023</a>)</span>, to model cardiovascular and metabolic risk <span class="citation" data-cites="liu2013">(<a href="#ref-liu2013" role="doc-biblioref">Liu et al. 2013</a>)</span>, and to integrate multiple data modalities such as imaging and laboratory measures <span class="citation" data-cites="abdullah2022bdlhealth">(<a href="#ref-abdullah2022bdlhealth" role="doc-biblioref">Abdullah, Hassan, and Mustafa 2022</a>)</span>. Moreover, multiple imputation combined with Bayesian modeling generates robust estimates when data are missing at random (MAR) or not at random (MNAR) <span class="citation" data-cites="austin2021">(<a href="#ref-austin2021" role="doc-biblioref">Austin et al. 2021</a>)</span>.</p>
 <p>The broader Bayesian literature emphasizes the role of priors and model checking. Weakly informative priors, such as <span class="math inline">\(N(0, 2.5)\)</span> for coefficients, regularize estimation and reduce variance in small samples <span class="citation" data-cites="gelman2008 vandeschoot2021">(<a href="#ref-gelman2008" role="doc-biblioref">Gelman et al. 2008</a>; <a href="#ref-vandeschoot2021" role="doc-biblioref">Vande Schoot et al. 2021</a>)</span>. Tutorials using R packages like <code>brms</code> and <code>blavaan</code> illustrate how MCMC enables posterior inference and empirical Bayes analysis <span class="citation" data-cites="klauenberg2015">(<a href="#ref-klauenberg2015" role="doc-biblioref">Klauenberg et al. 2015</a>)</span>.</p>
@@ -4135,7 +4136,7 @@ window.Quarto = {
 <section id="bayesian-logistic-regression" class="level2">
 <h2 class="anchored" data-anchor-id="bayesian-logistic-regression">Bayesian Logistic Regression</h2>
 <p>This study employs Bayesian logistic regression to estimate the association between predictors and a binary outcome.</p>
-<p>The Bayesian framework integrates prior knowledge with observed data to generate posterior distributions, allowing direct probabilistic interpretation of model parameters.</p>
+<p>The Bayesian framework integrates prior knowledge with observed data to generate posterior distributions, allowing parameters to be interpreted directly in probabilistic terms.</p>
 <p>Unlike traditional frequentist approaches that yield single-point estimates and p-values, Bayesian methods represent parameters as random variables with full probability distributions.</p>
 <p>This provides greater flexibility, incorporates parameter uncertainty, and produces credible intervals that directly quantify the probability that a parameter lies within a given range.</p>
 </section>
@@ -4151,27 +4152,26 @@ window.Quarto = {
 <li><span class="math inline">\(\beta_0\)</span> is the intercept (log-odds when all predictors are zero), and</li>
 <li><span class="math inline">\(\beta_j\)</span> represents the effect of predictor <span class="math inline">\(X_j\)</span> on the log-odds of the outcome, holding other predictors constant.</li>
 </ul>
-<p>In the Bayesian framework, the coefficients (<span class="math inline">\(\boldsymbol{\beta}\)</span>) are assigned prior distributions that reflect existing knowledge or plausible ranges before observing the data.<br>
-After incorporating the observed evidence, the priors are updated through Bayes’ theorem:</p>
+<p>In the Bayesian framework, model parameters (<span class="math inline">\(\boldsymbol{\beta}\)</span>) are treated as random variables and assigned prior distributions that reflect existing knowledge or plausible ranges before observing the data. After incorporating the observed evidence, the priors are updated through Bayes’ theorem <span class="citation" data-cites="deleeuw2012 klauenberg2015">(<a href="#ref-deleeuw2012" role="doc-biblioref">Leeuw and Klugkist 2012</a>; <a href="#ref-klauenberg2015" role="doc-biblioref">Klauenberg et al. 2015</a>)</span>:</p>
 <p><span class="math display">\[
 \text{Posterior} \propto \text{Likelihood} \times \text{Prior}
 \]</span></p>
 <ul>
-<li><strong>Likelihood:</strong> the probability of the observed data given model parameters (as in classical regression).<br>
+<li><strong>Likelihood:</strong> represents the probability of the observed data given the model parameters—it captures how well different parameter values explain the data.<br>
 </li>
-<li><strong>Prior:</strong> expresses beliefs or information about parameter values before observing data.<br>
+<li><strong>Prior:</strong> expresses beliefs or existing information about the parameters before observing the data.<br>
 </li>
-<li><strong>Posterior:</strong> represents updated beliefs about parameter values after observing data.</li>
+<li><strong>Posterior:</strong> combines both, representing the updated distribution of parameter values after accounting for the data.</li>
 </ul>
-<p>This formulation allows uncertainty to be naturally propagated through the model, producing full posterior distributions for each coefficient.</p>
+<p>This formulation allows uncertainty to propagate naturally through the model, producing posterior distributions for each coefficient that can be directly interpreted as probabilities.</p>
 </section>
 <section id="prior-specification" class="level2">
 <h2 class="anchored" data-anchor-id="prior-specification">Prior Specification</h2>
 <p>Weakly informative priors were used to regularize estimation without imposing strong assumptions:</p>
 <ul>
-<li><strong>Regression coefficients:</strong> <span class="math inline">\(N(0, 2.5)\)</span>, providing gentle regularization while allowing substantial variation in plausible effects <span class="citation" data-cites="vandeschoot2021">(<a href="#ref-vandeschoot2021" role="doc-biblioref">Vande Schoot et al. 2021</a>)</span>.<br>
+<li><strong>Regression coefficients:</strong> <span class="math inline">\(N(0, 2.5)\)</span>, providing gentle regularization while allowing substantial variation in plausible effects <span class="citation" data-cites="gelman2008 vandeschoot2021">(<a href="#ref-gelman2008" role="doc-biblioref">Gelman et al. 2008</a>; <a href="#ref-vandeschoot2021" role="doc-biblioref">Vande Schoot et al. 2021</a>)</span>.<br>
 </li>
-<li><strong>Intercept:</strong> Student’s t-distribution prior, <span class="math inline">\(t(3, 0, 10)\)</span>, which has
+<li><strong>Intercept:</strong> Student’s t-distribution prior, <span class="math inline">\(t(3, 0, 10)\)</span> <span class="citation" data-cites="vandeschoot2013 vandeschoot2021">(<a href="#ref-vandeschoot2013" role="doc-biblioref">Schoot et al. 2013</a>; <a href="#ref-vandeschoot2021" role="doc-biblioref">Vande Schoot et al. 2021</a>)</span>, which has
 <ul>
 <li>3 degrees of freedom (heavy tails to allow occasional large effects),<br>
 </li>
@@ -4180,7 +4180,7 @@ After incorporating the observed evidence, the priors are updated through Bayes�
 <li>scale 10 (broad range of possible values).</li>
 </ul></li>
 </ul>
-<p>Such priors stabilize estimation in the presence of multicollinearity, limited sample size, or potential outliers.</p>
+<p>Such priors help stabilize estimation in the presence of multicollinearity, limited sample size, or potential outliers.</p>
 </section>
 <section id="advantages-of-bayesian-logistic-regression" class="level2">
 <h2 class="anchored" data-anchor-id="advantages-of-bayesian-logistic-regression">Advantages of Bayesian Logistic Regression</h2>
@@ -5504,6 +5504,9 @@ Klauenberg, K., G. Wübbeler, B. Mickan, P. Harris, and C. Elster. 2015. <span>�
 <div id="ref-kruschke2017" class="csl-entry" role="listitem">
 Kruschke, J. K., and T. M. Liddell. 2017. <span>“Bayesian Data Analysis for Newcomers.”</span> <em>Psychonomic Bulletin &amp; Review</em> 25 (1): 155–77. <a href="https://doi.org/10.3758/s13423-017-1272-1">https://doi.org/10.3758/s13423-017-1272-1</a>.
 </div>
+<div id="ref-deleeuw2012" class="csl-entry" role="listitem">
+Leeuw, C. de, and I. Klugkist. 2012. <span>“Augmenting Data with Published Results in Bayesian Linear Regression.”</span> <em>Multivariate Behavioral Research</em> 47 (3): 369–91. <a href="https://doi.org/10.1080/00273171.2012.673957">https://doi.org/10.1080/00273171.2012.673957</a>.
+</div>
 <div id="ref-liu2013" class="csl-entry" role="listitem">
 Liu, Y. M., S. L. S. Chen, A. M. F. Yen, and H. H. Chen. 2013. <span>“Individual Risk Prediction Model for Incident Cardiovascular Disease: A Bayesian Clinical Reasoning Approach.”</span> <em>International Journal of Cardiology</em> 167 (5): 2008–12. <a href="https://doi.org/10.1016/j.ijcard.2012.05.016">https://doi.org/10.1016/j.ijcard.2012.05.016</a>.
 </div>
@@ -5518,6 +5521,9 @@ National Center for Health Statistics (NCHS). 2014. <span>“National Health and
 </div>
 <div id="ref-richardson2018bnr" class="csl-entry" role="listitem">
 Richardson, Robert, and Brian Hartman. 2018. <span>“Bayesian Nonparametric Regression Models for Modeling and Predicting Healthcare Claims.”</span> <em>Insurance: Mathematics and Economics</em> 83: 1–8. <a href="https://doi.org/10.1016/j.insmatheco.2018.06.002">https://doi.org/10.1016/j.insmatheco.2018.06.002</a>.
+</div>
+<div id="ref-vandeschoot2013" class="csl-entry" role="listitem">
+Schoot, Rens van de, David Kaplan, Jaap Denissen, Jens Asendorpf, Franz Neyer, and Marcel van Aken. 2013. <span>“A Gentle Introduction to Bayesian Analysis: Applications to Developmental Research.”</span> <em>European Journal of Developmental Psychology</em> 10 (6): 723–49. <a href="https://doi.org/10.1080/17405629.2013.803373">https://doi.org/10.1080/17405629.2013.803373</a>.
 </div>
 <div id="ref-vandeschoot2021" class="csl-entry" role="listitem">
 Vande Schoot, R., S. Depaoli, R. King, B. Kramer, K. Märtens, M. G. Tadesse, M. Vannucci, et al. 2021. <span>“Bayesian Statistics and Modelling.”</span> <em>Nature Reviews Methods Primers</em> 1: 1–26. <a href="https://doi.org/10.1038/s43586-020-00001-2">https://doi.org/10.1038/s43586-020-00001-2</a>.
