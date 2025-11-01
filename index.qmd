@@ -9,14 +9,14 @@ date: '`r Sys.Date()`'
 course: Capstone Projects in Data Science
 
 execute:
-  echo: false       # Hide all code by default
+  echo: false       
   warning: false
   message: false
   cache: false
   
 format:
   html:
-    code-fold: true # Allow readers to expand code if they want
+    code-fold: true 
 
 bibliography: references.bib
 reference-section-title: "References"
@@ -49,7 +49,7 @@ library(loo); library(glue)
 
 options(brms.backend = "cmdstanr")
 
-# Optional: confirm CmdStanR is working
+# Confirm CmdStanR is working
 if (requireNamespace("cmdstanr", quietly = TRUE)) {
   try(cmdstanr::cmdstan_version(), silent = TRUE)
 }
@@ -439,6 +439,19 @@ adult <- merged_data %>%
     ) |> forcats::fct_relevel("White")
   ) %>%
   droplevels()
+```
+
+```{r}
+#| label: adult-structure
+#| echo: true
+#| eval: true
+#| collapse: true
+#| comment: ""
+
+# Show structure and first few participants
+
+str(adult)
+head(adult, 10)
 ```
 
 Descriptive statistics for continuous and categorical variables are presented below.

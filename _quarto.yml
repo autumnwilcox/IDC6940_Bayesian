@@ -12,8 +12,6 @@ website:
         href: slides.qmd
       - text: "About Us"
         href: about.qmd 
-      - text: "Contributions"
-        href: contributions.qmd
 
 format:
   html:
