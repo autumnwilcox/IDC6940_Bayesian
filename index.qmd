@@ -1226,8 +1226,7 @@ and may not generalize to later datasets or longitudinal analyses.
 
 The Bayesian, survey-weighted, and imputed logistic regression
 frameworks all identified consistent predictors of diabetes risk in U.S.
-adults: advancing age, higher BMI, male sex, and non-White
-race/ethnicity.
+adults: advancing age, higher BMI, sex (lower odds for females), and non-White race/ethnicity.
 
 The Bayesian model produced estimates nearly identical in direction and
 magnitude to the frequentist results while providing a more
