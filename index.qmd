@@ -175,8 +175,8 @@ $$
 \text{Posterior} \propto \text{Likelihood} \times \text{Prior}
 $$
 
--   **Likelihood:** represents the probability of the observed data given the model parameters—it captures how well different parameter values explain the data.\
--   **Prior:** expresses beliefs or existing information about the parameters before observing the data.\
+-   **Likelihood:** represents the probability of the observed data given the model parameters—it captures how well different parameter values explain the data.
+-   **Prior:** expresses beliefs or existing information about the parameters before observing the data.
 -   **Posterior:** combines both, representing the updated distribution of parameter values after accounting for the data.
 
 This formulation allows uncertainty to propagate naturally through the model, producing posterior distributions for each coefficient that can be directly interpreted as probabilities.
@@ -188,12 +188,12 @@ imposing strong assumptions:
 
 -   **Regression coefficients:** $N(0, 2.5)$, providing gentle
     regularization while allowing substantial variation in plausible
-    effects [@gelman2008; @vandeschoot2021].\
+    effects [@gelman2008; @vandeschoot2021].
 -   **Intercept:** Student’s t-distribution prior, $t(3, 0, 10)$ [@vandeschoot2013; @vandeschoot2021], which
     has
     -   3 degrees of freedom (heavy tails to allow occasional large
-        effects),\
-    -   mean 0 (no bias toward positive or negative effects), and\
+        effects),
+    -   mean 0 (no bias toward positive or negative effects), and
     -   scale 10 (broad range of possible values).
 
 Such priors help stabilize estimation in the presence of multicollinearity,
@@ -202,28 +202,28 @@ limited sample size, or potential outliers.
 ## Advantages of Bayesian Logistic Regression
 
 -   **Uncertainty quantification:** Produces full posterior
-    distributions instead of single estimates.\
+    distributions instead of single estimates.
 -   **Credible intervals:** Provide the range within which a parameter
-    lies with a specified probability (e.g., 95%).\
+    lies with a specified probability (e.g., 95%).
 -   **Flexible priors:** Allow integration of expert knowledge or
-    findings from prior studies.\
+    findings from prior studies.
 -   **Probabilistic predictions:** Posterior predictive distributions
-    yield direct probabilities for new or future observations.\
+    yield direct probabilities for new or future observations.
 -   **Model evaluation:** Posterior predictive checks (PPCs) assess how
     well simulated outcomes reproduce observed data.
 
 ## Posterior Predictions
 
 Posterior distributions of regression coefficients were used to estimate
-the probability of the outcome for given predictor values.\
-This allows statements such as:\
+the probability of the outcome for given predictor values.
+This allows statements such as:
 \> “Given the predictors, the probability of the outcome lies between X%
 and Y%.”
 
 Posterior predictions account for two key sources of uncertainty:
 
 1.  **Parameter uncertainty:** Variability in estimated model
-    coefficients.\
+    coefficients.
 2.  **Predictive uncertainty:** Variability in possible future outcomes
     given those parameters.
 
@@ -239,14 +239,14 @@ diagnostics:
 -   **Posterior sampling:** Conducted via Markov Chain Monte
     Carlo (MCMC) using the No-U-Turn Sampler (NUTS), a variant of
     Hamiltonian Monte Carlo (HMC) [@austin2021]. Four chains were run
-    with sufficient warm-up iterations to ensure convergence.\
+    with sufficient warm-up iterations to ensure convergence.
 -   **Convergence metrics:** The potential scale reduction factor
     ($\hat{R}$) and effective sample size (ESS) were used to verify
-    stability and mixing across chains.\
+    stability and mixing across chains.
 -   **Autocorrelation checks:** Ensured independence between successive
-    draws.\
+    draws.
 -   **Posterior predictive checks (PPCs):** Compared simulated outcomes
-    to observed data to evaluate fit.\
+    to observed data to evaluate fit.
 -   **Bayesian** $R^2$: Quantified the proportion of variance explained
     by predictors, incorporating posterior uncertainty.
 
@@ -880,10 +880,10 @@ bullets <- c(
   glue(" - **Baseline risk.** Male, White, mean age/BMI: **~{baseline_txt}** predicted diabetes prevalence."),
   glue(" - **Age.** +1 SD → **{fmt(age$or)}×** (95% CrI {fmt(age$lcl)}–{fmt(age$ucl)}; {excludes1(age$lcl,age$ucl)})."),
   glue(" - **BMI.** +1 SD → **{fmt(bmi$or)}×** (95% CrI {fmt(bmi$lcl)}–{fmt(bmi$ucl)}; {excludes1(bmi$lcl,bmi$ucl)})."),
-  glue(" - **Female vs Male.** **{fmt(fem$or)}×** (95% CrI {fmt(fem$lcl)}–{fmt(fem$ucl)}; {excludes1(fem$lcl,fem$ucl)})."),
-  glue(" - **Black vs White.** **{fmt(blk$or)}×** (95% CrI {fmt(blk$lcl)}–{fmt(blk$ucl)}; {excludes1(blk$lcl,blk$ucl)})."),
-  glue(" - **Hispanic vs White.** **{fmt(his$or)}×** (95% CrI {fmt(his$lcl)}–{fmt(his$ucl)}; {excludes1(his$lcl,his$ucl)})."),
-  glue(" - **Other/Multi vs White.** **{fmt(oth$or)}×** (95% CrI {fmt(oth$lcl)}–{fmt(oth$ucl)}; {excludes1(oth$lcl,oth$ucl)}).")
+  glue(" - **Female vs. Male.** **{fmt(fem$or)}×** (95% CrI {fmt(fem$lcl)}–{fmt(fem$ucl)}; {excludes1(fem$lcl,fem$ucl)})."),
+  glue(" - **Black vs. White.** **{fmt(blk$or)}×** (95% CrI {fmt(blk$lcl)}–{fmt(blk$ucl)}; {excludes1(blk$lcl,blk$ucl)})."),
+  glue(" - **Hispanic vs. White.** **{fmt(his$or)}×** (95% CrI {fmt(his$lcl)}–{fmt(his$ucl)}; {excludes1(his$lcl,his$ucl)})."),
+  glue(" - **Other/Multi vs. White.** **{fmt(oth$or)}×** (95% CrI {fmt(oth$lcl)}–{fmt(oth$ucl)}; {excludes1(oth$lcl,oth$ucl)}).")
 )
 ```
 
@@ -931,7 +931,7 @@ Model comparison results using leave-one-out cross-validation are presented belo
 
 ```{r}
 #| label: model-comparison
-#| tbl-cap: "Bayesian model comparison (LOO): base model vs models without race or without sex."
+#| tbl-cap: "Bayesian model comparison (LOO): base model vs. models without race or without sex."
 #| echo: false
 #| message: false
 #| warning: false
@@ -988,7 +988,7 @@ regex_pars = "^b_"
 
 ```{r}
 #| label: fig-ppc-bars
-#| fig-cap: "Posterior predictive check: observed vs replicated outcome distribution (bars)."
+#| fig-cap: "Posterior predictive check: observed vs. replicated outcome distribution (bars)."
 #| echo: false
 
 bayesplot::pp_check(bayes_fit, type = "bars", nsamples = 100)
@@ -1019,11 +1019,11 @@ or_plot <- bayes_or %>%
     term_clean = dplyr::case_when(
       term == "age_c"            ~ "Age (per 1 SD)",
       term == "bmi_c"            ~ "BMI (per 1 SD)",
-      term == "sexFemale"        ~ "Female (vs Male)",
-      term == "sexMale"          ~ "Male (vs Female)",
-      term == "race3Black"       ~ "Black (vs White)",
-      term == "race3Hispanic"    ~ "Hispanic (vs White)",
-      term == "race3Other"       ~ "Other (vs White)",
+      term == "sexFemale"        ~ "Female (vs. Male)",
+      term == "sexMale"          ~ "Male (vs. Female)",
+      term == "race3Black"       ~ "Black (vs. White)",
+      term == "race3Hispanic"    ~ "Hispanic (vs. White)",
+      term == "race3Other"       ~ "Other (vs. White)",
       TRUE                       ~ term
     )
   )
@@ -1039,7 +1039,7 @@ Calibration between predicted and observed diabetes probabilities is displayed i
 
 ```{r}
 #| label: fig-pred-calibration
-#| fig-cap: "Observed outcome vs mean predicted probability (calibration scatter with smoother)."
+#| fig-cap: "Observed outcome vs. mean predicted probability (calibration scatter with smoother)."
 #| echo: false
 pred_mean <- colMeans(brms::posterior_epred(bayes_fit))
 ggplot(data.frame(pred = pred_mean, obs = yobs),
@@ -1148,11 +1148,11 @@ dplyr::mutate(
 term = dplyr::case_when(
   grepl("^bmi", term,  ignore.case = TRUE) ~ "BMI (per 1 SD)",
   grepl("^age", term,  ignore.case = TRUE) ~ "Age (per 1 SD)",
-  grepl("^sexFemale$", term)               ~ "Female (vs Male)",
-  grepl("^sexMale$", term)                 ~ "Male (vs Female)",
-  grepl("^race3Hispanic$", term)           ~ "Hispanic (vs White)",
-  grepl("^race3Black$", term)              ~ "Black (vs White)",
-  grepl("^race3Other$", term)              ~ "Other (vs White)",
+  grepl("^sexFemale$", term)               ~ "Female (vs. Male)",
+  grepl("^sexMale$", term)                 ~ "Male (vs. Female)",
+  grepl("^race3Hispanic$", term)           ~ "Hispanic (vs. White)",
+  grepl("^race3Black$", term)              ~ "Black (vs. White)",
+  grepl("^race3Other$", term)              ~ "Other (vs. White)",
   TRUE ~ term
 ),
 OR_CI = sprintf("%.2f (%.2f – %.2f)", OR, LCL, UCL)
@@ -1169,7 +1169,7 @@ knitr::kable(all_tbl, align = c("l","l","c"))
 ```
 
 This table summarizes results from the survey-weighted (design-based),
-multiple-imputation, and Bayesian models.\
+multiple-imputation, and Bayesian models.
 
 The **Bayesian** model’s credible intervals closely align with the
 frequentist confidence intervals but provide a more direct probabilistic
