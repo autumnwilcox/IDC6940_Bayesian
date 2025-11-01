@@ -70,13 +70,9 @@ Bayesian logistic regression offers a robust alternative by integrating
 prior information, regularizing estimates, and quantifying uncertainty
 more transparently than frequentist approaches.
 
-This study applies Bayesian logistic regression to estimate the risk of
-doctor-diagnosed diabetes among adults in the 2013–2014 National Health
-and Nutrition Examination Survey (NHANES). Predictors include age, body mass index (BMI), sex, and a coarsened race/ethnicity factor (`race3`) comprising White, Black, and Hispanic groups, with low-frequency levels combined as “Other.” The NHANES race/ethnicity source variable (`RIDRETH1`) includes Mexican American, Other Hispanic, Non-Hispanic White, Non-Hispanic Black, and Other/Multi. For analysis, we collapsed these into four groups—White, Black, Hispanic, and Other—to ensure adequate representation and model stability.
+This study applies Bayesian logistic regression to estimate the risk of doctor-diagnosed diabetes among adults in the 2013–2014 National Health and Nutrition Examination Survey (NHANES). Predictors include age, body mass index (BMI), sex, and a four-level race/ethnicity variable (`race4`) derived from the NHANES demographic field `RIDRETH1`. The original `RIDRETH1` categories (Mexican American, Other Hispanic, Non-Hispanic White, Non-Hispanic Black, and Other/Multi) were recorded into broader groups (White, Black, Hispanic, and Other) to ensure adequate representation and model stability.
 
-Three analytic frameworks were compared: (1) survey-weighted maximum likelihood estimation (MLE) using the NHANES complex design, (2) multiple imputation (MICE) with predictive mean matching and Rubin’s rules, and (3) Bayesian inference with weakly informative priors $N(0, 2.5)$ implemented via `brms`. The Bayesian
-model incorporated normalized NHANES exam weights as importance weights,
-approximating design-based inference. Across all methods, age and BMI
+Three analytic frameworks were compared: (1) survey-weighted maximum likelihood estimation (MLE) using the NHANES complex design, (2) multiple imputation (MICE) with predictive mean matching and Rubin’s rules, and (3) Bayesian inference with weakly informative priors $N(0, 2.5)$ implemented via `brms`. The Bayesian model incorporated normalized NHANES exam weights as importance weights, approximating design-based inference. Across all methods, age and BMI
 were positively associated with diabetes odds, female sex tended to have
 lower odds than male, and Black and Hispanic adults showed higher odds
 relative to White. Agreement across modeling frameworks supports the
@@ -309,7 +305,7 @@ diabetes questionnaire data. We then restrict the sample to adults (age ≥ 20) 
 #| echo: false
 
 var_desc <- data.frame(
-Variable = c("age", "bmi", "sex", "race3", "diabetes_ind"),
+Variable = c("age", "bmi", "sex", "race4", "diabetes_ind"),
 NHANES_Source = c("RIDAGEYR", "BMXBMI", "RIAGENDR", "RIDRETH1", "DIQ010"),
 Description = c(
 "Participant age in years (adults aged 20 years and older)",
@@ -355,7 +351,7 @@ adult_eda <- merged_data %>%
   dplyr::mutate(
     age_c = as.numeric(scale(age)),
     bmi_c = as.numeric(scale(bmi)),
-    race3 = forcats::fct_collapse(
+    race4 = forcats::fct_collapse(
               factor(race),
               White    = "NH White",
               Black    = "NH Black",
@@ -430,7 +426,7 @@ adult <- merged_data %>%
   mutate(
     age_c = scale(age),
     bmi_c = scale(bmi),
-    race3 = forcats::fct_collapse(
+    race4 = forcats::fct_collapse(
       race,
       White = "NH White",
       Black = "NH Black",
@@ -468,7 +464,7 @@ tbl1_dat <- adult %>%
     age,
     bmi,
     sex,
-    race3,
+    race4,
     # CHANGE: make diabetes_ind a factor so it plays nice with pivot_longer()
     diabetes_ind = factor(diabetes_ind, levels = c(0, 1), labels = c("No", "Yes"))
   )
@@ -492,7 +488,7 @@ cont_sum <- tbl1_dat %>%
   mutate(across(c(Mean, SD, Min, Max), ~round(.x, 2)))
 
 # Categorical summaries: counts and percents
-cat_vars <- c("sex", "race3", "diabetes_ind")
+cat_vars <- c("sex", "race4", "diabetes_ind")
 
 cat_sum <- tbl1_dat %>%
   # CHANGE: ensure all cat vars are factors and include NA as an explicit "(Missing)" level
@@ -507,7 +503,7 @@ cat_sum <- tbl1_dat %>%
   arrange(Variable, desc(n))
 
 kable(cont_sum, caption = "Table 1a. Continuous variables (age, BMI): N, missing, mean (SD), range.")
-kable(cat_sum,  caption = "Table 1b. Categorical variables (sex, race3, diabetes_ind): counts and percentages.")
+kable(cat_sum,  caption = "Table 1b. Categorical variables (sex, race4, diabetes_ind): counts and percentages.")
 ```
 
 Table 1a and 1b summarize the analytic variables included in subsequent models. Mean age and BMI values indicate an adult cohort spanning a wide range of body composition, while categorical summaries confirm balanced sex representation and sufficient sample sizes across race/ethnicity categories. These variables were standardized and used as predictors in all modeling frameworks.
@@ -528,7 +524,7 @@ knitr::kable(head(adult))
 As shown in @tbl-adult, the analytic adult cohort (N =
 `r format(adult_n, big.mark=",")`) includes standardized variables for
 age and BMI (`age_c`, `bmi_c`), categorical indicators for sex and
-race/ethnicity (`race3`), and a binary doctor-diagnosed diabetes
+race/ethnicity (`race4`), and a binary doctor-diagnosed diabetes
 variable (`diabetes_ind`).
 
 ### Missing Data Summary
@@ -552,6 +548,8 @@ DataExplorer::plot_missing(
 The missingness plot visually confirms that BMI and diabetes status have
 modest proportions of missing data, with no evident systematic pattern
 across records.
+
+Missingness was low (~4%) and primarily affected BMI and diabetes status. Patterns likely reflect data missing at random (MAR), as older adults or those with health limitations may be less likely to complete physical exams, supporting the use of MICE for bias reduction.
 
 ### Exploratory Data Summary
 
@@ -585,10 +583,10 @@ ggplot(adult, aes(x = factor(diabetes_ind, levels = c(0,1), labels = c("No","Yes
   labs(title = "BMI by Diabetes Diagnosis (≥20 years)", x = "Diabetes (No/Yes)", y = "BMI") +
   theme_minimal()
 
-# Diabetes by race3 (dodged bars)
-ggplot(adult, aes(x = race3, fill = factor(diabetes_ind, levels = c(0,1), labels = c("No","Yes")))) +
+# Diabetes by race4 (dodged bars)
+ggplot(adult, aes(x = race4, fill = factor(diabetes_ind, levels = c(0,1), labels = c("No","Yes")))) +
   geom_bar(position = "dodge") +
-  labs(title = "Diabetes Diagnosis by Race/Ethnicity (≥20 years)", x = "Race/Ethnicity (race3)", y = "Count", fill = "Diabetes") +
+  labs(title = "Diabetes Diagnosis by Race/Ethnicity (≥20 years)", x = "Race/Ethnicity (race4)", y = "Count", fill = "Diabetes") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
@@ -627,11 +625,11 @@ adult_eda %>%
 
 ```{r}
 #| label: fig-cohort-race
-#| fig-cap: "Race/ethnicity composition (race3)."
+#| fig-cap: "Race/ethnicity composition (race4)."
 #| echo: false
 adult_eda %>%
-  count(race3) %>%
-  ggplot(aes(x = race3, y = n)) +
+  count(race4) %>%
+  ggplot(aes(x = race4, y = n)) +
   geom_col() +
   labs(x = NULL, y = "Count") +
   theme_minimal() +
@@ -642,12 +640,12 @@ The EDA missingness summary shows approximately
 `r sprintf("%.1f", miss_bmi)`% missing BMI and
 `r sprintf("%.1f", miss_diab)`% missing diabetes status
 (`diabetes_ind`). All design variables (WTMEC2YR, SDMVPSU, SDMVSTRA), as
-well as age, sex, and race3, are complete—sex and race NAs are encoded
+well as age, sex, and race4, are complete—sex and race NAs are encoded
 as explicit “(Missing)” levels in the EDA view.
 
 ## Modeling Frameworks
 
-Three modeling frameworks were compared using identical predictors (standardized age, BMI, sex, and race3) and the binary outcome `diabetes_ind`:
+Three modeling frameworks were compared using identical predictors (standardized age, BMI, sex, and race4) and the binary outcome `diabetes_ind`:
 (1) survey-weighted logistic regression to incorporate the NHANES complex sampling design,
 (2) multiple imputation (MICE) to address missing BMI values, and
 (3) Bayesian logistic regression with weakly informative priors to quantify uncertainty.
@@ -664,14 +662,14 @@ Three modeling frameworks were compared using identical predictors (standardized
 adult_clean <- adult %>%
   dplyr::mutate(
     sex   = forcats::fct_drop(sex),
-    race3 = forcats::fct_drop(race3),
+    race4 = forcats::fct_drop(race4),
     age_c = as.numeric(age_c),
     bmi_c = as.numeric(bmi_c)
   ) %>%
   dplyr::filter(!is.na(diabetes_ind), !is.na(age_c), !is.na(bmi_c)) %>%
   droplevels()
 
-str(adult_clean[, c("diabetes_ind","sex","race3","age_c","bmi_c")])
+str(adult_clean[, c("diabetes_ind","sex","race4","age_c","bmi_c")])
 ```
 
 ```{r}
@@ -693,17 +691,17 @@ data = adult_clean
 
 des_cc <- subset(nhanes_design_adult, !is.na(diabetes_ind) &
 !is.na(age_c) & !is.na(bmi_c) &
-!is.na(sex) & !is.na(race3))
+!is.na(sex) & !is.na(race4))
 
 # Sanity checks before modeling
 stopifnot(nlevels(adult_clean$sex)   >= 2)
-stopifnot(nlevels(adult_clean$race3) >= 2)
+stopifnot(nlevels(adult_clean$race4) >= 2)
 
 table(adult_clean$sex)
-table(adult_clean$race3)
+table(adult_clean$race4)
 
 svy_fit <- survey::svyglm(
-diabetes_ind ~ age_c + bmi_c + sex + race3,
+diabetes_ind ~ age_c + bmi_c + sex + race4,
 design = des_cc,
 family = quasibinomial()
 )
@@ -743,7 +741,7 @@ MICE, as an alternative to the Bayesian approach, effectively manages missing da
 
 For large sample sizes (n ≥ 400), even in the presence of high percentages (up to 75%) of missing data in one variable, non-normal distributions such as flat densities, heavy tails, skewness, and multimodality do not materially affect mean structure estimation performance [@vanbuuren2012].  
 
-In this study, continuous variables (age and BMI) were imputed using predictive mean matching (PMM) to preserve realistic distributions, while categorical variables (sex and race3) were imputed using logistic and polytomous regression models, respectively. Diabetes status (`diabetes_ind`) was treated as an outcome variable and was not imputed. Twenty imputations were generated to reduce Monte Carlo error and maintain robust variance estimation.
+In this study, continuous variables (age and BMI) were imputed using predictive mean matching (PMM) to preserve realistic distributions, while categorical variables (sex and race4) were imputed using logistic and polytomous regression models, respectively. Diabetes status (`diabetes_ind`) was treated as an outcome variable and was not imputed. Twenty imputations were generated to reduce Monte Carlo error and maintain robust variance estimation.
 
 ```{r}
 #| label: model-mice
@@ -755,7 +753,7 @@ In this study, continuous variables (age and BMI) were imputed using predictive 
 # Build data for imputation
 
 mi_dat <- adult %>%
-dplyr::select(diabetes_ind, age, bmi, sex, race3, WTMEC2YR, SDMVPSU, SDMVSTRA)
+dplyr::select(diabetes_ind, age, bmi, sex, race4, WTMEC2YR, SDMVPSU, SDMVSTRA)
 
 # Specify methods and predictor matrix
 
@@ -769,10 +767,10 @@ pred["diabetes_ind", ] <- 0
 pred[, "diabetes_ind"] <- 1
 
 # Continuous vars: age = normal; bmi = predictive mean matching (PMM).
-# Categoricals: sex = logistic; race3 = polytomous regression.
+# Categoricals: sex = logistic; race4 = polytomous regression.
 
 meth[c("age","bmi")]   <- c("norm","pmm")
-meth[c("sex","race3")] <- c("logreg","polyreg")
+meth[c("sex","race4")] <- c("logreg","polyreg")
 
 # Design variables as auxiliaries only
 
@@ -788,7 +786,7 @@ imp <- mice::mice(mi_dat, m = 20, method = meth, predictorMatrix = pred, seed = 
 fits <- with(
   imp,
   glm(
-    diabetes_ind ~ scale(age) + scale(bmi) + relevel(sex, "Male") + relevel(race3, "White"),
+    diabetes_ind ~ scale(age) + scale(bmi) + relevel(sex, "Male") + relevel(race4, "White"),
     family = binomial()
   )
 )
@@ -811,7 +809,7 @@ dplyr::filter(term != "(Intercept)")
 adult_imp1 <- mice::complete(imp, 1) %>%
   dplyr::mutate(
     sex     = factor(sex,   levels = levels(adult$sex)),
-    race3   = factor(race3, levels = levels(adult$race3)),
+    race4   = factor(race4, levels = levels(adult$race4)),
     age_c   = as.numeric(scale(age)),
     bmi_c   = as.numeric(scale(bmi)),
     wt_norm = WTMEC2YR / mean(WTMEC2YR, na.rm = TRUE)
@@ -826,7 +824,7 @@ adult_imp1 <- mice::complete(imp, 1) %>%
 #| dependson: [adult-imp1]
 #| cache: false
 
-fml_bayes <- diabetes_ind | weights(wt_norm) ~ age_c + bmi_c + sex + race3
+fml_bayes <- diabetes_ind | weights(wt_norm) ~ age_c + bmi_c + sex + race4
 
 priors <- c(
   brms::set_prior("normal(0, 2.5)", class = "b"),
@@ -908,7 +906,7 @@ knitr::kable(mi_or, caption = mi_caption)
 Bayesian logistic regression was implemented using the following model specification:
 
 **Formula:**  
-`diabetes_ind | weights(wt_norm) ~ age_c + bmi_c + sex + race3`
+`diabetes_ind | weights(wt_norm) ~ age_c + bmi_c + sex + race4`
 
 ```{r}
 #| label: corr-heatmap-adult-imp1
@@ -969,9 +967,9 @@ excludes1 <- function(lcl,ucl) ifelse(!is.na(lcl) && !is.na(ucl) && (lcl>1 | ucl
 age  <- pull_or(bayes_or, "age_c")
 bmi  <- pull_or(bayes_or, "bmi_c")
 fem  <- pull_or(bayes_or, "sexFemale")
-blk  <- pull_or(bayes_or, "race3Black")
-his  <- pull_or(bayes_or, "race3Hispanic")
-oth  <- pull_or(bayes_or, "race3Other")
+blk  <- pull_or(bayes_or, "race4Black")
+his  <- pull_or(bayes_or, "race4Hispanic")
+oth  <- pull_or(bayes_or, "race4Other")
 
 post <- as.data.frame(brms::as_draws_df(bayes_fit))
 b0   <- mean(post$b_Intercept)
@@ -1043,7 +1041,7 @@ Model comparison results using leave-one-out cross-validation are presented belo
 
 # Reduced models (let brms compile if needed)
 invisible(capture.output({
-  fit_no_race <- update(bayes_fit, formula = update(fml_bayes, . ~ . - race3))
+  fit_no_race <- update(bayes_fit, formula = update(fml_bayes, . ~ . - race4))
   fit_no_sex  <- update(bayes_fit, formula = update(fml_bayes, . ~ . - sex))
 }))
 
@@ -1083,12 +1081,12 @@ adult_means <- adult_imp1 %>% summarise(
   bmi_sd   = sd(bmi, na.rm = TRUE)
 )
 
-to_model_row <- function(age_raw, bmi_raw, sex_lab, race3_lab) {
+to_model_row <- function(age_raw, bmi_raw, sex_lab, race4_lab) {
   tibble(
     age_c  = (age_raw - adult_means$age_mean)/adult_means$age_sd,
     bmi_c  = (bmi_raw - adult_means$bmi_mean)/adult_means$bmi_sd,
     sex    = factor(sex_lab,   levels = levels(adult_imp1$sex)),
-    race3  = factor(race3_lab, levels = levels(adult_imp1$race3)),
+    race4  = factor(race4_lab, levels = levels(adult_imp1$race4)),
     wt_norm = 1
   )
 }
@@ -1108,15 +1106,15 @@ plot_post_density <- function(df_row, title_txt) {
 # Use participants from analytic data (adult) for realistic inputs
 stopifnot(nrow(adult) >= 2)
 p1 <- to_model_row(adult$age[1], adult$bmi[1],
-                   as.character(adult$sex[1]), as.character(adult$race3[1]))
+                   as.character(adult$sex[1]), as.character(adult$race4[1]))
 p2 <- to_model_row(adult$age[2], adult$bmi[2],
-                   as.character(adult$sex[2]), as.character(adult$race3[2]))
+                   as.character(adult$sex[2]), as.character(adult$race4[2]))
 
 plot_post_density(p1, "Participant 1: Posterior Predictive Distribution (95% CrI)")
 plot_post_density(p2, "Participant 2: Posterior Predictive Distribution (95% CrI)")
 
 # “New” participant example
-new_pt <- to_model_row(age_raw = 45, bmi_raw = 32, sex_lab = "Female", race3_lab = "Hispanic")
+new_pt <- to_model_row(age_raw = 45, bmi_raw = 32, sex_lab = "Female", race4_lab = "Hispanic")
 plot_post_density(new_pt, "New Participant: Posterior Predictive Distribution (95% CrI)")
 ```
 
@@ -1164,7 +1162,7 @@ bayesplot::mcmc_acf(post_array, pars = c("b_age_c", "b_bmi_c"))
 #| echo: false
 
 par_names <- names(posterior::as_draws_df(bayes_fit))
-want <- c("b_age_c","b_bmi_c","b_sexFemale","b_race3Black","b_race3Hispanic","b_race3Other")
+want <- c("b_age_c","b_bmi_c","b_sexFemale","b_race4Black","b_race4Hispanic","b_race4Other")
 have <- intersect(want, par_names)
 
 if (length(have) == 0) {
@@ -1225,9 +1223,9 @@ or_plot <- bayes_or %>%
       term == "bmi_c"            ~ "BMI (per 1 SD)",
       term == "sexFemale"        ~ "Female (vs. Male)",
       term == "sexMale"          ~ "Male (vs. Female)",
-      term == "race3Black"       ~ "Black (vs. White)",
-      term == "race3Hispanic"    ~ "Hispanic (vs. White)",
-      term == "race3Other"       ~ "Other (vs. White)",
+      term == "race4Black"       ~ "Black (vs. White)",
+      term == "race4Hispanic"    ~ "Hispanic (vs. White)",
+      term == "race4Other"       ~ "Other (vs. White)",
       TRUE                       ~ term
     )
   )
@@ -1339,7 +1337,7 @@ all_cols <- names(draws_df)
 
 # EDIT THESE if your names differ (check the printed list from list-brms-pars)
 
-want_post <- c("b_age_c","b_bmi_c","b_sexFemale","b_race3Black","b_race3Hispanic","b_race3Other")
+want_post <- c("b_age_c","b_bmi_c","b_sexFemale","b_race4Black","b_race4Hispanic","b_race4Other")
 
 have_post  <- intersect(want_post, all_cols)
 have_prior <- intersect(paste0("prior_", have_post), all_cols)
@@ -1370,9 +1368,9 @@ combined_draws <<- dplyr::bind_rows(prior_long, post_long)
 lbl <- c(
 b_age_c = "Age (1 SD)", b_bmi_c = "BMI (1 SD)",
 b_sexFemale = "Female vs Male",
-b_race3Black = "Black vs White",
-b_race3Hispanic = "Hispanic vs White",
-b_race3Other = "Other vs White"
+b_race4Black = "Black vs White",
+b_race4Hispanic = "Hispanic vs White",
+b_race4Other = "Other vs White"
 )
 combined_draws$term <- factor(
 combined_draws$term,
@@ -1417,7 +1415,7 @@ knitr::asis_output("**Skipped: no matching prior/posterior draws to plot.**")
 #| cache: false
 
 par_names <- names(posterior::as_draws_df(bayes_fit))
-want <- c("b_age_c","b_bmi_c","b_sexFemale","b_race3Black","b_race3Hispanic","b_race3Other")
+want <- c("b_age_c","b_bmi_c","b_sexFemale","b_race4Black","b_race4Hispanic","b_race4Other")
 have <- intersect(want, par_names)
 
 if (length(have)) {
@@ -1466,9 +1464,9 @@ term = dplyr::case_when(
   grepl("^age", term,  ignore.case = TRUE) ~ "Age (per 1 SD)",
   grepl("^sexFemale$", term)               ~ "Female (vs. Male)",
   grepl("^sexMale$", term)                 ~ "Male (vs. Female)",
-  grepl("^race3Hispanic$", term)           ~ "Hispanic (vs. White)",
-  grepl("^race3Black$", term)              ~ "Black (vs. White)",
-  grepl("^race3Other$", term)              ~ "Other (vs. White)",
+  grepl("^race4Hispanic$", term)           ~ "Hispanic (vs. White)",
+  grepl("^race4Black$", term)              ~ "Black (vs. White)",
+  grepl("^race4Other$", term)              ~ "Other (vs. White)",
   TRUE ~ term
 ),
 OR_CI = sprintf("%.2f (%.2f – %.2f)", OR, LCL, UCL)
