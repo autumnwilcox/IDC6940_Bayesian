@@ -899,7 +899,7 @@ Bayesian logistic regression was implemented using the following model specifica
 
 ```{r}
 #| label: corr-heatmap-adult-imp1
-#| echo: true
+#| echo: false
 #| dependson: [adult-imp1]
 #| cache: false
 
@@ -1059,7 +1059,7 @@ Figures below visualize posterior distributions, MCMC diagnostics, and model fit
 
 ```{r}
 #| label: posterior-density-participants
-#| echo: true
+#| echo: false
 #| dependson: [fit-bayes]
 #| cache: false
 
@@ -1304,7 +1304,7 @@ theme_minimal()
 
 ```{r}
 #| label: list-brms-pars
-#| echo: true
+#| echo: false
 #| dependson: [fit-bayes]
 #| cache: false
 
