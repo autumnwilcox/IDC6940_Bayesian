@@ -442,6 +442,8 @@ adult <- merged_data %>%
   droplevels()
 ```
 
+Descriptive statistics for continuous and categorical variables are presented below.
+
 ```{r}
 #| label: tbl1-analytic
 #| echo: false
@@ -833,6 +835,8 @@ UCL  = exp(Q97.5)
 dplyr::select(term, OR, LCL, UCL)
 ```
 
+Posterior odds ratios and credible intervals from the Bayesian logistic regression are shown in Table @tbl-bayes.
+
 ```{r}
 #| label: tbl-bayes
 #| echo: false
@@ -887,6 +891,8 @@ As shown in @tbl-bayes, the Bayesian logistic regression model estimated the log
 
 Posterior summaries were further evaluated using the Bayesian $R^2$, which estimates the proportion of outcome variance explained by model predictors.
 
+Model-level performance is summarized in Table @tbl-bayesR2.
+
 ```{r}
 #| label: tbl-bayesR2
 #| echo: false
@@ -921,6 +927,8 @@ knitr::kable(diag_b, digits = 1)
 
 All model parameters achieved R̂ values approximately equal to 1.00 and bulk/tail effective sample sizes exceeding 2,000, confirming strong convergence and well-mixed chains. The Bayesian R² was approximately 0.13, indicating that age, BMI, sex, and race collectively explained about 13% of variability in diabetes risk at the population level.
 
+Model comparison results using leave-one-out cross-validation are presented below.
+
 ```{r}
 #| label: model-comparison
 #| tbl-cap: "Bayesian model comparison (LOO): base model vs models without race or without sex."
@@ -954,6 +962,8 @@ knitr::kable(
 ```
 
 Leave-one-out (LOO) cross-validation showed that models excluding race or sex had lower expected log predictive density (elpd), indicating a poorer fit. This supports the inclusion of both variables as meaningful contributors to predictive performance and overall model adequacy.
+
+Figures below visualize posterior distributions, MCMC diagnostics, and model fit.
 
 ```{r}
 #| label: fig-mcmc-areas
@@ -1024,6 +1034,8 @@ ggplot(or_plot, aes(x = OR, y = reorder(term_clean, OR))) +
   geom_errorbarh(aes(xmin = LCL, xmax = UCL), height = 0.15) +
   labs(x = "Odds ratio (logit model, posterior)", y = NULL)
 ```
+
+Calibration between predicted and observed diabetes probabilities is displayed in Figure @fig-pred-calibration.
 
 ```{r}
 #| label: fig-pred-calibration
@@ -1105,6 +1117,8 @@ if (length(present) == 0) {
 The overlay of prior and posterior densities illustrates that informative updates occurred primarily for BMI, age, and race coefficients, which showed distinct posterior shifts relative to the priors. In contrast, weaker predictors such as sex displayed overlapping distributions, indicating that inference for those parameters was more influenced by prior uncertainty than by the observed data. This balance confirms appropriate regularization rather than overfitting.
 
 ## Results
+
+A concise summary of posterior estimates is provided below.
 
 ```{r}
 #| label: results-bullets
