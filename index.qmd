@@ -12,6 +12,7 @@ execute:
   echo: false       # Hide all code by default
   warning: false
   message: false
+  cache: false
   
 format:
   html:
@@ -41,10 +42,8 @@ for (p in need) if (!requireNamespace(p, quietly = TRUE)) install.packages(p)
 
 # Project Libraries
 library(dplyr); library(readr); library(DataExplorer); library(forcats)
-library(survey); library(mice); library(brms); library(posterior); library(broom)
-library(ggplot2); library(stringr); library(tidyr); library(knitr)
-library(bayesplot); library(tibble); library(reshape2)
-library(loo)  # <- add this
+library(survey); library(mice); library(brms); library(posterior); library(broom); library(ggplot2); library(stringr); library(tidyr); library(knitr); library(bayesplot); library(tibble); library(reshape2)
+library(loo); library(glue)  
 
 # Set cmdstanr backend
 
@@ -256,8 +255,8 @@ diagnostics:
 
 We analyzed NHANES 2013–2014 public-use data from the CDC’s National
 Center for Health Statistics [@nchs2014]. Three component files were
-merged: demographics (**DEMO_H**), body measures (**BMX_H**), and the
-diabetes questionnaire (**DIQ_H**). All variables were coerced to
+merged: demographics (DEMO_H), body measures (BMX_H), and the
+diabetes questionnaire (DIQ_H). All variables were coerced to
 consistent numeric or factor types prior to merging to ensure atomic
 columns suitable for survey analysis and modeling.
 
@@ -300,7 +299,7 @@ standardized as appropriate.
 
 The merged dataset contains `r format(merged_n, big.mark = ",")`
 participants. It integrates demographic, examination, and
-diabetes questionnaire data. We then restrict the sample to **adults (age ≥ 20)** to define the analytic cohort used in subsequent analyses. A small proportion of records have missing values in **BMI** and **diabetes status**, which will be addressed later through multiple imputation.
+diabetes questionnaire data. We then restrict the sample to adults (age ≥ 20) to define the analytic cohort used in subsequent analyses. A small proportion of records have missing values in BMI and diabetes status, which will be addressed later through multiple imputation.
 
 ### Adult Cohort Definition
 
@@ -546,6 +545,42 @@ across records.
 The adult analytic cohort was broadly representative of the U.S. population, with a majority identifying as Non-Hispanic White. Age and BMI distributions were right-skewed, with most participants classified as overweight or obese. Visual exploration revealed a clear positive relationship between age, BMI, and diabetes prevalence. Non-Hispanic Black and Hispanic participants exhibited higher proportions of diabetes compared to Non-Hispanic Whites. Missingness was minimal and primarily limited to BMI and diabetes status, supporting the use of multiple imputation for these variables.
 
 ```{r}
+#| label: eda-histograms-bars
+#| echo: false
+
+# Age distribution (analytic adult)
+ggplot(adult, aes(x = age)) +
+  geom_histogram(binwidth = 5, color = "white") +
+  labs(title = "Distribution of Age (≥20 years)", x = "Age (years)", y = "Count") +
+  theme_minimal()
+
+# Diabetes outcome distribution
+ggplot(adult, aes(x = factor(diabetes_ind, levels = c(0,1), labels = c("No","Yes")))) +
+  geom_bar() +
+  labs(title = "Diabetes Outcome Distribution (≥20 years)", x = "Diabetes (No/Yes)", y = "Count") +
+  theme_minimal()
+
+# BMI distribution
+ggplot(adult, aes(x = bmi)) +
+  geom_histogram(binwidth = 1, color = "white") +
+  labs(title = "Distribution of BMI (≥20 years)", x = "BMI", y = "Count") +
+  theme_minimal()
+
+# BMI by diabetes outcome (boxplot)
+ggplot(adult, aes(x = factor(diabetes_ind, levels = c(0,1), labels = c("No","Yes")), y = bmi)) +
+  geom_boxplot() +
+  labs(title = "BMI by Diabetes Diagnosis (≥20 years)", x = "Diabetes (No/Yes)", y = "BMI") +
+  theme_minimal()
+
+# Diabetes by race3 (dodged bars)
+ggplot(adult, aes(x = race3, fill = factor(diabetes_ind, levels = c(0,1), labels = c("No","Yes")))) +
+  geom_bar(position = "dodge") +
+  labs(title = "Diabetes Diagnosis by Race/Ethnicity (≥20 years)", x = "Race/Ethnicity (race3)", y = "Count", fill = "Diabetes") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
 #| label: fig-cohort-age
 #| fig-cap: "Age distribution (age ≥ 20)."
 #| echo: false
@@ -591,8 +626,8 @@ adult_eda %>%
 ```
 
 The EDA missingness summary shows approximately
-`r sprintf("%.1f", miss_bmi)`% **missing BMI** and
-`r sprintf("%.1f", miss_diab)`% **missing diabetes status**
+`r sprintf("%.1f", miss_bmi)`% missing BMI and
+`r sprintf("%.1f", miss_diab)`% missing diabetes status
 (`diabetes_ind`). All design variables (WTMEC2YR, SDMVPSU, SDMVSTRA), as
 well as age, sex, and race3, are complete—sex and race NAs are encoded
 as explicit “(Missing)” levels in the EDA view.
@@ -670,7 +705,7 @@ dplyr::select(term, OR, LCL, UCL, p.value) %>%
 dplyr::filter(term != "(Intercept)")
 ```
 
-Design-based odds ratios are summarized in Table @tbl-survey.
+Design-based odds ratios are summarized in @tbl-survey.
 
 ```{r}
 #| label: tbl-survey
@@ -680,13 +715,22 @@ knitr::kable(svy_or)
 ```
 
 The NHANES 2013–2014 data use a complex, multistage probability design
-involving **strata** (`SDMVSTRA`), **primary sampling units (PSUs;
-SDMVPSU)**, and **examination weights (`WTMEC2YR`)** to ensure
+involving strata (`SDMVSTRA`), primary sampling units (PSUs;
+SDMVPSU), and examination weights (`WTMEC2YR`) to ensure
 nationally representative estimates [@nchs2014].
 
 Estimates are population-weighted using NHANES survey design variables (`WTMEC2YR`, `SDMVSTRA`, `SDMVPSU`). Odds ratios are reported per one standard deviation (1 SD) increase in age and BMI, with reference groups Male and White.
 
 ### Multiple Imputation (MICE)
+
+Multiple Imputation by Chained Equations (MICE) was used as a principled approach for handling missing data [@vanbuuren2011; @vanbuuren2012].  
+MICE iteratively imputes each incomplete variable using regression models based on other variables in the dataset, producing multiple completed datasets that reflect uncertainty due to missingness. Estimates are then pooled across imputations using Rubin’s rules to generate final parameter estimates and confidence intervals.
+
+MICE, as an alternative to the Bayesian approach, effectively manages missing data through chained regression equations without requiring full joint modeling of all variables.  
+
+For large sample sizes (n ≥ 400), even in the presence of high percentages (up to 75%) of missing data in one variable, non-normal distributions such as flat densities, heavy tails, skewness, and multimodality do not materially affect mean structure estimation performance [@vanbuuren2012].  
+
+In this study, continuous variables (age and BMI) were imputed using predictive mean matching (PMM) to preserve realistic distributions, while categorical variables (sex and race3) were imputed using logistic and polytomous regression models, respectively. Diabetes status (`diabetes_ind`) was treated as an outcome variable and was not imputed. Twenty imputations were generated to reduce Monte Carlo error and maintain robust variance estimation.
 
 ```{r}
 #| label: model-mice
@@ -745,6 +789,82 @@ dplyr::rename(OR = estimate, LCL = `2.5 %`, UCL = `97.5 %`) %>%
 dplyr::filter(term != "(Intercept)")
 ```
 
+```{r}
+#| label: adult-imp1
+#| echo: false
+#| message: false
+#| warning: false
+
+adult_imp1 <- mice::complete(imp, 1) %>%
+  dplyr::mutate(
+    sex     = factor(sex,   levels = levels(adult$sex)),
+    race3   = factor(race3, levels = levels(adult$race3)),
+    age_c   = as.numeric(scale(age)),
+    bmi_c   = as.numeric(scale(bmi)),
+    wt_norm = WTMEC2YR / mean(WTMEC2YR, na.rm = TRUE)
+  ) %>%
+  dplyr::filter(!is.na(diabetes_ind), !is.na(age_c), !is.na(bmi_c)) %>%
+  droplevels()
+```
+
+```{r}
+#| label: define-bayes-formula
+#| echo: false
+#| dependson: [adult-imp1]
+#| cache: false
+
+fml_bayes <- diabetes_ind | weights(wt_norm) ~ age_c + bmi_c + sex + race3
+
+priors <- c(
+  brms::set_prior("normal(0, 2.5)", class = "b"),
+  brms::set_prior("student_t(3, 0, 10)", class = "Intercept")
+)
+```
+
+```{r}
+#| label: fit-bayes
+#| echo: false
+#| message: false
+#| warning: false
+#| dependson: [adult-imp1, define-bayes-formula]
+#| cache: false
+
+invisible(capture.output({
+  bayes_fit <- brms::brm(
+    formula = fml_bayes,
+    data    = adult_imp1,
+    family  = bernoulli(link = "logit"),
+    prior   = priors,
+    chains  = 4, iter = 2000, seed = 123,
+    control = list(adapt_delta = 0.95),
+    refresh = 0
+  )
+}))
+
+bayes_or <- brms::posterior_summary(bayes_fit, pars = "^b_") %>%
+  as.data.frame() %>%
+  tibble::rownames_to_column("raw") %>%
+  dplyr::mutate(
+    term = gsub("^b_", "", raw),
+    OR   = exp(Estimate),
+    LCL  = exp(Q2.5),
+    UCL  = exp(Q97.5)
+  ) %>%
+  dplyr::select(term, OR, LCL, UCL)
+```
+
+```{r}
+#| label: tbl-bayes
+#| echo: false
+#| tbl-cap: "Bayesian logistic regression: posterior odds ratios (OR) with 95% credible intervals."
+#| dependson: [fit-bayes]
+#| cache: false
+
+knitr::kable(
+  dplyr::mutate(bayes_or, dplyr::across(c(OR, LCL, UCL), ~ round(.x, 2)))
+)
+```
+
 Multiple imputation preserves sample size and reduces bias from missing
 BMI values. Results closely mirror the survey-weighted model, confirming
 robustness to imputation.
@@ -752,6 +872,7 @@ robustness to imputation.
 ```{r}
 #| label: tbl-mice
 #| echo: false 
+
 miss_age  <- sum(is.na(mi_dat$age))
 miss_bmiN <- sum(is.na(mi_dat$bmi))
 
@@ -771,88 +892,58 @@ knitr::kable(mi_or, caption = mi_caption)
 
 ### Bayesian Logistic Regression
 
-```{r}
-#| label: model-bayesian
-#| cache: true
-#| echo: false
-#| include: false
-#| message: false
-#| warning: false
-#| results: 'hide'
+Bayesian logistic regression was implemented using the following model specification:
 
-# Prepare a single imputed dataset (from MICE results)
-
-adult_imp1 <- mice::complete(imp, 1) %>%
-dplyr::mutate(
-sex   = factor(sex,   levels = levels(adult$sex)),
-race3 = factor(race3, levels = levels(adult$race3)),
-age_c = as.numeric(scale(age)),
-bmi_c = as.numeric(scale(bmi)),
-wt_norm = WTMEC2YR / mean(WTMEC2YR, na.rm = TRUE)
-) %>%
-dplyr::filter(!is.na(diabetes_ind), !is.na(age_c), !is.na(bmi_c)) %>%
-droplevels()
-
-# Define model formula
-
-fml_bayes <- diabetes_ind | weights(wt_norm) ~ age_c + bmi_c + sex + race3
-
-# Specify weakly informative priors
-
-priors <- c(
-brms::set_prior("normal(0, 2.5)", class = "b"),
-brms::set_prior("student_t(3, 0, 10)", class = "Intercept")
-)
-
-# Fit Bayesian logistic regression
-
-invisible(capture.output({
-  bayes_fit <- brms::brm(
-    formula = fml_bayes,
-    data    = adult_imp1,
-    family  = bernoulli(link = "logit"),
-    prior   = priors,
-    chains  = 4, iter = 2000, seed = 123,
-    control = list(adapt_delta = 0.95),
-    refresh = 0
-  )
-}))
-
-# Shared objects for diagnostics/plots
-yobs <- adult_imp1$diabetes_ind
-
-# Extract posterior summaries and transform to odds ratios
-
-bayes_or <- brms::posterior_summary(bayes_fit, pars = "^b_") %>%
-as.data.frame() %>%
-tibble::rownames_to_column("raw") %>%
-dplyr::mutate(
-term = gsub("^b_", "", raw),
-OR   = exp(Estimate),
-LCL  = exp(Q2.5),
-UCL  = exp(Q97.5)
-) %>%
-dplyr::select(term, OR, LCL, UCL)
-```
-
-Posterior odds ratios and credible intervals from the Bayesian logistic regression are shown in Table @tbl-bayes.
+**Formula:**  
+`diabetes_ind | weights(wt_norm) ~ age_c + bmi_c + sex + race3`
 
 ```{r}
-#| label: tbl-bayes
-#| echo: false
-#| tbl-cap: "Bayesian logistic regression: posterior odds ratios (OR) with 95% credible intervals for diabetes diagnosis among adults (NHANES 2013–2014)."
-knitr::kable(
-  dplyr::mutate(bayes_or, dplyr::across(c(OR, LCL, UCL), ~ round(.x, 2)))
+#| label: corr-heatmap-adult-imp1
+#| echo: true
+#| dependson: [adult-imp1]
+#| cache: false
+
+stopifnot(all(c("diabetes_ind","age","bmi") %in% names(adult_imp1)))
+
+correlation_matrix <- cor(
+  adult_imp1[, c("diabetes_ind", "age", "bmi")],
+  use = "complete.obs",
+  method = "pearson"
 )
+correlation_melted <- melt(correlation_matrix, varnames = c("Var1","Var2"), value.name = "value")
+
+ggplot(correlation_melted, aes(Var1, Var2, fill = value)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white",
+                       midpoint = 0, limits = c(-1, 1), name = "Correlation") +
+  theme_minimal() +
+  labs(title = "Correlation Heatmap (adult_imp1)", x = "Features", y = "Features")
 ```
+
+```{r}
+#| label: fit-with-priors
+#| dependson: [fit-bayes]
+#| echo: false
+#| cache: false
+
+if (exists("bayes_fit")) {
+bayes_fit_prior <- tryCatch(
+update(bayes_fit, sample_prior = "yes", refresh = 0),
+error = function(e) bayes_fit
+)
+} else {
+bayes_fit_prior <- NULL
+}
+```
+
+Posterior odds ratios and credible intervals from the Bayesian logistic regression are shown in @tbl-bayes.
 
 ```{r}
 #| label: build-bullets
 #| echo: false
 #| include: false
-
-library(dplyr)
-library(glue)
+#| dependson: [fit-bayes]
+#| cache: false
 
 pull_or <- function(df, term) {
   row <- df %>% filter(term == !!term)
@@ -891,12 +982,13 @@ As shown in @tbl-bayes, the Bayesian logistic regression model estimated the log
 
 Posterior summaries were further evaluated using the Bayesian $R^2$, which estimates the proportion of outcome variance explained by model predictors.
 
-Model-level performance is summarized in Table @tbl-bayesR2.
+Model-level performance is summarized in @tbl-bayesR2.
 
 ```{r}
 #| label: tbl-bayesR2
 #| echo: false
 #| tbl-cap: "Bayesian R² summary."
+
 knitr::kable(as.data.frame(brms::bayes_R2(bayes_fit)))
 ```
 
@@ -966,9 +1058,62 @@ Leave-one-out (LOO) cross-validation showed that models excluding race or sex ha
 Figures below visualize posterior distributions, MCMC diagnostics, and model fit.
 
 ```{r}
+#| label: posterior-density-participants
+#| echo: true
+#| dependson: [fit-bayes]
+#| cache: false
+
+adult_means <- adult_imp1 %>% summarise(
+  age_mean = mean(age, na.rm = TRUE),
+  age_sd   = sd(age, na.rm = TRUE),
+  bmi_mean = mean(bmi, na.rm = TRUE),
+  bmi_sd   = sd(bmi, na.rm = TRUE)
+)
+
+to_model_row <- function(age_raw, bmi_raw, sex_lab, race3_lab) {
+  tibble(
+    age_c  = (age_raw - adult_means$age_mean)/adult_means$age_sd,
+    bmi_c  = (bmi_raw - adult_means$bmi_mean)/adult_means$bmi_sd,
+    sex    = factor(sex_lab,   levels = levels(adult_imp1$sex)),
+    race3  = factor(race3_lab, levels = levels(adult_imp1$race3)),
+    wt_norm = 1
+  )
+}
+
+plot_post_density <- function(df_row, title_txt) {
+  phat <- posterior_linpred(bayes_fit, newdata = df_row, transform = TRUE)
+  ci95 <- quantile(phat, c(0.025, 0.975))
+  ggplot(data.frame(pred = as.numeric(phat)), aes(x = pred)) +
+    geom_density() +
+    geom_vline(xintercept = ci95[1], linetype = "dashed") +
+    geom_vline(xintercept = ci95[2], linetype = "dashed") +
+    coord_cartesian(xlim = c(0, 1)) +
+    labs(x = "P(Diabetes = 1)", y = "Density", title = title_txt) +
+    theme_minimal()
+}
+
+# Use participants from analytic data (adult) for realistic inputs
+stopifnot(nrow(adult) >= 2)
+p1 <- to_model_row(adult$age[1], adult$bmi[1],
+                   as.character(adult$sex[1]), as.character(adult$race3[1]))
+p2 <- to_model_row(adult$age[2], adult$bmi[2],
+                   as.character(adult$sex[2]), as.character(adult$race3[2]))
+
+plot_post_density(p1, "Participant 1: Posterior Predictive Distribution (95% CrI)")
+plot_post_density(p2, "Participant 2: Posterior Predictive Distribution (95% CrI)")
+
+# “New” participant example
+new_pt <- to_model_row(age_raw = 45, bmi_raw = 32, sex_lab = "Female", race3_lab = "Hispanic")
+plot_post_density(new_pt, "New Participant: Posterior Predictive Distribution (95% CrI)")
+```
+
+```{r}
 #| label: fig-mcmc-areas
 #| fig-cap: "Posterior distributions (95% credible mass) for slope parameters."
 #| echo: false
+#| dependson: [fit-bayes]
+#| cache: false
+
 bayesplot::mcmc_areas(
 as.array(bayes_fit),
 regex_pars = "^b_",
@@ -980,6 +1125,9 @@ prob = 0.95
 #| label: fig-mcmc-trace
 #| fig-cap: "Trace plots for slope parameters (chain mixing and stationarity)."
 #| echo: false
+#| dependson: [fit-bayes]
+#| cache: false
+
 bayesplot::mcmc_trace(
 as.array(bayes_fit),
 regex_pars = "^b_"
@@ -987,17 +1135,58 @@ regex_pars = "^b_"
 ```
 
 ```{r}
+#| label: fig-mcmc-acf
+#| fig-cap: "Autocorrelation plots for posterior samples of age and BMI coefficients (MCMC diagnostics)."
+#| echo: false
+#| dependson: [fit-bayes]
+#| cache: false
+
+post_array <- posterior::as_draws_array(bayes_fit)  # draws x chains x parameters
+bayesplot::mcmc_acf(post_array, pars = c("b_age_c", "b_bmi_c"))
+```
+
+```{r}
+#| label: fig-mcmc-areas-expanded
+#| fig-cap: "Posterior density areas (95% credible mass) for age, BMI, sex, and race coefficients."
+#| echo: false
+
+par_names <- names(posterior::as_draws_df(bayes_fit))
+want <- c("b_age_c","b_bmi_c","b_sexFemale","b_race3Black","b_race3Hispanic","b_race3Other")
+have <- intersect(want, par_names)
+
+if (length(have) == 0) {
+knitr::asis_output("**No matching slope parameters found for mcmc_areas.**")
+} else {
+bayesplot::mcmc_areas(as.array(bayes_fit), pars = have, prob = 0.95)
+}
+```
+
+```{r}
 #| label: fig-ppc-bars
 #| fig-cap: "Posterior predictive check: observed vs. replicated outcome distribution (bars)."
 #| echo: false
+#| dependson: [fit-bayes]
+#| cache: false
 
 bayesplot::pp_check(bayes_fit, type = "bars", nsamples = 100)
+```
+
+```{r}
+#| label: bayes-yobs
+#| echo: false
+#| dependson: [adult-imp1, fit-bayes]
+#| cache: false
+
+yobs <- adult_imp1$diabetes_ind
 ```
 
 ```{r}
 #| label: fig-ppc-mean-sd
 #| fig-cap: "Posterior predictive checks for mean and standard deviation of the binary outcome."
 #| echo: false
+#| dependson: [fit-bayes]
+#| cache: false
+
 yrep <- brms::posterior_predict(bayes_fit, ndraws = 400)  # draws x observations
 
 bayesplot::ppc_stat(y = yobs, yrep = yrep, stat = "mean")
@@ -1012,6 +1201,8 @@ Posterior predictive checks showed that simulated outcome distributions closely 
 #| label: fig-or-forest
 #| fig-cap: "Posterior odds ratios (points) with 95% credible intervals (lines)."
 #| echo: false
+#| dependson: [fit-bayes]
+#| cache: false
 
 or_plot <- bayes_or %>%
   dplyr::filter(term != "Intercept") %>%
@@ -1035,12 +1226,15 @@ ggplot(or_plot, aes(x = OR, y = reorder(term_clean, OR))) +
   labs(x = "Odds ratio (logit model, posterior)", y = NULL)
 ```
 
-Calibration between predicted and observed diabetes probabilities is displayed in Figure @fig-pred-calibration.
+Calibration between predicted and observed diabetes probabilities is displayed in @fig-pred-calibration.
 
 ```{r}
 #| label: fig-pred-calibration
 #| fig-cap: "Observed outcome vs. mean predicted probability (calibration scatter with smoother)."
 #| echo: false
+#| dependson: [fit-bayes]
+#| cache: false
+
 pred_mean <- colMeans(brms::posterior_epred(bayes_fit))
 ggplot(data.frame(pred = pred_mean, obs = yobs),
        aes(x = pred, y = obs)) +
@@ -1053,6 +1247,8 @@ ggplot(data.frame(pred = pred_mean, obs = yobs),
 #| label: fig-posterior-prevalence
 #| fig-cap: "Posterior predictive distribution of diabetes prevalence compared to observed NHANES prevalence."
 #| echo: false
+#| dependson: [fit-bayes]
+#| cache: false
 
 post_pred <- brms::posterior_epred(bayes_fit, summary = FALSE)
 post_prev <- rowMeans(post_pred)
@@ -1070,49 +1266,155 @@ p
 The posterior predictive distribution of diabetes prevalence closely mirrored the survey-estimated prevalence, with the posterior mean aligning within 1% of the observed rate. This indicates that the Bayesian model accurately reproduced the population-level prevalence and supports its calibration for epidemiologic inference.
 
 ```{r}
-#| label: fig-prior-posterior-overlay
-#| fig-cap: "Overlay of prior and posterior densities for key predictors (only coefficients present in the model are plotted)."
+#| label: fig-pop-vs-posterior-prev
+#| fig-cap: "Population (NHANES survey-weighted) vs posterior predictive diabetes prevalence."
 #| echo: false
-# Auto-detect available parameter names and intersect with what we want
+#| dependson: [fit-bayes]
+#| cache: false
 
-# Convert to draws array and get parameter names
-draws_arr <- posterior::as_draws_array(bayes_fit)
-vars      <- dimnames(draws_arr)$variable
+# Posterior predictive prevalence (replicated datasets)
 
-# Build desired coefficient names from your model structure
-# Continuous
-want <- c("b_age_c", "b_bmi_c")
+yrep <- brms::posterior_predict(bayes_fit, ndraws = 2000)   # draws x observations (0/1)
+post_prev <- rowMeans(yrep)                                 # prevalence each posterior draw
 
-# Categorical: build names from factor levels with reference dropped
-# (Assumes 'Male' and 'White' are references; adjusts automatically if not.)
-sex_levels   <- levels(adult_imp1$sex)
-race3_levels <- levels(adult_imp1$race3)
+# Survey-weighted observed prevalence (population estimate)
 
-if (!is.null(sex_levels) && length(sex_levels) > 1) {
-  ref_sex <- sex_levels[1]     # brms uses first level as reference
-  others  <- setdiff(sex_levels, ref_sex)
-  want <- c(want, paste0("b_sex", others))     # e.g., "b_sexFemale"
-}
+des_obs <- survey::svydesign(
+id = ~SDMVPSU, strata = ~SDMVSTRA, weights = ~WTMEC2YR,
+nest = TRUE, data = adult_imp1
+)
+obs <- survey::svymean(~diabetes_ind, des_obs, na.rm = TRUE)
+obs_prev  <- as.numeric(obs["diabetes_ind"])
+obs_se    <- as.numeric(SE(obs)["diabetes_ind"])
+obs_lcl   <- max(0, obs_prev - 1.96 * obs_se)
+obs_ucl   <- min(1, obs_prev + 1.96 * obs_se)
 
-if (!is.null(race3_levels) && length(race3_levels) > 1) {
-  ref_race <- race3_levels[1]  # brms uses first level as reference
-  others   <- setdiff(race3_levels, ref_race)
-  want <- c(want, paste0("b_race3", others))   # e.g., "b_race3Black"
-}
+# Plot: posterior density with weighted point estimate and 95% CI band
 
-# Keep only those that actually exist in the posterior draws
-present <- intersect(want, vars)
+ggplot(data.frame(prev = post_prev), aes(x = prev)) +
+geom_density(alpha = 0.6) +
+annotate("rect", xmin = obs_lcl, xmax = obs_ucl, ymin = 0, ymax = Inf, alpha = 0.15) +
+geom_vline(xintercept = obs_prev, linetype = 2) +
+coord_cartesian(xlim = c(0, 1)) +
+labs(x = "Diabetes prevalence", y = "Posterior density",
+subtitle = sprintf("Survey-weighted NHANES prevalence = %.1f%% (95%% CI %.1f–%.1f%%)",
+100*obs_prev, 100*obs_lcl, 100*obs_ucl)) +
+theme_minimal()
+```
 
-# If none found, give a friendly message instead of erroring
-if (length(present) == 0) {
-  message("No matching b_* coefficients found to plot. Check factor level references and variable names.")
+```{r}
+#| label: list-brms-pars
+#| echo: true
+#| dependson: [fit-bayes]
+#| cache: false
+
+src_obj <- if (exists("bayes_fit_prior") && !is.null(bayes_fit_prior)) bayes_fit_prior else bayes_fit
+draws_names <- names(posterior::as_draws_df(src_obj))
+sort(grep("^(b_|prior_b_)", draws_names, value = TRUE))
+```
+
+```{r}
+#| label: fig-prior-posterior-overlay
+#| fig-cap: "Prior (dashed) vs posterior (solid) densities for selected coefficients."
+#| echo: false
+#| dependson: [fit-bayes]
+#| cache: false
+
+src_obj <- if (exists("bayes_fit_prior") && !is.null(bayes_fit_prior)) bayes_fit_prior else bayes_fit
+draws_df <- posterior::as_draws_df(src_obj)
+all_cols <- names(draws_df)
+
+# EDIT THESE if your names differ (check the printed list from list-brms-pars)
+
+want_post <- c("b_age_c","b_bmi_c","b_sexFemale","b_race3Black","b_race3Hispanic","b_race3Other")
+
+have_post  <- intersect(want_post, all_cols)
+have_prior <- intersect(paste0("prior_", have_post), all_cols)
+
+pairs <- data.frame(post = have_post, prior = paste0("prior_", have_post),
+stringsAsFactors = FALSE)
+pairs <- pairs[pairs$prior %in% have_prior, , drop = FALSE]
+
+if (nrow(pairs) == 0) {
+knitr::asis_output("**No matching prior/posterior parameters found to overlay.**")
 } else {
-  bayesplot::mcmc_dens_overlay(
-    draws_arr,
-    pars = present
-  )
+post_long <- tidyr::pivot_longer(
+draws_df[, pairs$post, drop = FALSE],
+cols = tidyselect::everything(), names_to = "term", values_to = "estimate"
+)
+post_long$type <- "Posterior"
+
+prior_tmp <- draws_df[, pairs$prior, drop = FALSE]
+colnames(prior_tmp) <- pairs$post
+prior_long <- tidyr::pivot_longer(
+prior_tmp,
+cols = tidyselect::everything(), names_to = "term", values_to = "estimate"
+)
+prior_long$type <- "Prior"
+
+combined_draws <<- dplyr::bind_rows(prior_long, post_long)
+
+lbl <- c(
+b_age_c = "Age (1 SD)", b_bmi_c = "BMI (1 SD)",
+b_sexFemale = "Female vs Male",
+b_race3Black = "Black vs White",
+b_race3Hispanic = "Hispanic vs White",
+b_race3Other = "Other vs White"
+)
+combined_draws$term <- factor(
+combined_draws$term,
+levels = intersect(names(lbl), unique(combined_draws$term)),
+labels = lbl[intersect(names(lbl), unique(combined_draws$term))]
+)
+
+ggplot2::ggplot(combined_draws, ggplot2::aes(x = estimate, linetype = type)) +
+ggplot2::geom_density() +
+ggplot2::facet_wrap(~ term, scales = "free", ncol = 2) +
+ggplot2::labs(x = "Coefficient (log-odds)", y = "Density", linetype = NULL) +
+ggplot2::theme_minimal()
 }
 ```
+
+```{r}
+#| label: fig-prior-posterior-ggplot
+#| fig-cap: "Prior vs Posterior Distributions (ggplot2 version)."
+#| echo: false
+#| dependson: [fit-bayes]
+#| cache: false
+
+if (exists("combined_draws") && is.data.frame(combined_draws) && nrow(combined_draws) > 0) {
+ggplot(combined_draws, aes(x = estimate, fill = type)) +
+geom_density(alpha = 0.4) +
+facet_wrap(~ term, scales = "free", ncol = 2) +
+theme_minimal(base_size = 13) +
+labs(
+title = "Prior vs Posterior Distributions",
+x = "Coefficient estimate",
+y = "Density",
+fill = ""
+)
+} else {
+knitr::asis_output("**Skipped: no matching prior/posterior draws to plot.**")
+}
+```
+
+```{r}
+#| label: fig-mcmc-areas-selected
+#| dependson: [fit-bayes]
+#| cache: false
+
+par_names <- names(posterior::as_draws_df(bayes_fit))
+want <- c("b_age_c","b_bmi_c","b_sexFemale","b_race3Black","b_race3Hispanic","b_race3Other")
+have <- intersect(want, par_names)
+
+if (length(have)) {
+  bayesplot::mcmc_areas(as.array(bayes_fit), pars = have, prob = 0.95)
+} else {
+  knitr::asis_output("**No matching slope parameters available to plot.**")
+}
+```
+
+For age and BMI, the posterior densities shift notably away from the N(0, 2.5) prior toward positive values and are narrower, indicating strong information from the data; for sex, the posterior remains closer to the prior with more overlap, indicating weaker evidence.
 
 The overlay of prior and posterior densities illustrates that informative updates occurred primarily for BMI, age, and race coefficients, which showed distinct posterior shifts relative to the priors. In contrast, weaker predictors such as sex displayed overlapping distributions, indicating that inference for those parameters was more influenced by prior uncertainty than by the observed data. This balance confirms appropriate regularization rather than overfitting.
 
@@ -1124,6 +1426,7 @@ A concise summary of posterior estimates is provided below.
 #| label: results-bullets
 #| echo: false
 #| results: 'asis'
+
 cat(paste(bullets, collapse = "\n"))
 ```
 
@@ -1160,7 +1463,7 @@ OR_CI = sprintf("%.2f (%.2f – %.2f)", OR, LCL, UCL)
 dplyr::select(Model, term, OR_CI)
 ```
 
-Comparative odds ratios across frameworks are shown in Table @tbl-comparison.
+Comparative odds ratios across frameworks are shown in @tbl-comparison.
 
 ```{r}
 #| label: tbl-comparison
@@ -1171,7 +1474,7 @@ knitr::kable(all_tbl, align = c("l","l","c"))
 This table summarizes results from the survey-weighted (design-based),
 multiple-imputation, and Bayesian models.
 
-The **Bayesian** model’s credible intervals closely align with the
+The Bayesian model’s credible intervals closely align with the
 frequentist confidence intervals but provide a more direct probabilistic
 interpretation of uncertainty.
 
