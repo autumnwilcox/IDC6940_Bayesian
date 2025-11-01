@@ -670,6 +670,8 @@ dplyr::select(term, OR, LCL, UCL, p.value) %>%
 dplyr::filter(term != "(Intercept)")
 ```
 
+Design-based odds ratios are summarized in Table @tbl-survey.
+
 ```{r}
 #| label: tbl-survey
 #| echo: false
@@ -766,8 +768,6 @@ mi_caption <- paste0(mi_caption, " Odds ratios are per 1 SD for age and BMI.")
 
 knitr::kable(mi_or, caption = mi_caption)
 ```
-
-The multiple imputation (MICE) framework addressed missingness in BMI using predictive mean matching (PMM). Categorical variables (`sex`, `race3`) used logistic/polytomous regression. Results from multiple imputation were consistent with the survey-weighted model, confirming robustness to missing data handling. The imputation model used PMM for continuous variables, normal regression for age, and logistic/polytomous regression for categorical predictors, consistent with NHANES data structure and MICE best practices.
 
 ### Bayesian Logistic Regression
 
@@ -1160,6 +1160,8 @@ OR_CI = sprintf("%.2f (%.2f – %.2f)", OR, LCL, UCL)
 dplyr::select(Model, term, OR_CI)
 ```
 
+Comparative odds ratios across frameworks are shown in Table @tbl-comparison.
+
 ```{r}
 #| label: tbl-comparison
 #| tbl-cap: "Comparison of odds ratios (per 1 SD for age and BMI) and 95% intervals across survey-weighted, MICE, and Bayesian frameworks."
@@ -1168,10 +1170,6 @@ knitr::kable(all_tbl, align = c("l","l","c"))
 
 This table summarizes results from the survey-weighted (design-based),
 multiple-imputation, and Bayesian models.\
-
-Across all frameworks, **age** and **BMI** consistently show strong
-positive associations with diabetes risk, confirming robustness to
-missing-data handling and modeling assumptions.\
 
 The **Bayesian** model’s credible intervals closely align with the
 frequentist confidence intervals but provide a more direct probabilistic
@@ -1198,7 +1196,7 @@ practicality of Bayesian modeling for complex, weighted population data.
 
 Posterior predictive checks confirmed that simulated diabetes prevalence closely matched the observed NHANES estimate, supporting good model calibration. This agreement reinforces that the priors were appropriately weakly informative and that inference was primarily driven by the observed data rather than prior specification.
 
-Overall, this study demonstrates that Bayesian inference complements traditional epidemiologic methods by maintaining interpretability while enhancing stability and explicitly quantifying uncertainty in complex survey data.These consistent findings across modeling frameworks underscore the robustness of core risk factors and support the use of Bayesian inference for epidemiologic research involving complex survey data.
+Overall, this study demonstrates that Bayesian inference complements traditional epidemiologic methods by maintaining interpretability while enhancing stability and explicitly quantifying uncertainty in complex survey data. These consistent findings across modeling frameworks underscore the robustness of core risk factors and support the use of Bayesian inference for epidemiologic research involving complex survey data.
 
 ### Limitations
 
