@@ -439,7 +439,7 @@ adult <- merged_data %>%
 
 ```{r}
 #| label: adult-structure
-#| echo: true
+#| echo: false
 #| eval: true
 #| collapse: true
 #| comment: ""
@@ -639,8 +639,8 @@ adult_eda %>%
 The EDA missingness summary shows approximately
 `r sprintf("%.1f", miss_bmi)`% missing BMI and
 `r sprintf("%.1f", miss_diab)`% missing diabetes status
-(`diabetes_ind`). All design variables (WTMEC2YR, SDMVPSU, SDMVSTRA), as
-well as age, sex, and race4, are complete—sex and race NAs are encoded
+(`diabetes_ind`). All design variables (`WTMEC2YR`, `SDMVPSU`, `SDMVSTRA`), as
+well as `age`, `sex`, and `race4`, are complete—sex and race NAs are encoded
 as explicit “(Missing)” levels in the EDA view.
 
 ## Modeling Frameworks
@@ -727,7 +727,7 @@ knitr::kable(svy_or)
 
 The NHANES 2013–2014 data use a complex, multistage probability design
 involving strata (`SDMVSTRA`), primary sampling units (PSUs;
-SDMVPSU), and examination weights (`WTMEC2YR`) to ensure
+`SDMVPSU`), and examination weights (`WTMEC2YR`) to ensure
 nationally representative estimates [@nchs2014].
 
 Estimates are population-weighted using NHANES survey design variables (`WTMEC2YR`, `SDMVSTRA`, `SDMVPSU`). Odds ratios are reported per one standard deviation (1 SD) increase in age and BMI, with reference groups Male and White.
@@ -821,7 +821,6 @@ adult_imp1 <- mice::complete(imp, 1) %>%
 ```{r}
 #| label: define-bayes-formula
 #| echo: false
-#| dependson: [adult-imp1]
 #| cache: false
 
 fml_bayes <- diabetes_ind | weights(wt_norm) ~ age_c + bmi_c + sex + race4
@@ -837,7 +836,6 @@ priors <- c(
 #| echo: false
 #| message: false
 #| warning: false
-#| dependson: [adult-imp1, define-bayes-formula]
 #| cache: false
 
 invisible(capture.output({
@@ -868,7 +866,6 @@ bayes_or <- brms::posterior_summary(bayes_fit, pars = "^b_") %>%
 #| label: tbl-bayes
 #| echo: false
 #| tbl-cap: "Bayesian logistic regression: posterior odds ratios (OR) with 95% credible intervals."
-#| dependson: [fit-bayes]
 #| cache: false
 
 knitr::kable(
@@ -911,7 +908,6 @@ Bayesian logistic regression was implemented using the following model specifica
 ```{r}
 #| label: corr-heatmap-adult-imp1
 #| echo: false
-#| dependson: [adult-imp1]
 #| cache: false
 
 stopifnot(all(c("diabetes_ind","age","bmi") %in% names(adult_imp1)))
@@ -932,10 +928,21 @@ ggplot(correlation_melted, aes(Var1, Var2, fill = value)) +
 ```
 
 ```{r}
-#| label: fit-with-priors
-#| dependson: [fit-bayes]
+#| label: fit-bayes-priors
 #| echo: false
 #| cache: false
+
+bayes_fit_prior <- tryCatch(
+  update(bayes_fit, sample_prior = "yes", refresh = 0),
+  error = function(e) NULL
+)
+```
+
+```{r}
+#| label: fit-with-priors
+#| echo: false
+#| cache: false
+#| include: false
 
 if (exists("bayes_fit")) {
 bayes_fit_prior <- tryCatch(
@@ -953,7 +960,6 @@ Posterior odds ratios and credible intervals from the Bayesian logistic regressi
 #| label: build-bullets
 #| echo: false
 #| include: false
-#| dependson: [fit-bayes]
 #| cache: false
 
 pull_or <- function(df, term) {
@@ -1071,7 +1077,6 @@ Figures below visualize posterior distributions, MCMC diagnostics, and model fit
 ```{r}
 #| label: posterior-density-participants
 #| echo: false
-#| dependson: [fit-bayes]
 #| cache: false
 
 adult_means <- adult_imp1 %>% summarise(
@@ -1122,7 +1127,6 @@ plot_post_density(new_pt, "New Participant: Posterior Predictive Distribution (9
 #| label: fig-mcmc-areas
 #| fig-cap: "Posterior distributions (95% credible mass) for slope parameters."
 #| echo: false
-#| dependson: [fit-bayes]
 #| cache: false
 
 bayesplot::mcmc_areas(
@@ -1136,7 +1140,6 @@ prob = 0.95
 #| label: fig-mcmc-trace
 #| fig-cap: "Trace plots for slope parameters (chain mixing and stationarity)."
 #| echo: false
-#| dependson: [fit-bayes]
 #| cache: false
 
 bayesplot::mcmc_trace(
@@ -1149,7 +1152,6 @@ regex_pars = "^b_"
 #| label: fig-mcmc-acf
 #| fig-cap: "Autocorrelation plots for posterior samples of age and BMI coefficients (MCMC diagnostics)."
 #| echo: false
-#| dependson: [fit-bayes]
 #| cache: false
 
 post_array <- posterior::as_draws_array(bayes_fit)  # draws x chains x parameters
@@ -1176,7 +1178,6 @@ bayesplot::mcmc_areas(as.array(bayes_fit), pars = have, prob = 0.95)
 #| label: fig-ppc-bars
 #| fig-cap: "Posterior predictive check: observed vs. replicated outcome distribution (bars)."
 #| echo: false
-#| dependson: [fit-bayes]
 #| cache: false
 
 bayesplot::pp_check(bayes_fit, type = "bars", nsamples = 100)
@@ -1185,7 +1186,6 @@ bayesplot::pp_check(bayes_fit, type = "bars", nsamples = 100)
 ```{r}
 #| label: bayes-yobs
 #| echo: false
-#| dependson: [adult-imp1, fit-bayes]
 #| cache: false
 
 yobs <- adult_imp1$diabetes_ind
@@ -1195,7 +1195,6 @@ yobs <- adult_imp1$diabetes_ind
 #| label: fig-ppc-mean-sd
 #| fig-cap: "Posterior predictive checks for mean and standard deviation of the binary outcome."
 #| echo: false
-#| dependson: [fit-bayes]
 #| cache: false
 
 yrep <- brms::posterior_predict(bayes_fit, ndraws = 400)  # draws x observations
@@ -1212,7 +1211,6 @@ Posterior predictive checks showed that simulated outcome distributions closely 
 #| label: fig-or-forest
 #| fig-cap: "Posterior odds ratios (points) with 95% credible intervals (lines)."
 #| echo: false
-#| dependson: [fit-bayes]
 #| cache: false
 
 or_plot <- bayes_or %>%
@@ -1243,7 +1241,6 @@ Calibration between predicted and observed diabetes probabilities is displayed i
 #| label: fig-pred-calibration
 #| fig-cap: "Observed outcome vs. mean predicted probability (calibration scatter with smoother)."
 #| echo: false
-#| dependson: [fit-bayes]
 #| cache: false
 
 pred_mean <- colMeans(brms::posterior_epred(bayes_fit))
@@ -1258,7 +1255,6 @@ ggplot(data.frame(pred = pred_mean, obs = yobs),
 #| label: fig-posterior-prevalence
 #| fig-cap: "Posterior predictive distribution of diabetes prevalence compared to observed NHANES prevalence."
 #| echo: false
-#| dependson: [fit-bayes]
 #| cache: false
 
 post_pred <- brms::posterior_epred(bayes_fit, summary = FALSE)
@@ -1280,7 +1276,6 @@ The posterior predictive distribution of diabetes prevalence closely mirrored th
 #| label: fig-pop-vs-posterior-prev
 #| fig-cap: "Population (NHANES survey-weighted) vs posterior predictive diabetes prevalence."
 #| echo: false
-#| dependson: [fit-bayes]
 #| cache: false
 
 # Posterior predictive prevalence (replicated datasets)
@@ -1316,7 +1311,6 @@ theme_minimal()
 ```{r}
 #| label: list-brms-pars
 #| echo: false
-#| dependson: [fit-bayes]
 #| cache: false
 
 src_obj <- if (exists("bayes_fit_prior") && !is.null(bayes_fit_prior)) bayes_fit_prior else bayes_fit
@@ -1328,7 +1322,6 @@ sort(grep("^(b_|prior_b_)", draws_names, value = TRUE))
 #| label: fig-prior-posterior-overlay
 #| fig-cap: "Prior (dashed) vs posterior (solid) densities for selected coefficients."
 #| echo: false
-#| dependson: [fit-bayes]
 #| cache: false
 
 src_obj <- if (exists("bayes_fit_prior") && !is.null(bayes_fit_prior)) bayes_fit_prior else bayes_fit
@@ -1390,7 +1383,6 @@ ggplot2::theme_minimal()
 #| label: fig-prior-posterior-ggplot
 #| fig-cap: "Prior vs Posterior Distributions (ggplot2 version)."
 #| echo: false
-#| dependson: [fit-bayes]
 #| cache: false
 
 if (exists("combined_draws") && is.data.frame(combined_draws) && nrow(combined_draws) > 0) {
@@ -1411,7 +1403,6 @@ knitr::asis_output("**Skipped: no matching prior/posterior draws to plot.**")
 
 ```{r}
 #| label: fig-mcmc-areas-selected
-#| dependson: [fit-bayes]
 #| cache: false
 
 par_names <- names(posterior::as_draws_df(bayes_fit))
