@@ -11,7 +11,7 @@ Her work focuses on the early detection and prevention of non-communicable disea
 
 Outside of work, she enjoys gardening, cooking, singing, and sewing.
 
-Developed the project plan, content draft, analytic coding, and coordinated commits and collaboration with the group on GitHub.
+Dr. Mishra developed the project plan, content draft, analytic coding, and coordinated commits and collaboration with the group on GitHub.
 
 📧 Contact: nmishra\@uwf.edu
 
@@ -21,6 +21,6 @@ Developed the project plan, content draft, analytic coding, and coordinated comm
 
 Her background bridges technology, analytics, and healthcare, with a focus on applying data-driven approaches to improve communication and systems reliability. Outside of work, Autumn enjoys traveling, photography, and finding creative inspiration through music.
 
-Contributed to analytic coding, content draft, structured the project workflow, and collaborated actively via GitHub.
+Autumn contributed to analytic coding, content draft, structured the project workflow, and collaborated actively via GitHub.
 
 📧 Contact: awr12\@students.uwf.edu
