@@ -29,6 +29,72 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto-0fde88a82f0356838740f155f1088782.css">
   <link rel="stylesheet" href="slides.css">
@@ -147,9 +213,211 @@ Autumn Wilcox
 
   <p class="date">Invalid Date</p>
 </section>
+<section id="slide-1-introduction" class="slide level2">
+<h2>Slide 1: Introduction</h2>
+<ul>
+<li><p>Diabetes is a chronic disease with rising global prevalence.</p></li>
+<li><p>Early identification of risk factors is key to prevention and control.</p></li>
+<li><p>Bayesian methods allow flexible modeling with uncertainty quantification.</p></li>
+<li><p><strong>Aim:</strong> Predict diabetes diagnosis using Bayesian logistic regression with imputed data .</p>
+<p><img data-src="Population Prevalence vs Proportion of Diabetes = 1.png" width="437"></p></li>
+</ul>
+</section>
+<section id="slide-2-data-source" class="slide level2">
+<h2>Slide 2: Data Source</h2>
+<ul>
+<li><p>Data: <em>National Health and Nutrition Examination Survey (NHANES)</em></p></li>
+<li><p>Adult dataset (&gt;20 years).</p></li>
+<li><p>Variables included:</p>
+<ul>
+<li><p><strong>Demographics:</strong> age, sex, race</p></li>
+<li><p><strong>Clinical:</strong> BMI</p></li>
+<li><p><strong>Outcome:</strong> <code>diabetes_dx</code> (diagnosis: 0 = No, 1 = Yes)</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">head</span>(adult)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><img data-src="images/clipboard-126412730.png"></p></li>
+</ul></li>
+</ul>
+</section>
+<section id="slide-3-missing-data-assessment" class="slide level2">
+<h2>Slide 3: Missing Data Assessment</h2>
+<ul>
+<li>Overall missingness: ~4%, No variable completely missing, Missingness is not uniform<img data-src="images/clipboard-1235247978.png" width="537"></li>
+<li>Missingness pattern: likely <em>MAR</em> (Missing At Random).</li>
+<li>Clustered mainly in bmi and diabetes_dx.</li>
+<li>Decision: Apply <strong>Multiple Imputation by Chained Equations (MICE)</strong>.</li>
+</ul>
+</section>
+<section id="slide-4-mice-imputation" class="slide level2">
+<h2>Slide 4: MICE Imputation</h2>
+<ul>
+<li><p><strong>Method:</strong> Predictive mean matching (PMM) for continuous vars; logistic regression for binary.</p></li>
+<li><p><strong>Iterations:</strong> 5 imputations, 10 iterations each, combined imputed datasets using Rubin’s rules.</p></li>
+<li><p>Distribution plots confirmed consistency with the original data.</p></li>
+</ul>
+</section>
+<section id="slide-5-multivariate-imputation-by-chained-equations-pooled-logistic-regression" class="slide level2">
+<h2>Slide 5: Multivariate Imputation by Chained Equations (Pooled Logistic Regression)</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a>  <span class="fu">glm</span>(diabetes_dx <span class="sc">~</span> age_c <span class="sc">+</span> bmi_c <span class="sc">+</span> sex <span class="sc">+</span> race, <span class="at">family =</span> <span class="fu">binomial</span>()) <span class="er">})</span> pool_mi <span class="ot">&lt;-</span> <span class="fu">pool</span>(fit_mi) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li><p>n=5,769 participants</p></li>
+<li><p>Model significance: All predictors are statistically significant (p &lt; 0.01), suggesting a robust association across demographic and health variables.</p></li>
+</ul>
+</section>
+<section id="slide-5-bayesian-logistic-regression" class="slide level2">
+<h2>Slide 5: Bayesian Logistic Regression</h2>
+<p>Outcome: <code>diabetes_dx</code> (0 = non-diabetic, 1 = diabetic)</p>
+<p>Predictors: <code>age_c</code>, <code>bmi_c</code>, <code>sex</code>, <code>race</code>.</p>
+<ul>
+<li><p>Intercept prior: student_t(3, 0, 10) — allows heavy tails for flexibility in the intercept estimate. <span class="citation" data-cites="VanDeSchoot2013">(<a href="" role="doc-biblioref" onclick="return false;"><strong>VanDeSchoot2013?</strong></a>)</span></p></li>
+<li><p>Regression coefficients prior: normal(0, 2.5) — providing weakly informative regularization, constraining extreme values without overpowering the data. <span class="citation" data-cites="VandeSchoot2021">(<a href="" role="doc-biblioref" onclick="return false;"><strong>VandeSchoot2021?</strong></a>)</span></p></li>
+<li><p>Implemented in <code>brms</code> (Stan backend), Posterior draws = 4000 (4 chains × 1000 iterations). Logistic link function</p>
+<p><img data-src="images/clipboard-87871382.png" width="332" height="60"></p></li>
+</ul>
+</section>
+<section id="slide-6-bayesian-model-equation" class="slide level2">
+<h2>Slide 6: Bayesian Model Equation</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="fu">library</span>(gt)</span>
+<span id="cb3-2"><a></a>priors <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb3-3"><a></a>  <span class="fu">set_prior</span>(<span class="st">"normal(0, 2.5)"</span>, <span class="at">class =</span> <span class="st">"b"</span>),</span>
+<span id="cb3-4"><a></a>  <span class="fu">set_prior</span>(<span class="st">"student_t(3, 0, 10)"</span>, <span class="at">class =</span> <span class="st">"Intercept"</span>) </span>
+<span id="cb3-5"><a></a>)</span>
+<span id="cb3-6"><a></a>bayes_fit <span class="ot">&lt;-</span> <span class="fu">brm</span>(</span>
+<span id="cb3-7"><a></a>  <span class="at">formula =</span> diabetes_dx <span class="sc">|</span> <span class="fu">weights</span>(wt_norm) <span class="sc">~</span> age_c <span class="sc">+</span> bmi_c <span class="sc">+</span> sex <span class="sc">+</span> race,</span>
+<span id="cb3-8"><a></a>  <span class="at">data    =</span> adult_imp1,</span>
+<span id="cb3-9"><a></a>  <span class="at">family  =</span> <span class="fu">bernoulli</span>(<span class="at">link =</span> <span class="st">"logit"</span>),</span>
+<span id="cb3-10"><a></a>  <span class="at">prior   =</span> priors,</span>
+<span id="cb3-11"><a></a>  <span class="at">chains  =</span> <span class="dv">4</span>, <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">seed =</span> <span class="dv">123</span>,</span>
+<span id="cb3-12"><a></a>  <span class="at">control =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.95</span>),</span>
+<span id="cb3-13"><a></a>  <span class="at">refresh =</span> <span class="dv">0</span>   <span class="co"># quiet Stan output</span></span>
+<span id="cb3-14"><a></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><span class="math display">\[
+\text{logit}(P(Y=1)) = \beta_0 + \beta_1 \text{age}_c + \beta_2 \text{bmi}_c + \beta_3 \text{sex} + \beta_4 \text{race}
+\]</span></p>
+<ul>
+<li>( P(Y=1) ): Probability of being diabetic</li>
+<li>Coefficients estimated with posterior means and 95% credible intervals.</li>
+</ul>
+</section>
+<section id="slide-7-bayesian-model-diagnostics" class="slide level2">
+<h2>Slide 7: Bayesian Model Diagnostics</h2>
+<ul>
+<li><p>Rhat ≈ 1.00 → convergence achieved.</p></li>
+<li><p>Bulk ESS &gt; 3000 for all parameters → good mixing.</p></li>
+<li><p>Trace plots showed stable sampling across chains.</p></li>
+<li><p>Posterior distributions were unimodal and well-centered.</p>
+<p><img data-src="images/clipboard-353929734.png" width="366"></p></li>
+</ul>
+</section>
+<section id="slide-8-posterior-estimates" class="slide level2">
+<h2>Slide 8: Posterior Estimates</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 24%">
+<col style="width: 48%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Predictor</th>
+<th>Estimate</th>
+<th>95% CI</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Intercept</td>
+<td>-2.66</td>
+<td>[-2.84, -2.50]</td>
+<td>Baseline log-odds</td>
+</tr>
+<tr class="even">
+<td>Age_c</td>
+<td>1.09</td>
+<td>[0.97, 1.22]</td>
+<td>↑ age increases diabetes risk</td>
+</tr>
+<tr class="odd">
+<td>BMI_c</td>
+<td>0.88</td>
+<td>[0.76, 1.01]</td>
+<td>Higher BMI linked with higher risk</td>
+</tr>
+<tr class="even">
+<td>HTN</td>
+<td>0.65</td>
+<td>[0.50, 0.81]</td>
+<td>Hypertension predicts diabetes</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="slide-9-posterior-predictive-distribution" class="slide level2">
+<h2>Slide 9: Posterior Predictive Distribution</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb4-2"><a></a></span>
+<span id="cb4-3"><a></a><span class="fu">ggplot</span>(combined_draws, <span class="fu">aes</span>(<span class="at">x =</span> estimate, <span class="at">fill =</span> type)) <span class="sc">+</span></span>
+<span id="cb4-4"><a></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb4-5"><a></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> term, <span class="at">scales =</span> <span class="st">"free"</span>, <span class="at">ncol =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb4-6"><a></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>) <span class="sc">+</span></span>
+<span id="cb4-7"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb4-8"><a></a>    <span class="at">title =</span> <span class="st">"Prior vs Posterior Distributions"</span>,</span>
+<span id="cb4-9"><a></a>    <span class="at">x =</span> <span class="st">"Coefficient estimate"</span>,</span>
+<span id="cb4-10"><a></a>    <span class="at">y =</span> <span class="st">"Density"</span>,</span>
+<span id="cb4-11"><a></a>    <span class="at">fill =</span> <span class="st">""</span></span>
+<span id="cb4-12"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+
+<img data-src="Prior vs Posterior Distributions_bmi_age.png" width="426" class="r-stretch"></section>
 <section class="slide level2">
 
-<p>in progress</p>
+<p><strong>Interpretation:</strong> The <strong>blue curve</strong>: estimated distribution of predicted diabetes probabilities. - <strong>Red dashed lines</strong>: lower and upper bounds of the <strong>95% credible interval</strong>, showing model uncertainty.</p>
+</section>
+<section id="slide-10-model-interpretation" class="slide level2">
+<h2>Slide 10: Model Interpretation</h2>
+<ul>
+<li>Strong positive relationship between <strong>age</strong>, <strong>BMI</strong>, and diabetes probability.</li>
+<li>Posterior predictive checks confirm the model captures data patterns well.</li>
+<li>Imputation reduced bias and improved model robustness.</li>
+</ul>
+</section>
+<section id="slide-11-limitations" class="slide level2">
+<h2>Slide 11: Limitations</h2>
+<ul>
+<li>NHANES data are cross-sectional → no causal inference.</li>
+<li>Potential unmeasured confounding (diet, physical activity).</li>
+<li>Limited predictors → simplified model structure.</li>
+<li>Imputation assumes MAR; violations may introduce bias.</li>
+</ul>
+</section>
+<section id="slide-12-conclusion" class="slide level2">
+<h2>Slide 12: Conclusion</h2>
+<ul>
+<li>Bayesian logistic regression effectively models uncertainty.</li>
+<li>MICE improved data completeness and reliability.</li>
+<li>Posterior predictions provide interpretable probabilities for diabetes risk.</li>
+<li>Framework adaptable to other health outcomes (e.g., hypertension, obesity).</li>
+</ul>
+</section>
+<section id="slide-13-references" class="slide level2">
+<h2>Slide 13: References</h2>
+<ul>
+<li>van Buuren S., Groothuis-Oudshoorn K. (2011). <em>MICE: Multivariate Imputation by Chained Equations in R.</em></li>
+<li>Gelman A., Hill J. (2007). <em>Data Analysis Using Regression and Multilevel/Hierarchical Models.</em></li>
+<li>NHANES Data Documentation (CDC).</li>
+<li>McElreath R. (2020). <em>Statistical Rethinking: A Bayesian Course with Examples in R and Stan.</em></li>
+</ul>
+</section>
+<section id="slide-14-acknowledgements" class="slide level2">
+<h2>Slide 14: Acknowledgements</h2>
+<ul>
+<li><p>Faculty: Dr.&nbsp;Ashraf Cohen, PhD, MS</p></li>
+<li><p>University of West Florida, Department: Mathematics and Statistics</p>
+<pre><code>        Thanks for the guidance</code></pre></li>
+</ul>
+</section>
+<section id="references" class="slide level2">
+<h2>References</h2>
 
 
 </section>

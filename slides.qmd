@@ -12,6 +12,7 @@ format:
     slide-number: true
     transition: slide
     css: slides.css
+    fontSize: 20px 
 bibliography: references.bib
 execute:
   warning: false
@@ -19,4 +20,214 @@ execute:
   echo: false
 ---
 
-in progress
+------------------------------------------------------------------------
+
+## Slide 1: Introduction
+
+-   Diabetes is a chronic disease with rising global prevalence.
+
+-   Early identification of risk factors is key to prevention and control.
+
+-   Bayesian methods allow flexible modeling with uncertainty quantification.
+
+-   **Aim:** Predict diabetes diagnosis using Bayesian logistic regression with imputed data .
+
+    ![](Population%20Prevalence%20vs%20Proportion%20of%20Diabetes%20=%201.png){width="437"}
+
+------------------------------------------------------------------------
+
+## Slide 2: Data Source
+
+-   Data: *National Health and Nutrition Examination Survey (NHANES)*
+
+-   Adult dataset (\>20 years).
+
+-   Variables included:
+
+    -   **Demographics:** age, sex, race
+
+    -   **Clinical:** BMI
+
+    -   **Outcome:** `diabetes_dx` (diagnosis: 0 = No, 1 = Yes)
+
+        ``` r
+        head(adult)
+        ```
+
+        ![](images/clipboard-126412730.png)
+
+------------------------------------------------------------------------
+
+## Slide 3: Missing Data Assessment
+
+-   Overall missingness: \~4%, No variable completely missing, Missingness is not uniform![](images/clipboard-1235247978.png){width="537"}
+-   Missingness pattern: likely *MAR* (Missing At Random).
+-   Clustered mainly in bmi and diabetes_dx.
+-   Decision: Apply **Multiple Imputation by Chained Equations (MICE)**.
+
+------------------------------------------------------------------------
+
+## Slide 4: MICE Imputation
+
+-   **Method:** Predictive mean matching (PMM) for continuous vars; logistic regression for binary.
+
+-   **Iterations:** 5 imputations, 10 iterations each, combined imputed datasets using Rubin’s rules.
+
+-   Distribution plots confirmed consistency with the original data.
+
+------------------------------------------------------------------------
+
+## Slide 5: Multivariate Imputation by Chained Equations (Pooled Logistic Regression)
+
+``` r
+  glm(diabetes_dx ~ age_c + bmi_c + sex + race, family = binomial()) }) pool_mi <- pool(fit_mi) 
+```
+
+-   n=5,769 participants
+
+-   Model significance: All predictors are statistically significant (p \< 0.01), suggesting a robust association across demographic and health variables.
+
+------------------------------------------------------------------------
+
+## Slide 5: Bayesian Logistic Regression
+
+Outcome: `diabetes_dx` (0 = non-diabetic, 1 = diabetic)
+
+Predictors: `age_c`, `bmi_c`, `sex`, `race`.
+
+-   Intercept prior: student_t(3, 0, 10) — allows heavy tails for flexibility in the intercept estimate. @VanDeSchoot2013
+
+-   Regression coefficients prior: normal(0, 2.5) — providing weakly informative regularization, constraining extreme values without overpowering the data. @VandeSchoot2021
+
+-   Implemented in `brms` (Stan backend), Posterior draws = 4000 (4 chains × 1000 iterations). Logistic link function
+
+    ![](images/clipboard-87871382.png){width="332" height="60"}
+
+------------------------------------------------------------------------
+
+## Slide 6: Bayesian Model Equation
+
+``` r
+library(gt)
+priors <- c(
+  set_prior("normal(0, 2.5)", class = "b"),
+  set_prior("student_t(3, 0, 10)", class = "Intercept") 
+)
+bayes_fit <- brm(
+  formula = diabetes_dx | weights(wt_norm) ~ age_c + bmi_c + sex + race,
+  data    = adult_imp1,
+  family  = bernoulli(link = "logit"),
+  prior   = priors,
+  chains  = 4, iter = 2000, seed = 123,
+  control = list(adapt_delta = 0.95),
+  refresh = 0   # quiet Stan output
+)
+```
+
+$$
+\text{logit}(P(Y=1)) = \beta_0 + \beta_1 \text{age}_c + \beta_2 \text{bmi}_c + \beta_3 \text{sex} + \beta_4 \text{race}
+$$
+
+-   ( P(Y=1) ): Probability of being diabetic
+-   Coefficients estimated with posterior means and 95% credible intervals.
+
+------------------------------------------------------------------------
+
+## Slide 7: Bayesian Model Diagnostics
+
+-   Rhat ≈ 1.00 → convergence achieved.
+
+-   Bulk ESS \> 3000 for all parameters → good mixing.
+
+-   Trace plots showed stable sampling across chains.
+
+-   Posterior distributions were unimodal and well-centered.
+
+    ![](images/clipboard-353929734.png){width="366"}
+
+------------------------------------------------------------------------
+
+## Slide 8: Posterior Estimates
+
+| Predictor | Estimate | 95% CI           | Interpretation                     |
+|-----------|----------|------------------|------------------------------------|
+| Intercept | -2.66    | \[-2.84, -2.50\] | Baseline log-odds                  |
+| Age_c     | 1.09     | \[0.97, 1.22\]   | ↑ age increases diabetes risk      |
+| BMI_c     | 0.88     | \[0.76, 1.01\]   | Higher BMI linked with higher risk |
+| HTN       | 0.65     | \[0.50, 0.81\]   | Hypertension predicts diabetes     |
+
+------------------------------------------------------------------------
+
+## Slide 9: Posterior Predictive Distribution
+
+``` r
+library(ggplot2)
+
+ggplot(combined_draws, aes(x = estimate, fill = type)) +
+  geom_density(alpha = 0.4) +
+  facet_wrap(~ term, scales = "free", ncol = 2) +
+  theme_minimal(base_size = 13) +
+  labs(
+    title = "Prior vs Posterior Distributions",
+    x = "Coefficient estimate",
+    y = "Density",
+    fill = ""
+  )
+```
+
+![](Prior vs Posterior Distributions_bmi_age.png){width="426"}
+
+------------------------------------------------------------------------
+
+**Interpretation:** The **blue curve**: estimated distribution of predicted diabetes probabilities. - **Red dashed lines**: lower and upper bounds of the **95% credible interval**, showing model uncertainty.
+
+------------------------------------------------------------------------
+
+## Slide 10: Model Interpretation
+
+-   Strong positive relationship between **age**, **BMI**, and diabetes probability.
+-   Posterior predictive checks confirm the model captures data patterns well.
+-   Imputation reduced bias and improved model robustness.
+
+------------------------------------------------------------------------
+
+## Slide 11: Limitations
+
+-   NHANES data are cross-sectional → no causal inference.
+-   Potential unmeasured confounding (diet, physical activity).
+-   Limited predictors → simplified model structure.
+-   Imputation assumes MAR; violations may introduce bias.
+
+------------------------------------------------------------------------
+
+## Slide 12: Conclusion
+
+-   Bayesian logistic regression effectively models uncertainty.
+-   MICE improved data completeness and reliability.
+-   Posterior predictions provide interpretable probabilities for diabetes risk.
+-   Framework adaptable to other health outcomes (e.g., hypertension, obesity).
+
+------------------------------------------------------------------------
+
+## Slide 13: References
+
+-   van Buuren S., Groothuis-Oudshoorn K. (2011). *MICE: Multivariate Imputation by Chained Equations in R.*
+-   Gelman A., Hill J. (2007). *Data Analysis Using Regression and Multilevel/Hierarchical Models.*
+-   NHANES Data Documentation (CDC).
+-   McElreath R. (2020). *Statistical Rethinking: A Bayesian Course with Examples in R and Stan.*
+
+------------------------------------------------------------------------
+
+## Slide 14: Acknowledgements
+
+-   Faculty: Dr. Ashraf Cohen, PhD, MS
+
+-   University of West Florida, Department: Mathematics and Statistics
+
+    ```         
+            Thanks for the guidance
+    ```
+
+------------------------------------------------------------------------
+
+## References

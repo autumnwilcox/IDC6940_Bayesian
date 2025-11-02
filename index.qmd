@@ -117,7 +117,17 @@ by Bayesian analysis in population health modeling [@nchs2014].
 
 ## Aims
 
-The present study employs Bayesian logistic regression to predict diabetes status and examine the relationships between diabetes and key predictors, including body mass index (BMI), age (≥20 years), gender, and race. Using retrospective data from the 2013–2014 NHANES survey, the analysis accounts for the study’s complex sampling design, which involves stratification, clustering, and the oversampling of specific subpopulations rather than simple random sampling. The Bayesian framework is applied to address common analytical challenges such as missing data, complete case bias, and data separation, thereby improving the robustness and reliability of inference compared to traditional logistic regression methods.
+The present study employs Bayesian logistic regression to predict
+diabetes status and examine the relationships between diabetes and key
+predictors, including body mass index (BMI), age (≥20 years), sex,
+and race. Using retrospective data from the 2013–2014 NHANES survey, the
+analysis accounts for the study’s complex sampling design, which
+involves stratification, clustering, and the oversampling of specific
+subpopulations rather than simple random sampling. The Bayesian
+framework is applied to address common analytical challenges such as
+missing data, complete case bias, and data separation, thereby improving
+the robustness and reliability of inference compared to traditional
+logistic regression methods.
 
 # Method
 
@@ -247,23 +257,49 @@ diagnostics:
 
 ## Data Preparation
 
-We analyzed NHANES 2013–2014 public-use data from the CDC’s National
-Center for Health Statistics [@nchs2014]. Three component files were
-merged: demographics (DEMO_H), body measures (BMX_H), and the diabetes
-questionnaire (DIQ_H). All variables were coerced to consistent numeric
-or factor types prior to merging to ensure atomic columns suitable for
-survey analysis and modeling.
+This study used publicly available 2013–2014 NHANES data published by
+the CDC’s National Center for Health Statistics [@nchs2014]. Three
+component files were utilized: `DEMO_H` (demographics), `BMX_H` (body
+measures), and `DIQ_H` (diabetes questionnaire). Each file was imported
+in `.XPT` format using the **`haven`** package in **R**, and merged
+using the unique participant identifier `SEQN` to create a single adult
+analytic dataset (age ≥ 20 years).
 
-### Import and Merge Datasets
+All variables were coerced to consistent numeric or factor types prior
+to merging to ensure atomic columns suitable for survey-weighted
+analysis and modeling. The use of `SEQN` preserved respondent integrity
+across datasets and ensured accurate record linkage. This preprocessing
+step standardized variable formats and minimized inconsistencies between
+files.
+
+Data wrangling, cleaning, and merging were performed in **R** using a
+combination of base functions and tidyverse packages. Bayesian logistic
+regression modeling was later implemented using the **`brms`** interface
+to **Stan**, allowing probabilistic inference within a reproducible
+workflow that accommodated the NHANES complex survey design and missing
+data considerations.
+
+### Data Import and Merging
 
 ```{r}
 #| label: load-merged
-#| echo: false
+#| echo: true
 #| message: false
 #| warning: false
 
 merged_data <- readRDS("data/merged_2013_2014.rds")
 
+merged_n <- nrow(merged_data)
+```
+
+The merged dataset contains `r format(merged_n, big.mark = ",")`
+participants. It integrates demographic, examination, and diabetes
+questionnaire data. We then restrict the sample to adults (age ≥ 20) to
+define the analytic cohort used in subsequent analyses. A small
+proportion of records have missing values in BMI and diabetes status,
+which will be addressed later through multiple imputation.
+
+```{r}
 # A compact preview with ONLY analysis variables (no design vars here)
 merged_preview <- merged_data %>%
   transmute(
@@ -280,50 +316,92 @@ knitr::kable(
 )
 ```
 
-```{r}
-#| label: merged-n
-#| echo: false
-#| include: false
-merged_n <- nrow(merged_data)
-```
+### Variable Definitions
 
-This preview shows the raw NHANES columns before transformation. Each
-variable is retained for later use in analysis and renamed or
-standardized as appropriate.
+-   **Response Variable:**\
+    `diabetes_ind` (binary) represents a Type 2 diabetes diagnosis,
+    excluding gestational diabetes. It was derived from `DIQ010`
+    (“Doctor told you have diabetes”), while `DIQ050` (insulin use) was
+    excluded to prevent treatment-related confounding.
 
-The merged dataset contains `r format(merged_n, big.mark = ",")`
-participants. It integrates demographic, examination, and diabetes
-questionnaire data. We then restrict the sample to adults (age ≥ 20) to
-define the analytic cohort used in subsequent analyses. A small
-proportion of records have missing values in BMI and diabetes status,
-which will be addressed later through multiple imputation.
+-   **Predictor Variables:**
 
-### Adult Cohort Definition
+    -   `BMXBMI`   – Body Mass Index (categorical; six levels as `bmi_cat`)\
+    -   `RIDAGEYR` – Age (continuous, 20–80 years)\
+    -   `RIAGENDR` – Sex (factor, two levels)\
+    -   `RIDRETH1` – Ethnicity (factor, five levels)
 
 ```{r}
-#| label: tbl-variable-descriptions
-#| tbl-cap: "Variable Descriptions: Adult Analytic Dataset (NHANES 2013–2014)"
-#| echo: false
+#| label: variables-table
+#| echo: true
+#| message: false
+#| warning: false
 
-var_desc <- data.frame(
-Variable = c("age", "bmi", "sex", "race4", "diabetes_ind"),
-NHANES_Source = c("RIDAGEYR", "BMXBMI", "RIAGENDR", "RIDRETH1", "DIQ010"),
-Description = c(
-"Participant age in years (adults aged 20 years and older)",
-"Body Mass Index (BMI, kg/m²) measured during examination",
-"Sex of participant (Male or Female)",
-"Race/ethnicity collapsed into White, Black, Hispanic, and Other/Multi categories",
-"Doctor-diagnosed diabetes indicator (1 = Yes, 0 = No)"
-),
-Type = c("Continuous", "Continuous", "Categorical", "Categorical", "Binary")
+library(knitr)
+library(kableExtra)
+library(dplyr)
+library(tibble)
+
+# -----------------------------
+# Variable descriptions (with `code` formatting for names)
+# -----------------------------
+var_tbl <- tribble(
+  ~Variable,      ~Description,                                                                                                   ~Type,         ~Origin,
+  "`diabetes_ind`","Type 2 diabetes diagnosis (1 = Yes, 0 = No) derived from `DIQ010`; gestational diabetes excluded.",           "Categorical", "Derived from `DIQ010`",
+  "`age`",        "Age in years.",                                                                                                "Continuous",  "NHANES `RIDAGEYR`",
+  "`bmi`",        "Body Mass Index (kg/m^2) computed from measured height and weight.",                                           "Continuous",  "NHANES `BMXBMI`",
+  "`bmi_cat`",    "BMI categories: Underweight, Normal, Overweight, Obesity I–III (`Normal` is reference in models).",            "Categorical", "Derived from `bmi`",
+  "`sex`",        "Sex of participant (`Male`, `Female`).",                                                                       "Categorical", "NHANES `RIAGENDR`",
+  "`race`",       "Race/Ethnicity with five levels (e.g., Non-Hispanic White, Non-Hispanic Black, Mexican American).",            "Categorical", "NHANES `RIDRETH1`",
+  "`WTMEC2YR`",   "Examination sample weight for Mobile Examination Center participants.",                                        "Weight",      "NHANES design",
+  "`SDMVPSU`",    "Primary Sampling Unit used for variance estimation in the complex survey design.",                             "Design",      "NHANES design",
+  "`SDMVSTRA`",   "Stratum identifier used to define strata for the complex survey design.",                                      "Design",      "NHANES design",
+  "`age_c`",      "Centered and standardized age (z-score).",                                                                     "Continuous",  "Derived from `age`",
+  "`bmi_c`",      "Centered and standardized BMI (z-score).",                                                                     "Continuous",  "Derived from `bmi`"
 )
 
-knitr::kable(var_desc, align = "l")
+kbl(
+  var_tbl,
+  caption = "Variable Descriptions: Adult Analytic Dataset",
+  align = c("l","l","l","l"),
+  escape = FALSE
+) %>%
+  kable_styling(full_width = FALSE, position = "center", bootstrap_options = c("striped","hover")) %>%
+  group_rows("Analysis variables", 1, 6) %>%              # <-- updated range (now 6 analysis rows)
+  group_rows("Survey design variables", 7, 9) %>%
+  group_rows("Derived variables", 10, 11)
 ```
+
+### Study Design and Survey-Weighted Analysis  
+
+The National Health and Nutrition Examination Survey (NHANES) employs a complex, multistage probability sampling design with stratification, clustering, and oversampling of specific demographic groups (for example, racial/ethnic minorities and older adults) to produce nationally representative estimates of the U.S. population.  
+
+Survey design variables — primary sampling units (`SDMVPSU`), strata (`SDMVSTRA`), and examination sample weights (`WTMEC2YR`) — were retained to account for this complex design. These variables were applied to adjust for unequal probabilities of selection, nonresponse, and oversampling, ensuring valid standard errors, unbiased prevalence estimates, and generalizable population-level inference.  
+
+A survey-weighted logistic regression model was used to evaluate the association between diabetes status (`diabetes_ind`, binary outcome) and key predictors: body mass index (`bmi`), age (`age`), sex (`sex`), and race/ethnicity (`race`). Diabetes was defined using `DIQ010` (“Doctor told you have diabetes”) and coded as 0/1, with `DIQ050` (insulin use) excluded to avoid treatment-related confounding.  
+
+Covariates included:  
+- `age` (continuous; centered as `age_c`, categorized 20–80 years)  
+- `bmi` (continuous; centered as `bmi_c`, and categorized by BMI class `bmi_cat`)  
+- `sex` (male, female)  
+- `race` (five ethnicity levels)  
+
+This approach accounts for NHANES’ complex sampling design, producing unbiased parameter estimates and valid inference for U.S. adults.  
+
+| Step | Description |
+|------|-------------|
+| **Weighting** | Used the **`survey`** package to calculate weighted means and standard deviations for all variables. |
+| **Standardization** | Centered and standardized BMI and age (`bmi_c`, `age_c`) for use in regression models. |
+| **Age Categorization** | Recoded into intervals: 20–<30, 30–<40, 40–<50, 50–<60, 60–<70, and 70–80 years. |
+| **BMI Categorization** | Recoded as: <18.5 (Underweight), 18.5–<25 (Normal), 25–<30 (Overweight), 30–<35 (Obesity I), 35–<40 (Obesity II), ≥40 (Obesity III). |
+| **Ethnicity Recoding** | Recoded as: 1 = Mexican American, 2 = Other Hispanic, 3 = Non-Hispanic White, 4 = Non-Hispanic Black, 5 = Other/Multi. |
+| **Special Codes** | Transformed nonresponse codes (e.g., 3, 7) to `NA`. These missing codes were evaluated for potential nonrandom patterns (MAR/MNAR). |
+| **Missing Data** | Retained and visualized missing values to assess their pattern and informativeness before multiple imputation. |
+| **Final Dataset** | Created the cleaned analytic dataset (`adult`) using *Non-Hispanic White* and *Male* as reference groups for modeling. |
 
 ```{r}
 #| label: adult-eda
-#| echo: false
+#| echo: true
 #| include: false
 #| message: false
 #| warning: false
@@ -352,6 +430,18 @@ adult_eda <- merged_data %>%
   dplyr::mutate(
     age_c = as.numeric(scale(age)),
     bmi_c = as.numeric(scale(bmi)),
+
+    # --- NEW: BMI category like Namita ---
+    bmi_cat = cut(
+      bmi,
+      breaks = c(-Inf, 18.5, 25, 30, 35, 40, Inf),
+      labels = c("Underweight","Normal","Overweight","Obesity I","Obesity II","Obesity III"),
+      right = FALSE
+    ),
+    bmi_cat = forcats::fct_explicit_na(bmi_cat, na_level = "(Missing)") |>
+              forcats::fct_relevel("Normal","Underweight","Overweight","Obesity I","Obesity II","Obesity III","(Missing)"),
+    # --- END NEW ---
+
     race4 = forcats::fct_collapse(
               factor(race),
               White    = "NH White",
@@ -366,57 +456,28 @@ adult_eda <- merged_data %>%
   )
 ```
 
-```{r}
-#| label: missing-checks
-#| echo: false
-#| include: false
-#| message: false
-#| warning: false
-
-# How many NAs in each column?
-colSums(is.na(adult_eda))
-
-# Focus on the key variables we expect NAs in
-sapply(adult_eda[, c("diabetes_ind","bmi","bmi_c","age")], function(x) sum(is.na(x)))
-
-# Do the source columns actually contain NAs / non-(1,2) codes?
-table(merged_data$DIQ010, useNA = "ifany")
-sum(is.na(merged_data$BMXBMI))
-```
-
-```{r}
-#| label: miss-pcts-print
-#| echo: false
-#| include: false
-miss_bmi <- mean(is.na(adult_eda$bmi)) * 100
-miss_diab <- mean(is.na(adult_eda$diabetes_ind)) * 100
-sprintf("Missing BMI: %.1f%%; Missing diabetes_ind: %.1f%%", miss_bmi, miss_diab)
-```
-
-These summaries confirm that only BMI and diabetes indicators contain
-missing values, supporting the need for multiple imputation while
-keeping other variables complete.
+### Adult Cohort Definition 
 
 ```{r}
 #| label: adult-cohort
-#| echo: false
+#| echo: true
 #| include: false
 #| message: false
 #| warning: false
 
 # Define adult analytic cohort (age >= 20)
 adult <- merged_data %>%
-  filter(RIDAGEYR >= 20) %>%
-  transmute(
+  dplyr::filter(RIDAGEYR >= 20) %>%
+  dplyr::transmute(
     SDMVPSU, SDMVSTRA, WTMEC2YR,
-    diabetes_ind = case_when(DIQ010 == 1 ~ 1, DIQ010 == 2 ~ 0, TRUE ~ NA_real_),
-    bmi = as.numeric(BMXBMI),
-    age = as.numeric(RIDAGEYR),
-    sex = factor(case_when(
+    diabetes_ind = dplyr::case_when(DIQ010 == 1 ~ 1, DIQ010 == 2 ~ 0, TRUE ~ NA_real_),
+    bmi = suppressWarnings(as.numeric(BMXBMI)),
+    age = suppressWarnings(as.numeric(RIDAGEYR)),
+    sex = factor(dplyr::case_when(
       RIAGENDR == 1 ~ "Male",
       RIAGENDR == 2 ~ "Female"
     )),
-    race = factor(case_when(
+    race = factor(dplyr::case_when(
       RIDRETH1 == 1 ~ "Mexican American",
       RIDRETH1 == 2 ~ "Other Hispanic",
       RIDRETH1 == 3 ~ "NH White",
@@ -424,9 +485,21 @@ adult <- merged_data %>%
       RIDRETH1 == 5 ~ "Other/Multi"
     ))
   ) %>%
-  mutate(
-    age_c = scale(age),
-    bmi_c = scale(bmi),
+  dplyr::mutate(
+    # centered/scaled numeric versions
+    age_c = as.numeric(scale(age)),
+    bmi_c = as.numeric(scale(bmi)),
+
+    # NEW: BMI categories like Namita
+    bmi_cat = cut(
+      bmi,
+      breaks = c(-Inf, 18.5, 25, 30, 35, 40, Inf),
+      labels = c("Underweight","Normal","Overweight","Obesity I","Obesity II","Obesity III"),
+      right = FALSE
+    ),
+    bmi_cat = forcats::fct_explicit_na(bmi_cat, na_level = "(Missing)") |>
+              forcats::fct_relevel("Normal","Underweight","Overweight","Obesity I","Obesity II","Obesity III","(Missing)"),
+
     race4 = forcats::fct_collapse(
       race,
       White = "NH White",
@@ -439,16 +512,41 @@ adult <- merged_data %>%
 ```
 
 ```{r}
-#| label: adult-structure
-#| echo: false
-#| eval: true
-#| collapse: true
-#| comment: ""
+#| label: survey-design-adult
+#| echo: true
+#| message: false
+#| warning: false
 
-# Show structure and first few participants
+library(survey)
 
-str(adult)
-head(adult, 10)
+# NHANES survey design object for the adult analytic cohort
+
+nhanes_design_adult <- survey::svydesign(
+id      = ~SDMVPSU,
+strata  = ~SDMVSTRA,
+weights = ~WTMEC2YR,
+nest    = TRUE,
+data    = adult
+)
+
+# Quick weighted checks
+
+survey::svymean(~age, nhanes_design_adult, na.rm = TRUE)
+survey::svymean(~diabetes_ind, nhanes_design_adult, na.rm = TRUE)
+
+# Design effect and effective sample size for `diabetes_ind`
+
+v_hat <- as.numeric(survey::svyvar(~diabetes_ind, nhanes_design_adult, na.rm = TRUE))
+p_hat <- mean(adult$diabetes_ind, na.rm = TRUE)
+n_obs <- nrow(adult)
+v_srs <- p_hat * (1 - p_hat) / n_obs
+deff  <- v_hat / v_srs
+
+n_total <- sum(weights(nhanes_design_adult), na.rm = TRUE)
+ess     <- as.numeric(n_total / deff)
+
+cat("Design effect for diabetes_ind:", round(deff, 2), "\n")
+cat("Effective sample size for diabetes_ind:", round(ess), "\n")
 ```
 
 Descriptive statistics for continuous and categorical variables are
@@ -465,6 +563,7 @@ tbl1_dat <- adult %>%
   transmute(
     age,
     bmi,
+    bmi_cat,
     sex,
     race4,
     # CHANGE: make diabetes_ind a factor so it plays nice with pivot_longer()
@@ -490,7 +589,7 @@ cont_sum <- tbl1_dat %>%
   mutate(across(c(Mean, SD, Min, Max), ~round(.x, 2)))
 
 # Categorical summaries: counts and percents
-cat_vars <- c("sex", "race4", "diabetes_ind")
+cat_vars <- c("sex", "race4", "diabetes_ind", "bmi_cat")
 
 cat_sum <- tbl1_dat %>%
   # CHANGE: ensure all cat vars are factors and include NA as an explicit "(Missing)" level
@@ -505,7 +604,7 @@ cat_sum <- tbl1_dat %>%
   arrange(Variable, desc(n))
 
 kable(cont_sum, caption = "Table 1a. Continuous variables (age, BMI): N, missing, mean (SD), range.")
-kable(cat_sum,  caption = "Table 1b. Categorical variables (sex, race4, diabetes_ind): counts and percentages.")
+kable(cat_sum,  caption = "Table 1b. Categorical variables (sex, race4, diabetes_ind, bmi_cat): counts and percentages.")
 ```
 
 Table 1a and 1b summarize the analytic variables included in subsequent
@@ -534,44 +633,112 @@ age and BMI (`age_c`, `bmi_c`), categorical indicators for sex and
 race/ethnicity (`race4`), and a binary doctor-diagnosed diabetes
 variable (`diabetes_ind`).
 
-### Missing Data Summary
-
 ```{r}
-#| label: miss-pcts
-#| echo: false
-miss_bmi  <- mean(is.na(adult_eda$bmi)) * 100
-miss_diab <- mean(is.na(adult_eda$diabetes_ind)) * 100
+#| label: structure-and-preview
+#| echo: true
+#| message: false
+#| warning: false
+
+# Textual structure and preview
+str(adult)
+head(adult, 10)
+
+# Visual structure and type overview
+plot_intro(adult, title = "Adult dataset: variable types and completeness")
+plot_str(adult, type = "r")
 ```
 
 ```{r}
-#| label: fig-missing
-#| fig-cap: "Missing data pattern for analytic variables (outcome and predictors only)."
-#| echo: false
-DataExplorer::plot_missing(
-  adult_eda[, c("diabetes_ind", "bmi", "age")]
+#| label: missingness-visual
+#| echo: true
+#| message: false
+#| warning: false
+#| fig-cap: "Missingness overview for the adult dataset."
+
+library(DataExplorer)
+
+# Visualize missing data pattern for key variables
+
+plot_missing(adult, title = "Missing data pattern (Adult dataset)")
+```
+
+```{r}
+#| label: missing-summary
+#| echo: true
+#| message: false
+#| warning: false
+
+miss_tbl <- tibble::tibble(
+Variable = c("`bmi`","`diabetes_ind`"),
+Missing_n = c(sum(is.na(adult_eda$bmi)),
+sum(is.na(adult_eda$diabetes_ind))),
+Missing_pct = round(c(mean(is.na(adult_eda$bmi)),
+mean(is.na(adult_eda$diabetes_ind))) * 100, 1)
+)
+
+knitr::kable(
+miss_tbl,
+caption = "Missingness for key analysis variables."
 )
 ```
 
-The missingness plot visually confirms that BMI and diabetes status have
-modest proportions of missing data, with no evident systematic pattern
-across records.
+### Missing Data Summary  
 
-Missingness was low (\~4%) and primarily affected BMI and diabetes
-status. Patterns likely reflect data missing at random (MAR), as older
-adults or those with health limitations may be less likely to complete
-physical exams, supporting the use of MICE for bias reduction.
+Missingness was low overall (~`r round(mean(is.na(adult_eda$bmi) | is.na(adult_eda$diabetes_ind)) * 100, 1)`%). Gaps were concentrated in `bmi` and `diabetes_ind`; design variables and demographics were complete. Patterns were consistent with MAR, so we used multiple imputation (MICE) prior to modeling.
+
+```{r}
+#| label: missing-checks
+#| echo: true
+#| include: false
+#| message: false
+#| warning: false
+
+# Summarize missingness by variable
+
+colSums(is.na(adult_eda))
+
+# Focus on expected variables with NAs
+
+sapply(adult_eda[, c("diabetes_ind", "bmi", "bmi_c", "age")], function(x) sum(is.na(x)))
+
+# Check for missing or invalid source codes
+
+table(merged_data$DIQ010, useNA = "ifany")
+sum(is.na(merged_data$BMXBMI))
+```
+
+```{r}
+#| label: miss-pcts
+#| echo: true
+#| include: false
+miss_bmi  <- mean(is.na(adult_eda$bmi)) * 100
+miss_diab <- mean(is.na(adult_eda$diabetes_ind)) * 100
+sprintf("Missing BMI: %.1f%%; Missing diabetes_ind: %.1f%%", miss_bmi, miss_diab)
+```
+
+```{r}
+#| label: fig-missing-note
+#| echo: false
+#| include: false
+# (Note: full missingness pattern already visualized above using plot_missing(adult).)
+```
+
+Results indicated that missing values were limited primarily to BMI and diabetes indicators, while demographic and survey design variables were complete.
+
+The overall missingness (~4%) was low and appears consistent with data missing at random (MAR).
+This pattern likely reflects participation differences in the physical examination component among older adults or individuals with health limitations.
+
+Given these findings, multiple imputation using chained equations (MICE) was employed to minimize bias and retain statistical power in subsequent modeling.
 
 ### Exploratory Data Summary
 
-The adult analytic cohort was broadly representative of the U.S.
-population, with a majority identifying as Non-Hispanic White. Age and
-BMI distributions were right-skewed, with most participants classified
-as overweight or obese. Visual exploration revealed a clear positive
-relationship between age, BMI, and diabetes prevalence. Non-Hispanic
-Black and Hispanic participants exhibited higher proportions of diabetes
-compared to Non-Hispanic Whites. Missingness was minimal and primarily
-limited to BMI and diabetes status, supporting the use of multiple
-imputation for these variables.
+Following the missing data assessment, exploratory analyses were conducted to describe the adult analytic cohort and visualize distributions across key demographic and health variables. The goal was to examine univariate patterns and bivariate relationships relevant to diabetes prevalence before modeling.  
+
+The adult analytic cohort was broadly representative of the U.S. population, with a majority identifying as `Non-Hispanic White`. Age and `BMI` distributions were right-skewed, with most participants classified as overweight or obese. Visual exploration revealed a clear positive relationship between `age`, `BMI`, and diabetes prevalence. `Non-Hispanic Black` and `Hispanic` participants exhibited higher proportions of diabetes compared to `Non-Hispanic Whites`.  
+
+Approximately 25% of variables were categorical (for example, `sex`, `race4`, `diabetes_ind`) and 75% were continuous (`age`, `bmi`, `age_c`, `bmi_c`), indicating that the dataset primarily consisted of measured numeric values such as `BMI` and `age`. About 93% of rows contained complete information across all predictors and outcomes, reflecting high data quality.  
+
+`Age` was relatively evenly distributed across adult age groups, while `BMI` was concentrated in the overweight and obese ranges. `Female` participants were slightly overrepresented relative to `Male` participants.  
 
 ```{r}
 #| label: eda-histograms-bars
@@ -589,69 +756,26 @@ ggplot(adult, aes(x = factor(diabetes_ind, levels = c(0,1), labels = c("No","Yes
   labs(title = "Diabetes Outcome Distribution (≥20 years)", x = "Diabetes (No/Yes)", y = "Count") +
   theme_minimal()
 
-# BMI distribution
-ggplot(adult, aes(x = bmi)) +
-  geom_histogram(binwidth = 1, color = "white") +
-  labs(title = "Distribution of BMI (≥20 years)", x = "BMI", y = "Count") +
+# BMI category distribution
+ggplot(adult, aes(x = bmi_cat)) +
+  geom_bar(color = "white", fill = "skyblue") +
+  labs(title = "Distribution of BMI Categories (≥20 years)", x = "BMI Category", y = "Count") +
   theme_minimal()
 
 # BMI by diabetes outcome (boxplot)
+# (You can’t use boxplot with categorical y, so revert to numeric BMI here)
 ggplot(adult, aes(x = factor(diabetes_ind, levels = c(0,1), labels = c("No","Yes")), y = bmi)) +
-  geom_boxplot() +
-  labs(title = "BMI by Diabetes Diagnosis (≥20 years)", x = "Diabetes (No/Yes)", y = "BMI") +
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "BMI by Diabetes Diagnosis (≥20 years)", x = "Diabetes (No/Yes)", y = "BMI (numeric)") +
   theme_minimal()
 
 # Diabetes by race4 (dodged bars)
 ggplot(adult, aes(x = race4, fill = factor(diabetes_ind, levels = c(0,1), labels = c("No","Yes")))) +
   geom_bar(position = "dodge") +
-  labs(title = "Diabetes Diagnosis by Race/Ethnicity (≥20 years)", x = "Race/Ethnicity (race4)", y = "Count", fill = "Diabetes") +
+  labs(title = "Diabetes Diagnosis by Race/Ethnicity (≥20 years)",
+       x = "Race/Ethnicity (race4)", y = "Count", fill = "Diabetes") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
-
-```{r}
-#| label: fig-cohort-age
-#| fig-cap: "Age distribution (age ≥ 20)."
-#| echo: false
-ggplot(adult_eda, aes(x = age)) +
-  geom_histogram(binwidth = 5) +
-  labs(x = "Age (years)", y = "Count") +
-  theme_minimal()
-```
-
-```{r}
-#| label: fig-cohort-bmi
-#| fig-cap: "BMI distribution."
-#| echo: false
-ggplot(adult_eda, aes(x = bmi)) +
-  geom_histogram(binwidth = 1) +
-  labs(x = "BMI (kg/m²)", y = "Count") +
-  theme_minimal()
-```
-
-```{r}
-#| label: fig-cohort-sex
-#| fig-cap: "Sex composition."
-#| echo: false
-adult_eda %>%
-  count(sex) %>%
-  ggplot(aes(x = sex, y = n)) +
-  geom_col() +
-  labs(x = NULL, y = "Count") +
-  theme_minimal()
-```
-
-```{r}
-#| label: fig-cohort-race
-#| fig-cap: "Race/ethnicity composition (race4)."
-#| echo: false
-adult_eda %>%
-  count(race4) %>%
-  ggplot(aes(x = race4, y = n)) +
-  geom_col() +
-  labs(x = NULL, y = "Count") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 30, hjust = 1))
 ```
 
 The EDA missingness summary shows approximately
@@ -661,6 +785,22 @@ The EDA missingness summary shows approximately
 `SDMVSTRA`), as well as `age`, `sex`, and `race4`, are complete—sex and
 race NAs are encoded as explicit “(Missing)” levels in the EDA view.
 
+```{r}
+#| label: data-exploration
+#| include: false
+# data exploration
+
+if (sum(!is.na(adult$diabetes_ind)) == 0) {
+  stop("Too few non-missing outcomes for modeling (n = 0). Check DIQ010 upstream.")
+}
+
+# (optional plots omitted for brevity)
+
+# save for downstream
+if (!dir.exists("data")) dir.create("data", recursive = TRUE)
+saveRDS(adult, "data/adult_cleaned_2013_2014.rds")
+```
+    
 ## Modeling Frameworks
 
 Three modeling frameworks were compared using identical predictors
