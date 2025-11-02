@@ -439,7 +439,7 @@ adult_eda <- merged_data %>%
       right = FALSE
     ),
     bmi_cat = forcats::fct_explicit_na(bmi_cat, na_level = "(Missing)") |>
-              forcats::fct_relevel("Normal","Underweight","Overweight","Obesity I","Obesity II","Obesity III","(Missing)"),
+              forcats::fct_relevel("Underweight","Normal","Overweight","Obesity I","Obesity II","Obesity III","(Missing)"),
     # --- END NEW ---
 
     race4 = forcats::fct_collapse(
@@ -498,7 +498,7 @@ adult <- merged_data %>%
       right = FALSE
     ),
     bmi_cat = forcats::fct_explicit_na(bmi_cat, na_level = "(Missing)") |>
-              forcats::fct_relevel("Normal","Underweight","Overweight","Obesity I","Obesity II","Obesity III","(Missing)"),
+              forcats::fct_relevel("Underweight","Normal","Overweight","Obesity I","Obesity II","Obesity III","(Missing)"),
 
     race4 = forcats::fct_collapse(
       race,
@@ -641,11 +641,9 @@ variable (`diabetes_ind`).
 
 # Textual structure and preview
 str(adult)
-head(adult, 10)
 
 # Visual structure and type overview
 plot_intro(adult, title = "Adult dataset: variable types and completeness")
-plot_str(adult, type = "r")
 ```
 
 ```{r}
@@ -926,7 +924,7 @@ maintain robust variance estimation.
 ```{r}
 #| label: model-mice
 #| echo: true
-#| include: true
+#| include: false
 #| message: false
 #| warning: false
 
