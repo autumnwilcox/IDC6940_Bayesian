@@ -70,16 +70,6 @@ Bayesian logistic regression offers a robust alternative by integrating
 prior information, regularizing estimates, and quantifying uncertainty
 more transparently than frequentist approaches.
 
-This study applies Bayesian logistic regression to estimate the risk of doctor-diagnosed diabetes among adults in the 2013–2014 National Health and Nutrition Examination Survey (NHANES). Predictors include age, body mass index (BMI), sex, and a four-level race/ethnicity variable (`race4`) derived from the NHANES demographic field `RIDRETH1`. The original `RIDRETH1` categories (Mexican American, Other Hispanic, Non-Hispanic White, Non-Hispanic Black, and Other/Multi) were recorded into broader groups (White, Black, Hispanic, and Other) to ensure adequate representation and model stability.
-
-Three analytic frameworks were compared: (1) survey-weighted maximum likelihood estimation (MLE) using the NHANES complex design, (2) multiple imputation (MICE) with predictive mean matching and Rubin’s rules, and (3) Bayesian inference with weakly informative priors $N(0, 2.5)$ implemented via `brms`. The Bayesian model incorporated normalized NHANES exam weights as importance weights, approximating design-based inference. Across all methods, age and BMI
-were positively associated with diabetes odds, female sex tended to have
-lower odds than male, and Black and Hispanic adults showed higher odds
-relative to White. Agreement across modeling frameworks supports the
-robustness of these associations and highlights the interpretability and
-uncertainty quantification advantages offered by Bayesian analysis for
-population health modeling.
-
 Bayesian hierarchical models, implemented via Markov Chain Monte Carlo
 (MCMC), have been successfully applied in predicting patient health
 status across diseases such as pneumonia, prostate cancer, and mental
