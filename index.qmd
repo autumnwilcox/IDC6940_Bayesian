@@ -682,7 +682,7 @@ caption = "Missingness for key analysis variables."
 
 ### Missing Data Summary  
 
-Missingness was low overall (~`r round(mean(is.na(adult_eda$bmi) | is.na(adult_eda$diabetes_ind)) * 100, 1)`%). Gaps were concentrated in `bmi` and `diabetes_ind`; design variables and demographics were complete. Patterns were consistent with MAR, so we used multiple imputation (MICE) prior to modeling.
+Missingness was low overall (~`r round(mean(is.na(adult_eda$bmi) | is.na(adult_eda$diabetes_ind)) * 100, 1)`%). Gaps were concentrated in `bmi` and `diabetes_ind`; design variables and demographics were complete. Patterns were consistent with MAR.
 
 ```{r}
 #| label: missing-checks
@@ -726,8 +726,6 @@ Results indicated that missing values were limited primarily to BMI and diabetes
 The overall missingness (~4%) was low and appears consistent with data missing at random (MAR).
 This pattern likely reflects participation differences in the physical examination component among older adults or individuals with health limitations.
 
-Given these findings, multiple imputation using chained equations (MICE) was employed to minimize bias and retain statistical power in subsequent modeling.
-
 ### Exploratory Data Summary
 
 Following the missing data assessment, exploratory analyses were conducted to describe the adult analytic cohort and visualize distributions across key demographic and health variables. The goal was to examine univariate patterns and bivariate relationships relevant to diabetes prevalence before modeling.  
@@ -737,6 +735,30 @@ The adult analytic cohort was broadly representative of the U.S. population, wit
 Approximately 25% of variables were categorical (for example, `sex`, `race4`, `diabetes_ind`) and 75% were continuous (`age`, `bmi`, `age_c`, `bmi_c`), indicating that the dataset primarily consisted of measured numeric values such as `BMI` and `age`. About 93% of rows contained complete information across all predictors and outcomes, reflecting high data quality.  
 
 `Age` was relatively evenly distributed across adult age groups, while `BMI` was concentrated in the overweight and obese ranges. `Female` participants were slightly overrepresented relative to `Male` participants.  
+
+```{r}
+#| label: corr-heatmap-eda
+#| echo: true
+#| fig-cap: "Correlation heatmap (EDA, pairwise-complete) using adult_eda."
+stopifnot(all(c("diabetes_ind","age","bmi") %in% names(adult_eda)))
+
+adult_eda_num <- adult_eda |>
+  dplyr::transmute(
+    diabetes_ind = as.numeric(diabetes_ind),
+    age  = as.numeric(age),
+    bmi  = as.numeric(bmi)
+  )
+
+cmat <- cor(adult_eda_num, use = "pairwise.complete.obs", method = "pearson")
+cor_melt <- reshape2::melt(cmat, varnames = c("Var1","Var2"), value.name = "value")
+
+ggplot(cor_melt, aes(Var1, Var2, fill = value)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red",
+                       midpoint = 0, limits = c(-1, 1), name = "Correlation") +
+  theme_minimal() +
+  labs(title = "Correlation Heatmap (EDA: pairwise-complete)", x = NULL, y = NULL)
+```
 
 ```{r}
 #| label: eda-histograms-bars
@@ -1085,25 +1107,37 @@ specification:
 `diabetes_ind | weights(wt_norm) ~ age_c + bmi_c + sex + race4`
 
 ```{r}
-#| label: corr-heatmap-adult-imp1
+#| label: corr-heatmap-imputed-adult
 #| echo: true
 #| cache: false
+#| fig-cap: "Correlation heatmap (imputed dataset: adult_imp1)."
 
 stopifnot(all(c("diabetes_ind","age","bmi") %in% names(adult_imp1)))
 
-correlation_matrix <- cor(
+corr_matrix_imputed <- cor(
   adult_imp1[, c("diabetes_ind", "age", "bmi")],
   use = "complete.obs",
   method = "pearson"
 )
-correlation_melted <- melt(correlation_matrix, varnames = c("Var1","Var2"), value.name = "value")
 
-ggplot(correlation_melted, aes(Var1, Var2, fill = value)) +
+corr_melted_imputed <- reshape2::melt(
+  corr_matrix_imputed,
+  varnames = c("Var1","Var2"),
+  value.name = "value"
+)
+
+ggplot(corr_melted_imputed, aes(Var1, Var2, fill = value)) +
   geom_tile(color = "white") +
-  scale_fill_gradient2(low = "blue", high = "red", mid = "white",
-                       midpoint = 0, limits = c(-1, 1), name = "Correlation") +
+  scale_fill_gradient2(
+    low = "blue", mid = "white", high = "red",
+    midpoint = 0, limits = c(-1, 1), name = "Correlation"
+  ) +
   theme_minimal() +
-  labs(title = "Correlation Heatmap (adult_imp1)", x = "Features", y = "Features")
+  labs(
+    title = "Correlation Heatmap (Imputed Data: adult_imp1)",
+    x = "Features",
+    y = "Features"
+  )
 ```
 
 ```{r}
