@@ -1449,6 +1449,7 @@ unduly constrain the posterior.
 #| fig-cap: "Posterior odds ratios (points) with 95% credible intervals (lines)."
 #| echo: true
 #| cache: false
+#| include: true
 
 or_plot <- bayes_or %>%
   dplyr::filter(term != "Intercept") %>%
@@ -1480,6 +1481,7 @@ displayed in @fig-pred-calibration.
 #| fig-cap: "Observed outcome vs. mean predicted probability (calibration scatter with smoother)."
 #| echo: true
 #| cache: false
+#| include: true
 
 pred_mean <- colMeans(brms::posterior_epred(bayes_fit))
 ggplot(data.frame(pred = pred_mean, obs = yobs),
@@ -1494,6 +1496,7 @@ ggplot(data.frame(pred = pred_mean, obs = yobs),
 #| fig-cap: "Posterior predictive distribution of diabetes prevalence compared to observed NHANES prevalence."
 #| echo: true
 #| cache: false
+#| include: true
 
 post_pred <- brms::posterior_epred(bayes_fit, summary = FALSE)
 post_prev <- rowMeans(post_pred)
@@ -1519,6 +1522,7 @@ supports its calibration for epidemiologic inference.
 #| fig-cap: "Population (NHANES survey-weighted) vs posterior predictive diabetes prevalence."
 #| echo: true
 #| cache: false
+#| include: true
 
 # Posterior predictive prevalence (replicated datasets)
 
@@ -1554,6 +1558,7 @@ theme_minimal()
 #| label: list-brms-pars
 #| echo: true
 #| cache: false
+#| include: true
 
 src_obj <- if (exists("bayes_fit_prior") && !is.null(bayes_fit_prior)) bayes_fit_prior else bayes_fit
 draws_names <- names(posterior::as_draws_df(src_obj))
@@ -1565,6 +1570,7 @@ sort(grep("^(b_|prior_b_)", draws_names, value = TRUE))
 #| fig-cap: "Prior (dashed) vs posterior (solid) densities for selected coefficients."
 #| echo: true
 #| cache: false
+#| include: true
 
 src_obj <- if (exists("bayes_fit_prior") && !is.null(bayes_fit_prior)) bayes_fit_prior else bayes_fit
 draws_df <- posterior::as_draws_df(src_obj)
@@ -1626,6 +1632,7 @@ ggplot2::theme_minimal()
 #| fig-cap: "Prior vs Posterior Distributions (ggplot2 version)."
 #| echo: true
 #| cache: false
+#| include: true
 
 if (exists("combined_draws") && is.data.frame(combined_draws) && nrow(combined_draws) > 0) {
 ggplot(combined_draws, aes(x = estimate, fill = type)) +
@@ -1647,6 +1654,7 @@ knitr::asis_output("**Skipped: no matching prior/posterior draws to plot.**")
 #| label: fig-mcmc-areas-selected
 #| echo: true
 #| cache: false
+#| include: true
 
 par_names <- names(posterior::as_draws_df(bayes_fit))
 want <- c("b_age_c","b_bmi_c","b_sexFemale","b_race4Black","b_race4Hispanic","b_race4Other")
