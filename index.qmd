@@ -554,7 +554,7 @@ presented below.
 
 ```{r}
 #| label: tbl1-analytic
-#| echo: false
+#| echo: true
 #| message: false
 #| warning: false
 
