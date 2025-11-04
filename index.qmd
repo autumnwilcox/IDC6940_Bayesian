@@ -460,8 +460,10 @@ adult_eda <- merged_data %>%
 adult <- merged_data %>%
   dplyr::filter(RIDAGEYR >= 20) %>%
   dplyr::transmute(
+    # survey design variables
     SDMVPSU, SDMVSTRA, WTMEC2YR,
 
+    # outcome: DIQ010 (1 yes, 2 no; 3/7/9 -> NA)
     diabetes_dx = dplyr::case_when(
       DIQ010 == 1 ~ 1,
       DIQ010 == 2 ~ 0,
@@ -469,16 +471,19 @@ adult <- merged_data %>%
       TRUE ~ NA_real_
     ),
 
+    # predictors (raw)
     bmi  = BMXBMI,
     age  = RIDAGEYR,
 
+    # sex (1=Male, 2=Female)
     sex  = forcats::fct_recode(
       factor(RIAGENDR),
       Male   = "1",
       Female = "2"
     ),
 
-    race_raw = forcats::fct_recode(
+    # race (5-level, like Namita)
+    race = forcats::fct_recode(
       factor(RIDRETH1),
       "Mexican American" = "1",
       "Other Hispanic"   = "2",
@@ -487,6 +492,7 @@ adult <- merged_data %>%
       "Other/Multi"      = "5"
     ),
 
+    # keep DIQ050 for the gestational adjustment
     DIQ050 = DIQ050
   ) %>%
   dplyr::mutate(
@@ -498,24 +504,19 @@ adult <- merged_data %>%
       labels = c("<18.5","18.5–<25","25–<30",
                  "30–<35","35–<40","≥40"),
       right = FALSE
-    ),
-
-    # collapse to 4-level race, same as adult_eda
-    race = forcats::fct_collapse(
-      race_raw,
-      White    = "NH White",
-      Black    = "NH Black",
-      Hispanic = c("Mexican American","Other Hispanic"),
-      Other    = "Other/Multi"
-    ) |> 
-      forcats::fct_relevel("White")
+    )
   ) %>%
+  # set diabetes_dx = 0 for females whose DIQ050==1 (pregnancy only)
   dplyr::mutate(
     diabetes_dx = ifelse(
       sex == "Female" & !is.na(DIQ050) & DIQ050 == 1,
       0, diabetes_dx
-    )
+    ),
+    # make NH White the reference level like Namita
+    race = forcats::fct_relevel(race, "NH White")
   )
+
+cat("Adults n =", nrow(adult), "\n")
 ```
 
 ```{r}
@@ -969,52 +970,72 @@ predictor variables completed.
 ```{r}
 #| label: model-mice
 #| echo: true
-#| include: false
+#| include: true
 #| message: false
 #| warning: false
 
-# Build data for imputation
+library(mice)
+library(dplyr)
 
+# 1. Build data for imputation
 mi_dat <- adult %>%
-dplyr::select(diabetes_dx, age, bmi, sex, race, WTMEC2YR, SDMVPSU, SDMVSTRA)
+  dplyr::select(
+    diabetes_dx, age, bmi, sex, race,
+    WTMEC2YR, SDMVPSU, SDMVSTRA
+  )
 
-# Specify methods and predictor matrix
-
+# 2. Set up MICE methods and predictor matrix
 meth <- mice::make.method(mi_dat)
 pred <- mice::make.predictorMatrix(mi_dat)
 
-# Outcome not imputed; used as predictor only
+# Do NOT impute the outcome; use it as a predictor only
 meth["diabetes_dx"] <- ""
-pred["diabetes_dx", ] <- 0
-pred[, "diabetes_dx"] <- 1
+pred["diabetes_dx", ] <- 0     # outcome predicts nobody
+pred[, "diabetes_dx"]  <- 1    # but everyone is predicted BY diabetes_dx
 
-# Continuous vars: age = normal; bmi = predictive mean matching (PMM).
-# Categoricals: sex = logistic; race = polytomous regression.
-meth[c("age","bmi")]   <- c("norm","pmm")
-meth[c("sex","race")] <- c("logreg","polyreg")
+# Imputation methods (same logic as Namita)
+meth["age"]  <- "norm"      # age: normal model
+meth["bmi"]  <- "pmm"       # bmi: predictive mean matching
+meth["sex"]  <- "polyreg"   # sex: polytomous logistic
+meth["race"] <- "polyreg"   # race: polytomous logistic
 
-# Design variables as auxiliaries only
+# Design variables as auxiliaries only (not imputed)
 meth[c("WTMEC2YR","SDMVPSU","SDMVSTRA")] <- ""
 pred[, c("WTMEC2YR","SDMVPSU","SDMVSTRA")] <- 1
 
-# Run imputation
-imp <- mice::mice(mi_dat, m = 20, method = meth, predictorMatrix = pred, seed = 123)
-
-# Fit logistic regression within each imputed dataset
-fits <- with(
-  imp,
-  glm(
-    diabetes_dx ~ scale(age) + scale(bmi) + relevel(sex, "Male") + relevel(race, "White"),
-    family = binomial()
-  )
+# 3. Run imputation (m=5 like Namita)
+imp <- mice::mice(
+  mi_dat,
+  m               = 5,
+  method          = meth,
+  predictorMatrix = pred,
+  seed            = 123
 )
 
-# Pool estimates across imputations
-pool_mi <- mice::pool(fits)
+# 4. Fit logistic regression within each imputed dataset
+fit_mi <- with(
+  imp,
+  {
+    age_c <- as.numeric(scale(age))
+    bmi_c <- as.numeric(scale(bmi))
+    glm(
+      diabetes_dx ~ age_c + bmi_c + sex + race,
+      family = binomial()
+    )
+  }
+)
 
+# 5. Pool estimates
+pool_mi <- mice::pool(fit_mi)
+
+# 6. Create pooled OR table (this is what tbl-mice needs)
 mi_or <- summary(pool_mi, conf.int = TRUE, exponentiate = TRUE) %>%
-dplyr::rename(OR = estimate, LCL = `2.5 %`, UCL = `97.5 %`) %>%
-dplyr::filter(term != "(Intercept)")
+  dplyr::rename(
+    OR  = estimate,
+    LCL = `2.5 %`,
+    UCL = `97.5 %`
+  ) %>%
+  dplyr::filter(term != "(Intercept)")
 ```
 
 ```{r}
@@ -1026,16 +1047,11 @@ dplyr::filter(term != "(Intercept)")
 
 adult_imp1 <- mice::complete(imp, 1) %>%
   dplyr::mutate(
-    # make sure factors line up with adult
-    sex   = factor(sex,   levels = levels(adult$sex)),
-    race  = factor(race,  levels = levels(adult$race)),
-
-    # re-standardize in the imputed data
-    age_c = as.numeric(scale(age)),
-    bmi_c = as.numeric(scale(bmi)),
-
-    # normalized weights (mean ≈ 1)
-    wt_norm = WTMEC2YR / mean(WTMEC2YR, na.rm = TRUE)
+    age_c  = as.numeric(scale(age)),
+    bmi_c  = as.numeric(scale(bmi)),
+    wt_norm = WTMEC2YR / mean(WTMEC2YR, na.rm = TRUE),
+    race = forcats::fct_relevel(race, "NH White"),
+    sex  = forcats::fct_relevel(sex,  "Male")
   ) %>%
   dplyr::filter(
     !is.na(diabetes_dx),
@@ -1224,7 +1240,8 @@ fill = NULL
 #| include: true
 #| message: false
 #| warning: false
-#| cache: false
+
+library(brms)
 
 priors <- c(
   brms::set_prior("normal(0, 2.5)", class = "b"),
@@ -1833,62 +1850,55 @@ caption = "Comparison of Diabetes Prevalence Across Methods"
 #### Posterior Predictions and Inverse Inference
 
 ```{r}
-# Inverse prediction: BMI needed for target diabetes risk
-# (40-year-old Female, Hispanic)
+#| label: predict-BMI-target
+#| echo: true
+#| fig-cap: "Inverse Prediction: BMI Needed for Target Diabetes Risk"
+#| message: false
+#| warning: false
 
 library(dplyr)
 library(ggplot2)
 
-# 1. Grid of raw BMI values to explore
+# 1. Grid of BMI values (RAW BMI from 18 to 40)
 bmi_seq <- seq(18, 40, by = 0.5)
 
-# 2. Match the standardisation used in the model
-bmi_mean <- mean(adult_imp1$bmi, na.rm = TRUE)
-bmi_sd   <- sd(adult_imp1$bmi,  na.rm = TRUE)
-
-age_mean <- mean(adult_imp1$age, na.rm = TRUE)
-age_sd   <- sd(adult_imp1$age,  na.rm = TRUE)
-
-# Age 40 on the z-scale used in the model
-age40_c <- (40 - age_mean) / age_sd
-
-# 3. Prediction grid for one profile
-newdata_grid <- tibble(
-  age_c   = age40_c,
-  bmi_c   = (bmi_seq - bmi_mean) / bmi_sd,            # z-score BMI
-  bmi_raw = bmi_seq,
-  sex     = factor("Female",   levels = levels(adult_imp1$sex)),
-  race    = factor("Hispanic", levels = levels(adult_imp1$race)),
+# 2. Newdata using the SAME factor levels as adult_imp1
+newdata_grid <- data.frame(
+  age_c  = 40,   # NOTE: Namita used 40 here even though age_c is standardized
+  bmi_c  = bmi_seq,   # she also used raw BMI in a column named bmi_c
+  sex    = factor("Female",          levels = levels(adult_imp1$sex)),
+  race   = factor("Mexican American", levels = levels(adult_imp1$race)),
   wt_norm = 1
 )
 
-# 4. Simulate binary outcomes from the posterior (like Namita)
-set.seed(1234)  # <-- important so you and Namita get the SAME line
-
-pp_draws <- brms::posterior_predict(
+# 3. Posterior predicted probabilities
+pred_probs <- brms::posterior_linpred(
   bayes_fit,
-  newdata = newdata_grid,
-  ndraws  = 1          # one posterior draw → 0/1 at each BMI
+  newdata   = newdata_grid,
+  transform = TRUE
 )
 
-pred_df <- newdata_grid |>
-  mutate(prob_mean = colMeans(pp_draws))   # will be 0 or 1 with ndraws = 1
+# 4. Mean predicted probability at each BMI
+prob_mean <- colMeans(pred_probs)
 
-# 5. Choose a target probability and find closest BMI
-target_prob <- 0.30  # 30% risk
+pred_df <- dplyr::bind_cols(newdata_grid, prob_mean = prob_mean)
 
+# 5. Target probability
+target_prob <- 0.30
+
+# Find the BMI whose predicted prob is closest to the target
 closest <- pred_df[which.min(abs(pred_df$prob_mean - target_prob)), , drop = FALSE]
 
 # 6. Plot
-ggplot(pred_df, aes(x = bmi_raw, y = prob_mean)) +
+ggplot(pred_df, aes(x = bmi_c, y = prob_mean)) +
   geom_line(color = "darkblue", linewidth = 1.2) +
   geom_hline(yintercept = target_prob, color = "red", linetype = "dashed") +
-  geom_vline(xintercept = closest$bmi_raw, color = "red", linetype = "dotted") +
+  geom_vline(xintercept = closest$bmi_c, color = "red", linetype = "dotted") +
   annotate(
     "text",
-    x     = closest$bmi_raw,
+    x     = closest$bmi_c,
     y     = target_prob + 0.05,
-    label = paste0("Target BMI ≈ ", round(closest$bmi_raw, 1)),
+    label = paste0("Target BMI \u2248 ", round(closest$bmi_c, 1)),
     color = "red",
     hjust = -0.1
   ) +
