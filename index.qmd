@@ -727,10 +727,9 @@ sprintf("Missing BMI: %.1f%%; Missing diabetes_dx: %.1f%%", miss_bmi, miss_diab)
 
 Results indicated that missing values were limited primarily to BMI and diabetes indicators, while demographic and survey design variables were complete.
 
-The overall missingness (~4%) was low and appears consistent with data missing at random (MAR).
 This pattern likely reflects participation differences in the physical examination component among older adults or individuals with health limitations.
 
-### Exploratory Data Summary
+### Exploratory Data Analysis
 
 Following the missing data assessment, exploratory analyses were conducted to describe the adult analytic cohort and visualize distributions across key demographic and health variables. The goal was to examine univariate patterns and bivariate relationships relevant to diabetes prevalence before modeling.  
 
@@ -738,7 +737,7 @@ The adult analytic cohort was broadly representative of the U.S. population, wit
 
 Approximately 25% of variables were categorical (for example, `sex`, `race`, `diabetes_dx`) and 75% were continuous (`age`, `bmi`, `age_c`, `bmi_c`), indicating that the dataset primarily consisted of measured numeric values such as `BMI` and `age`. About 93% of rows contained complete information across all predictors and outcomes, reflecting high data quality.  
 
-`Age` was relatively evenly distributed across adult age groups, while `BMI` was concentrated in the overweight and obese ranges. `Female` participants were slightly overrepresented relative to `Male` participants.  
+Adult `age` ranged from 20 to 80 years, with peak representation between 30 and 50 years and a slight right skew toward older ages. `BMI` was concentrated in the overweight and obese ranges. `Female` participants were slightly over represented relative to `Male` participants.  
 
 ```{r}
 #| label: corr-heatmap-eda
@@ -763,6 +762,8 @@ ggplot(cor_melt, aes(Var1, Var2, fill = value)) +
   theme_minimal() +
   labs(title = "Correlation Heatmap (EDA: pairwise-complete)", x = NULL, y = NULL)
 ```
+
+The correlation heatmap indicates that both age and BMI are positively associated with diabetes diagnosis, with only modest correlation between age and BMI themselves, suggesting minimal multicollinearity between these key predictors.
 
 ```{r}
 #| label: eda-histograms-bars
@@ -1418,7 +1419,7 @@ means and standard deviations closely match observed data. The model
 accurately reproduces diabetes prevalence (~10–11%) seen in the
 imputed dataset.
 
-#### Individual Level Predictions
+#### Internal Validation: Individual-Level Predictions
 
 ```{r}
 #| label: posterior-density-participants
@@ -2063,6 +2064,8 @@ Finally, although convergence diagnostics (R̂ ≈ 1, sufficient effective
 sample sizes, and stable posterior predictive checks) indicated good
 model performance, results are conditional on the 2013–2014 NHANES cycle
 and may not generalize to later datasets or longitudinal analyses.
+
+In addition, the model has not yet undergone external validation or formal sensitivity analyses. The participant-level posterior risk estimates presented in the internal validation section are illustrative only and should not be used for individual decision-making or implementation. Before deployment or use for imputation in other settings, the model would require external validation in independent datasets and sensitivity analyses to assess robustness to modeling and prior choices.
 
 ## Conclusion
 
