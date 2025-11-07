@@ -778,12 +778,10 @@ saveRDS(adult, "data/adult_cleaned_2013_2014.rds")
     
 ## Modeling Frameworks
 
-Three modeling frameworks were compared using identical predictors
-(standardized age, BMI, sex, and race) and the binary outcome
-`diabetes_dx`: (1) survey-weighted logistic regression to incorporate
-the NHANES complex sampling design, (2) multiple imputation (MICE) to
-address missing BMI values, and (3) Bayesian logistic regression with
-weakly informative priors to quantify uncertainty.
+Three modeling frameworks were compared using identical predictors—standardized age, BMI, sex, and race—and the binary outcome `diabetes_dx`:
+(1) survey-weighted logistic regression to account for the NHANES complex sampling design,
+(2) multiple imputation (MICE) to handle missing BMI values, and
+(3) Bayesian logistic regression with weakly informative priors to quantify parameter uncertainty.
 
 ### Survey-Weighted Logistic Regression (Design-Based MLE)
 
@@ -818,11 +816,41 @@ adult_clean <- adult %>%
     !is.na(sex),
     !is.na(race)
   )
+```
 
-# Structure and sanity checks
+```{r}
+#| label: data-structure
+#| echo: true
+#| include: true
+#| fig-cap: "Structure of the analytic dataset used for regression modeling, showing variable names, types, and sample values (N = 5,349)."
+
 str(adult_clean[, c("diabetes_dx","sex","race","age_c","bmi_c")])
+```
+
+```{r}
+#| label: sex-distribution
+#| echo: true
+#| include: true
+#| fig-cap: "Distribution of participants by sex (Male = 2,551; Female = 2,798) in the analytic cohort."
+
 table(adult_clean$sex)
+```
+
+```{r}
+#| label: race-distribution
+#| echo: true
+#| include: true
+#| fig-cap: "Race/ethnicity composition of the analytic cohort, with most participants identifying as Non-Hispanic White (n = 2,293) and Non-Hispanic Black (n = 1,101)."
+
 table(adult_clean$race)
+```
+
+```{r}
+#| label: diabetes-distribution
+#| echo: true
+#| include: true
+#| fig-cap: "Observed diabetes prevalence (binary outcome variable `diabetes_dx`), with 597 diagnosed cases (1 = Yes) and 4,752 non-diabetic participants (0 = No)."
+
 table(adult_clean$diabetes_dx)
 ```
 
@@ -859,25 +887,26 @@ svy_or <- broom::tidy(svy_fit, conf.int = TRUE) %>%
   dplyr::filter(term != "(Intercept)")
 ```
 
-Design-based odds ratios are summarized in @tbl-survey.
-
 ```{r}
-#| label: tbl-survey
+#| label: tbl-svylogit
 #| echo: true
-#| tbl-cap: "Survey-weighted logistic regression: odds ratios (OR) and 95% confidence intervals for diabetes diagnosis among adults (NHANES 2013–2014)."
+#| fig-cap: "Survey-weighted logistic regression: odds ratios (OR) and 95% confidence intervals for diabetes diagnosis among adults (NHANES 2013–2014)."
+
 knitr::kable(svy_or)
 ```
 
 **Interpretation:**  
-Age and BMI are the strongest predictors of diabetes in the NHANES 2013–2014 adult sample, with each 1 SD increase in age nearly tripling diabetes risk and higher BMI contributing substantially to elevated odds. Males show significantly higher odds of diabetes compared to females, consistent with known sex differences in metabolic risk. Racial and ethnic disparities are evident, with Hispanic, Black, and Other/Multi-racial adults all exhibiting significantly higher odds of diabetes than Non-Hispanic Whites. All predictors are statistically significant (p < 0.05), indicating robust associations across demographic and health characteristics.
+`age_c` and `bmi_c` are the strongest predictors of diabetes in the NHANES 2013–2014 adult cohort, with each 1 SD increase in age nearly tripling the odds of diabetes and higher BMI substantially elevating risk. Males show significantly lower odds of diabetes than females, consistent with established sex differences in metabolic outcomes. Racial and ethnic disparities are evident, with Mexican American, Other Hispanic, Non-Hispanic Black, and Other/Multi-racial adults all showing significantly higher odds of diabetes compared to Non-Hispanic Whites. All predictors were statistically significant (p < 0.05), indicating robust associations across demographic and health characteristics.
 
 ### Multivariate Imputation by Chained Equations (Pooled Logistic Regression)
 
 Multiple Imputation by Chained Equations (MICE) was used as a principled
-approach for handling missing data [@vanbuuren2011; @vanbuuren2012].\
+approach for handling missing data [@vanbuuren2011; @vanbuuren2012].
+
 MICE iteratively imputes each incomplete variable using regression
 models based on other variables in the dataset, producing multiple
 completed datasets that reflect uncertainty due to missingness.
+
 Estimates are then pooled across imputations using Rubin’s rules to
 generate final parameter estimates and confidence intervals.
 
@@ -892,13 +921,14 @@ multimodality do not materially affect mean structure estimation
 performance [@vanbuuren2012].
 
 In this study, continuous variables were imputed using regression-based methods: age via normal linear regression (norm) and BMI via predictive mean matching (PMM) to better preserve the empirical BMI distribution.
+
 Categorical variables (sex and race) were imputed using logistic
 and polytomous regression models, respectively. Diabetes status
 (`diabetes_dx`) was treated as an outcome variable and was not imputed.
 Twenty imputations were generated to reduce Monte Carlo error and
 maintain robust variance estimation.
 
-**Convergence and Data Stability**  
+**Convergence and Data Stability:**  
 The chained equation process showed stable convergence across iterations,
 indicating reliable estimation of missing BMI (and, where present, age) values. After MICE,
 the final imputed dataset consisted of *n = 5,592 adults* with all key
@@ -907,7 +937,7 @@ predictor variables completed.
 ```{r}
 #| label: model-mice
 #| echo: true
-#| include: true
+#| include: false
 #| message: false
 #| warning: false
 
@@ -1002,7 +1032,7 @@ adult_imp1 <- mice::complete(imp, 1) %>%
 glimpse(adult_imp1)
 ```
 
-**Descriptive Results (Imputed Dataset)**
+**Descriptive Results (Imputed Dataset):**
 
 After imputation, the analytic dataset contained approximately 5,500–5,600 adults.
 The mean age was around 49 years (SD ≈ 17), and the mean BMI was approximately 29 (SD ≈ 7).
