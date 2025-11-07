@@ -687,49 +687,58 @@ Overall missingness was low (~`r round(mean(is.na(adult_eda$bmi) | is.na(adult_e
 Gaps were concentrated in `bmi` (n = 249) and `diabetes_dx` (n = 177), while demographic and design variables were complete.
 This limited pattern of missingness is consistent with a Missing At Random (MAR) mechanism and likely reflects reduced participation in the physical examination component among certain adults.
 
-```{r}
-#| label: missing-checks
-#| echo: true
-#| message: false
-#| warning: false
-
-# Sanity checks for missingness
-
-colSums(is.na(adult_eda))
-sapply(adult_eda[, c("diabetes_dx", "bmi", "bmi_c", "age")], function(x) sum(is.na(x)))
-```
+### Exploratory Data Analysis
 
 ### Exploratory Data Analysis
 
-Following the missing data assessment, exploratory analyses were conducted to describe the adult analytic cohort and visualize distributions across key demographic and health variables. The goal was to examine univariate patterns and bivariate relationships relevant to diabetes prevalence before modeling.  
+Following the missing data assessment, exploratory analyses were conducted to describe the adult analytic cohort and visualize distributions across key demographic and health variables. The goal was to examine univariate patterns and bivariate relationships relevant to diabetes prevalence prior to modeling.
 
-The adult analytic cohort was broadly representative of the U.S. population, with a majority identifying as `Non-Hispanic White`. Age and `BMI` distributions were right-skewed, with most participants classified as overweight or obese. Visual exploration revealed a clear positive relationship between `age`, `BMI`, and diabetes prevalence. `Non-Hispanic Black` and `Hispanic` participants exhibited higher proportions of diabetes compared to `Non-Hispanic Whites`.  
+The adult analytic cohort was broadly representative of the U.S. population, with a majority identifying as `Non-Hispanic White`. `Age` and `BMI` distributions were right-skewed, with most participants classified as overweight or obese. Visual exploration revealed a clear positive association between `age`, `BMI`, and diabetes prevalence. `Non-Hispanic Black` and `Hispanic` participants exhibited higher diabetes prevalence compared with `Non-Hispanic Whites`.
 
-Approximately 25% of variables were categorical (for example, `sex`, `race`, `diabetes_dx`) and 75% were continuous (`age`, `bmi`, `age_c`, `bmi_c`), indicating that the dataset primarily consisted of measured numeric values such as `BMI` and `age`. About 93% of rows contained complete information across all predictors and outcomes, reflecting high data quality.  
+Approximately 25% of variables were categorical (e.g., `sex`, `race`, `diabetes_dx`) and 75% were continuous (e.g., `age`, `bmi`, `age_c`, `bmi_c`), indicating that the dataset primarily comprised measured numeric values. About 93% of observations contained complete information across all predictors and outcomes, reflecting high data quality.
 
-Adult `age` ranged from 20 to 80 years, with peak representation between 30 and 50 years and a slight right skew toward older ages. `BMI` was concentrated in the overweight and obese ranges. `Female` participants were slightly over represented relative to `Male` participants.  
+Adult `age` ranged from 20 to 80 years, with peak representation between 30 and 50 years and a slight right skew toward older ages. `BMI` was concentrated in the overweight and obese ranges, and `Female` participants were slightly overrepresented relative to `Male` participants.
 
 ```{r}
-#| label: eda-histograms-bars
+#| label: eda-age-distribution
 #| echo: true
+#| fig-cap: "Distribution of age among adults aged ≥20 years. The sample spans 20–80 years, with peak representation between 30 and 50 years and a gradual decline in older age groups, reflecting a balanced adult cohort suitable for regression modeling."
 
 # Age distribution (analytic adult)
 ggplot(adult, aes(x = age)) +
   geom_histogram(binwidth = 5, color = "white") +
   labs(title = "Distribution of Age (≥20 years)", x = "Age (years)", y = "Count") +
   theme_minimal()
+```
+
+```{r}
+#| label: eda-diabetes-distribution
+#| echo: true
+#| fig-cap: "Distribution of diabetes outcomes among adults aged ≥20 years. Most participants reported no diabetes diagnosis (`No`), while approximately 11% had diabetes (`Yes`) and 3% had missing responses, reflecting expected population prevalence and limited outcome missingness."
 
 # Diabetes outcome distribution
 ggplot(adult, aes(x = factor(diabetes_dx, levels = c(0,1), labels = c("No","Yes")))) +
   geom_bar() +
   labs(title = "Diabetes Outcome Distribution (≥20 years)", x = "Diabetes (No/Yes)", y = "Count") +
   theme_minimal()
+```
+
+```{r}
+#| label: eda-bmi-distribution
+#| echo: true
+#| fig-cap: "Distribution of BMI categories among adults aged ≥20 years. The majority of participants fell within the overweight (25–<30) and obese (≥30) ranges, with fewer individuals classified as underweight (<18.5). This distribution aligns with national trends in adult body composition, supporting the dataset’s representativeness for metabolic health analyses."
 
 # BMI category distribution
 ggplot(adult, aes(x = bmi_cat)) +
   geom_bar(color = "white", fill = "skyblue") +
   labs(title = "Distribution of BMI Categories (≥20 years)", x = "BMI Category", y = "Count") +
   theme_minimal()
+```
+
+```{r}
+#| label: eda-bmi-by-diabetes-outcome
+#| echo: true
+#| fig-cap: "Distribution of BMI by diabetes diagnosis among adults aged ≥20 years. Participants with diabetes (`Yes`) show a higher median BMI and greater variability compared to those without diabetes (`No`), supporting the established positive association between obesity and diabetes risk."
 
 # BMI by diabetes outcome (boxplot)
 # (You can’t use boxplot with categorical y, so revert to numeric BMI here)
@@ -737,6 +746,12 @@ ggplot(adult, aes(x = factor(diabetes_dx, levels = c(0,1), labels = c("No","Yes"
   geom_boxplot(fill = "lightblue") +
   labs(title = "BMI by Diabetes Diagnosis (≥20 years)", x = "Diabetes (No/Yes)", y = "BMI (numeric)") +
   theme_minimal()
+```
+
+```{r}
+#| label: eda-diabetes-by-race
+#| echo: true
+#| fig-cap: "Diabetes diagnosis by race/ethnicity among adults aged ≥20 years. Non-Hispanic Black and Hispanic participants show higher proportions of diabetes diagnoses compared with Non-Hispanic White participants, reflecting known disparities in diabetes prevalence across racial and ethnic groups."
 
 # Diabetes by race (dodged bars)
 ggplot(adult, aes(x = race, fill = factor(diabetes_dx, levels = c(0,1), labels = c("No","Yes")))) +
@@ -746,10 +761,6 @@ ggplot(adult, aes(x = race, fill = factor(diabetes_dx, levels = c(0,1), labels =
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
-
-The EDA missingness summary shows approximately
-4.3% missing `BMI` and 3.1% missing diabetes diagnosis (`diabetes_dx`). All design variables (`WTMEC2YR`, `SDMVPSU`, `SDMVSTRA`), as well as `age`, `sex`, and `race`, are complete—sex and
-race NAs are encoded as explicit “(Missing)” levels in the EDA view.
 
 ```{r}
 #| label: data-exploration
