@@ -397,7 +397,7 @@ This approach accounts for NHANES’ complex sampling design, producing
 unbiased parameter estimates and valid inference for U.S. adults.
 
 | Step | Description |
-|----|----|
+|-----------------------|-------------------------------------------------|
 | **Weighting** | Used the **`survey`** package to calculate weighted means for key variables (e.g., age and diabetes status) and to estimate design effects and effective sample size for the complex survey design. |
 | **Standardization** | Centered and standardized BMI and age (`bmi_c`, `age_c`) for use in regression models. |
 | **Age Categorization** | Not implemented in the analytic dataset (continuous `age` retained). Reference retained for potential descriptive grouping (20–\<30, 30–\<40, 40–\<50, 50–\<60, 60–\<70, 70–80). |
@@ -993,10 +993,7 @@ Carlo error and ensure stable variance estimation.
 
 #### Convergence and Data Stability
 
-The chained equation process showed stable convergence across
-iterations, indicating reliable estimation of missing BMI (and, where
-present, age) values. After MICE, the final imputed dataset consisted of
-*n = 5,592 adults* with all key predictor variables completed.
+The chained equation process showed stable convergence across iterations, confirming reliable estimation of missing `BMI` (and, where present, `age`) values. After applying `MICE`, the final imputed dataset included **n = 5,592 adults** with all key predictors completed.
 
 ```{r}
 #| label: model-mice
@@ -1098,20 +1095,14 @@ glimpse(adult_imp1)
 
 #### Descriptive Results (Imputed Dataset)
 
-After imputation, the analytic dataset contained approximately
-5,500–5,600 adults. The mean age was around 49 years (SD ≈ 17), and the
-mean BMI was approximately 29 (SD ≈ 7). Females represented roughly 52%
-of participants, and the majority identified as Non-Hispanic White
-(\~43%). Diabetes prevalence was about 11%, consistent with
-population-level NHANES estimates.
+After imputation, the analytic dataset contained approximately **5,500–5,600 adults**. The mean `age` was around **49 years** (SD ≈ 17), and the mean `BMI` was approximately **29** (SD ≈ 7). `Female` participants represented about **52%** of the sample, and the majority identified as `Non-Hispanic White` (~43%). The estimated diabetes prevalence was **~11%**, consistent with population-level NHANES benchmarks.
 
 ```{r}
-#| label: mice-visuals
+#| label: corr-heatmap
 #| echo: true
 #| message: false
 #| warning: false
-
-# Correlation heatmap
+#| fig-cap: "Correlation heatmap showing positive associations among `diabetes_dx`, `age`, and `BMI`. Both `age` and `BMI` exhibit moderate positive correlations with diabetes diagnosis, consistent with known metabolic risk trends in the NHANES adult population."
 
 correlation_matrix <- cor(adult_imp1[, c("diabetes_dx", "age", "bmi")], use = "complete.obs", method = "pearson")
 correlation_melted <- melt(correlation_matrix)
@@ -1122,15 +1113,23 @@ scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0, na
 theme_minimal() +
 theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
 labs(title = "Correlation Heatmap: Diabetes, Age, and BMI")
+```
 
-# Diabetes diagnosis distribution
+```{r}
+#| label: diabetes-dist
+#| echo: true
+#| fig-cap: "Distribution of diabetes diagnosis among adults (age ≥ 20 years). The majority of participants (≈ 89%) reported no diabetes diagnosis (`0`), while about 11% reported a positive diagnosis (`1`), consistent with NHANES population prevalence."
 
 ggplot(adult_imp1, aes(x = factor(diabetes_dx))) +
 geom_bar(fill = "steelblue") +
 labs(title = "Diabetes Diagnosis Distribution", x = "Diabetes (0 = No, 1 = Yes)", y = "Count") +
 theme_minimal()
+```
 
-# BMI distribution by diabetes status
+```{r}
+#| label: bmi-diabetes-box
+#| echo: true
+#| fig-cap: "Boxplot of `BMI` by diabetes status. Individuals with a diabetes diagnosis show a higher median `BMI` and greater variability compared to those without diabetes, consistent with established associations between obesity and metabolic disease risk."
 
 ggplot(adult_imp1, aes(x = factor(diabetes_dx), y = bmi, fill = factor(diabetes_dx))) +
 geom_boxplot(alpha = 0.7) +
@@ -1138,8 +1137,12 @@ scale_x_discrete(labels = c("0" = "No Diabetes", "1" = "Diabetes")) +
 labs(x = "Diabetes Diagnosis", y = "BMI", title = "BMI Distribution by Diabetes Status") +
 theme_minimal() +
 theme(legend.position = "none")
+```
 
-# Predicted probability of diabetes vs BMI
+```{r}
+#| label: pred-bmi
+#| echo: true
+#| fig-cap: "Predicted probability of diabetes as a function of `BMI`. The logistic regression curve shows a nonlinear increase in diabetes risk with higher `BMI`, with probabilities rising sharply beyond a `BMI` of 30, indicating elevated risk among overweight and obese adults."
 
 ggplot(adult_imp1, aes(x = bmi, y = diabetes_dx)) +
 geom_point(alpha = 0.2, position = position_jitter(height = 0.02)) +
@@ -1170,38 +1173,25 @@ mi_caption <- paste0(mi_caption, " Odds ratios are per 1 SD for age and BMI.")
 knitr::kable(mi_or, caption = mi_caption)
 ```
 
-#### Interpretation
+#### Interpretation 
 
--   Age and BMI are strong positive predictors of diabetes; each 1 SD
-    increase substantially raises the odds.
-
--   Sex: Females show significantly lower odds of diabetes compared to
-    males.
-
--   race/Ethnicity: All non-White racial/ethnic groups have higher odds
-    of diabetes compared to Non-Hispanic Whites, underscoring persistent
-    disparities in diabetes risk.
-
--   Model significance: All predictors are statistically significant (p
-    \< 0.05).
-
--   Results are consistent with those from the survey-weighted model,
-    confirming robustness to imputation.
+- `Age` and `BMI` are strong positive predictors of diabetes; each 1 SD increase substantially increases the odds of diagnosis.  
+- `Sex:` Females exhibit significantly lower odds of diabetes compared to males.  
+- `Race/Ethnicity:` All non-White racial and ethnic groups demonstrate higher odds of diabetes compared to Non-Hispanic Whites, underscoring persistent disparities in diabetes risk.  
+- **Model Significance:** All predictors are statistically significant (*p* < 0.05).  
+- **Model Robustness:** Results are consistent with those from the survey-weighted model, confirming stability across imputation and weighting approaches.  
 
 ### Bayesian Logistic Regression
 
-Bayesian logistic regression was used to quantify parameter uncertainty
-and compare posterior estimates with the survey-weighted and MICE
-models. Weakly informative priors were used to regularize estimates
-while preserving flexibility in inference.
+Bayesian logistic regression was used to quantify parameter uncertainty and compare posterior estimates with the survey-weighted and MICE models. Weakly informative priors were applied to regularize estimates while preserving flexibility in inference.
 
-**Model Specifications:** - Family: Bernoulli with logit link\
-- Data: `adult_imp1` (N = 5,592)\
-- Chains: 4 (2,000 iterations each; 1,000 warmup)\
-- Adaptation delta: 0.95\
-- Weights: normalized NHANES exam weights (`wt_norm`, mean ≈ 1.00, SD ≈
-0.79)\
-- Predictors: standardized age, BMI, sex, and race
+**Model Specifications:**
+- **Family:** Bernoulli with logit link  
+- **Data:** `adult_imp1` (N = 5,592)  
+- **Chains:** 4 (2,000 iterations each; 1,000 warmup)  
+- **Adaptation delta:** 0.95  
+- **Weights:** Normalized NHANES examination weights (`wt_norm`, mean ≈ 1.00, SD ≈ 0.79)  
+- **Predictors:** Standardized `age`, `BMI`, `sex`, and `race`
 
 #### Define Model and Priors
 
@@ -1222,9 +1212,7 @@ priors <- c(
 ```{r}
 #| label: dist-adult-std-age-bmi
 #| echo: true
-#| message: false
-#| warning: false
-#| fig-cap: "Distributions for standardized BMI and Age (adult_imp1)."
+#| fig-cap: "Distribution of standardized age (`age_c`) and BMI (`bmi_c`) in the imputed dataset (`adult_imp1`). Both variables were mean-centered and scaled (z-scores) for inclusion in regression models. The overlapping density curves indicate approximate normality and comparable variance, supporting suitability for standardized coefficient estimation."
 
 adult_long <- adult_imp1 %>%
 dplyr::select(bmi_c, age_c) %>%
@@ -1250,7 +1238,7 @@ fill = "Coefficient"
 #| echo: true
 #| message: false
 #| warning: false
-#| fig-cap: "Prior distributions for Age and BMI coefficients (Normal(0, 2.5))."
+#| fig-cap: "Prior distributions for standardized age and BMI coefficients, assuming Normal(0, 2.5) priors. These weakly informative priors constrain extreme coefficient values while allowing flexibility in posterior estimation, ensuring regularization without strong bias."
 
 prior_draws <- tibble::tibble(
 term = rep(c("Age (per 1 SD)", "BMI (per 1 SD)"), each = 4000),
@@ -1603,6 +1591,48 @@ fill = ""
 } else {
 knitr::asis_output("**Skipped: no matching prior/posterior draws to plot.**")
 }
+```
+
+```{r}
+#| label: fig-prior-posterior-ggplot-2
+#| fig-cap: "Prior vs Posterior Distributions (ggplot2 version)."
+#| echo: true
+#| cache: false
+#| include: true
+
+# Extract posterior draws as a matrix, then convert to tibble
+post <- as_draws_matrix(bayes_fit) %>%   # safer than as_draws_df for manipulation
+  as.data.frame() %>%
+  select(b_bmi_c, b_age_c) %>%
+  pivot_longer(
+    everything(),
+    names_to = "term",
+    values_to = "estimate"
+  ) %>%
+  mutate(
+    term = case_when(
+      term == "b_bmi_c" ~ "BMI (per 1 SD)",
+      term == "b_age_c" ~ "Age (per 1 SD)"
+    ),
+    type = "Posterior"
+  )
+prior_draws <- tibble(
+  term = rep(c("BMI (per 1 SD)", "Age (per 1 SD)"), each = 4000),
+  estimate = c(rnorm(4000, 0, 1), rnorm(4000, 0, 1)),
+  type = "Prior"
+)
+combined_draws <- bind_rows(prior_draws, post)
+
+ggplot(combined_draws, aes(x = estimate, fill = type)) +
+  geom_density(alpha = 0.4) +
+  facet_wrap(~ term, scales = "free", ncol = 2) +
+  theme_minimal(base_size = 13) +
+  labs(
+    title = "Prior vs Posterior Distributions",
+    x = "Coefficient estimate",
+    y = "Density",
+    fill = ""
+  )
 ```
 
 For age and BMI, the posterior densities shift notably away from the
