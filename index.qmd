@@ -116,8 +116,8 @@ by Bayesian analysis in population health modeling [@nchs2014].
 
 The present study employs Bayesian logistic regression to predict
 diabetes status and examine the relationships between diabetes and key
-predictors, including body mass index (BMI), age (≥20 years), sex,
-and race. Using retrospective data from the 2013–2014 NHANES survey, the
+predictors, including body mass index (BMI), age (≥20 years), sex, and
+race. Using retrospective data from the 2013–2014 NHANES survey, the
 analysis accounts for the study’s complex sampling design, which
 involves stratification, clustering, and the oversampling of specific
 subpopulations rather than simple random sampling. The Bayesian
@@ -203,8 +203,8 @@ multicollinearity, limited sample size, or potential outliers.
 
 Posterior distributions of regression coefficients were used to estimate
 the probability of the outcome for given predictor values. This allows
-statements such as:
-> Given the predictors, the probability of the outcome lies between X% and Y%.
+statements such as: \> Given the predictors, the probability of the
+outcome lies between X% and Y%.
 
 Posterior predictions account for two key sources of uncertainty:
 
@@ -322,7 +322,8 @@ knitr::kable(
 
 -   **Predictor Variables:**
 
-    - `BMXBMI`   – Body Mass Index (kg/m^2), treated as continuous and categorized into six BMI classes (`bmi_cat`).\
+    -   `BMXBMI` – Body Mass Index (kg/m\^2), treated as continuous and
+        categorized into six BMI classes (`bmi_cat`).\
     -   `RIDAGEYR` – Age (continuous, 20–80 years)\
     -   `RIAGENDR` – Sex (factor, two levels)\
     -   `RIDRETH1` – Ethnicity (factor, five levels)
@@ -363,28 +364,44 @@ kbl(
   group_rows("Derived variables", 10, 11)
 ```
 
-### Study Design and Survey-Weighted Analysis  
+### Study Design and Survey-Weighted Analysis
 
-The National Health and Nutrition Examination Survey (NHANES) employs a complex, multistage probability sampling design with stratification, clustering, and oversampling of specific demographic groups (for example, racial/ethnic minorities and older adults) to produce nationally representative estimates of the U.S. population.  
+The National Health and Nutrition Examination Survey (NHANES) employs a
+complex, multistage probability sampling design with stratification,
+clustering, and oversampling of specific demographic groups (for
+example, racial/ethnic minorities and older adults) to produce
+nationally representative estimates of the U.S. population.
 
-Survey design variables — primary sampling units (`SDMVPSU`), strata (`SDMVSTRA`), and examination sample weights (`WTMEC2YR`) — were retained to account for this complex design. These variables were applied to adjust for unequal probabilities of selection, nonresponse, and oversampling, ensuring valid standard errors, unbiased prevalence estimates, and generalizable population-level inference.  
+Survey design variables — primary sampling units (`SDMVPSU`), strata
+(`SDMVSTRA`), and examination sample weights (`WTMEC2YR`) — were
+retained to account for this complex design. These variables were
+applied to adjust for unequal probabilities of selection, nonresponse,
+and oversampling, ensuring valid standard errors, unbiased prevalence
+estimates, and generalizable population-level inference.
 
-A survey-weighted logistic regression model was used to evaluate the association between diabetes status (`diabetes_dx`, binary outcome) and key predictors: body mass index (`bmi`), age (`age`), sex (`sex`), and race/ethnicity (`race`). Diabetes was defined using `DIQ010` (“Doctor told you have diabetes”) and coded as 0/1, with `DIQ050` (insulin use) excluded to avoid treatment-related confounding.  
+A survey-weighted logistic regression model was used to evaluate the
+association between diabetes status (`diabetes_dx`, binary outcome) and
+key predictors: body mass index (`bmi`), age (`age`), sex (`sex`), and
+race/ethnicity (`race`). Diabetes was defined using `DIQ010` (“Doctor
+told you have diabetes”) and coded as 0/1, with `DIQ050` (insulin use)
+excluded to avoid treatment-related confounding.
 
-Covariates included:  
-- `age` (continuous; centered as `age_c`, categorized 20–80 years)  
-- `bmi` (continuous; centered as `bmi_c`, and categorized by BMI class `bmi_cat`)  
-- `sex` (male, female)  
-- `race` (four ethnicity levels: White, Black, Hispanic, Other)  
+Covariates included:\
+- `age` (continuous; centered as `age_c`, categorized 20–80 years)\
+- `bmi` (continuous; centered as `bmi_c`, and categorized by BMI class
+`bmi_cat`)\
+- `sex` (male, female)\
+- `race` (four ethnicity levels: White, Black, Hispanic, Other)
 
-This approach accounts for NHANES’ complex sampling design, producing unbiased parameter estimates and valid inference for U.S. adults.
+This approach accounts for NHANES’ complex sampling design, producing
+unbiased parameter estimates and valid inference for U.S. adults.
 
 | Step | Description |
-|------|-------------|
+|----|----|
 | **Weighting** | Used the **`survey`** package to calculate weighted means for key variables (e.g., age and diabetes status) and to estimate design effects and effective sample size for the complex survey design. |
 | **Standardization** | Centered and standardized BMI and age (`bmi_c`, `age_c`) for use in regression models. |
-| **Age Categorization** | Not implemented in the analytic dataset (continuous `age` retained). Reference retained for potential descriptive grouping (20–<30, 30–<40, 40–<50, 50–<60, 60–<70, 70–80). |
-| **BMI Categorization** | Recoded as: <18.5 (Underweight), 18.5–<25 (Normal), 25–<30 (Overweight), 30–<35 (Obesity I), 35–<40 (Obesity II), ≥40 (Obesity III). |
+| **Age Categorization** | Not implemented in the analytic dataset (continuous `age` retained). Reference retained for potential descriptive grouping (20–\<30, 30–\<40, 40–\<50, 50–\<60, 60–\<70, 70–80). |
+| **BMI Categorization** | Recoded as: \<18.5 (Underweight), 18.5–\<25 (Normal), 25–\<30 (Overweight), 30–\<35 (Obesity I), 35–\<40 (Obesity II), ≥40 (Obesity III). |
 | **Ethnicity Recoding** | `RIDRETH1` recoded as: 1 = Mexican American, 2 = Other Hispanic, 3 = Non-Hispanic White, 4 = Non-Hispanic Black, 5 = Other/Multi; then `NH White` set as the reference level (five analytical levels retained). |
 | **Special Codes** | Transformed nonresponse codes (e.g., 3, 7, 9) to `NA`. These missing codes were evaluated for potential nonrandom patterns (MAR/MNAR). |
 | **Missing Data** | Retained and visualized missing values (primarily in BMI and diabetes status) to assess their pattern and informativeness before multiple imputation. |
@@ -447,7 +464,7 @@ adult_eda <- merged_data %>%
   )
 ```
 
-### Adult Cohort Definition 
+### Adult Cohort Definition
 
 ```{r}
 #| label: adult-cohort
@@ -615,7 +632,12 @@ kable(cat_sum,
   kable_styling(full_width = FALSE)
 ```
 
-Table 1a and 1b summarize the analytic variables included in subsequent models. Mean age and BMI values indicate an adult cohort spanning a wide range of body composition, while categorical summaries confirm balanced sex representation and sufficient sample sizes across race/ethnicity categories. These variables were standardized and used as predictors in all modeling frameworks (analytic cohort N = 5,769 adults ≥ 20 years).
+Table 1a and 1b summarize the analytic variables included in subsequent
+models. Mean age and BMI values indicate an adult cohort spanning a wide
+range of body composition, while categorical summaries confirm balanced
+sex representation and sufficient sample sizes across race/ethnicity
+categories. These variables were standardized and used as predictors in
+all modeling frameworks (analytic cohort N = 5,769 adults ≥ 20 years).
 
 ```{r}
 #| label: adult-n
@@ -633,8 +655,8 @@ knitr::kable(head(adult))
 As shown in @tbl-adult, the analytic adult cohort (N =
 `r format(adult_n, big.mark=",")`) includes standardized variables for
 age and BMI (`age_c`, `bmi_c`), categorical indicators for sex and
-race/ethnicity (`race`), and a binary doctor-diagnosed diabetes
-variable (`diabetes_dx`).
+race/ethnicity (`race`), and a binary doctor-diagnosed diabetes variable
+(`diabetes_dx`).
 
 ```{r}
 #| label: structure-and-preview
@@ -683,19 +705,41 @@ caption = "Missingness for Key Analysis Variables."
 )
 ```
 
-Overall missingness was low (~`r round(mean(is.na(adult_eda$bmi) | is.na(adult_eda$diabetes_dx)) * 100, 1)`%).
-Gaps were concentrated in `bmi` (n = 249) and `diabetes_dx` (n = 177), while demographic and design variables were complete.
-This limited pattern of missingness is consistent with a Missing At Random (MAR) mechanism and likely reflects reduced participation in the physical examination component among certain adults.
+Overall missingness was low
+(\~`r round(mean(is.na(adult_eda$bmi) | is.na(adult_eda$diabetes_dx)) * 100, 1)`%).
+Gaps were concentrated in `bmi` (n = 249) and `diabetes_dx` (n = 177),
+while demographic and design variables were complete. This limited
+pattern of missingness is consistent with a Missing At Random (MAR)
+mechanism and likely reflects reduced participation in the physical
+examination component among certain adults.
 
 ### Exploratory Data Analysis
 
-Following the missing data assessment, exploratory analyses were conducted to describe the adult analytic cohort and visualize distributions across key demographic and health variables. The goal was to examine univariate patterns and bivariate relationships relevant to diabetes prevalence prior to modeling.
+Following the missing data assessment, exploratory analyses were
+conducted to describe the adult analytic cohort and visualize
+distributions across key demographic and health variables. The goal was
+to examine univariate patterns and bivariate relationships relevant to
+diabetes prevalence prior to modeling.
 
-The adult analytic cohort was broadly representative of the U.S. population, with a majority identifying as `Non-Hispanic White`. `Age` and `BMI` distributions were right-skewed, with most participants classified as overweight or obese. Visual exploration revealed a clear positive association between `age`, `BMI`, and diabetes prevalence. `Non-Hispanic Black` and `Hispanic` participants exhibited higher diabetes prevalence compared with `Non-Hispanic Whites`.
+The adult analytic cohort was broadly representative of the U.S.
+population, with a majority identifying as `Non-Hispanic White`. `Age`
+and `BMI` distributions were right-skewed, with most participants
+classified as overweight or obese. Visual exploration revealed a clear
+positive association between `age`, `BMI`, and diabetes prevalence.
+`Non-Hispanic Black` and `Hispanic` participants exhibited higher
+diabetes prevalence compared with `Non-Hispanic Whites`.
 
-Approximately 25% of variables were categorical (e.g., `sex`, `race`, `diabetes_dx`) and 75% were continuous (e.g., `age`, `bmi`, `age_c`, `bmi_c`), indicating that the dataset primarily comprised measured numeric values. About 93% of observations contained complete information across all predictors and outcomes, reflecting high data quality.
+Approximately 25% of variables were categorical (e.g., `sex`, `race`,
+`diabetes_dx`) and 75% were continuous (e.g., `age`, `bmi`, `age_c`,
+`bmi_c`), indicating that the dataset primarily comprised measured
+numeric values. About 93% of observations contained complete information
+across all predictors and outcomes, reflecting high data quality.
 
-Adult `age` ranged from 20 to 80 years, with peak representation between 30 and 50 years and a slight right skew toward older ages. `BMI` was concentrated in the overweight and obese ranges, and `Female` participants were slightly overrepresented relative to `Male` participants.
+Adult `age` ranged from 20 to 80 years, with peak representation between
+30 and 50 years and a slight right skew toward older ages. `BMI` was
+concentrated in the overweight and obese ranges, and `Female`
+participants were slightly overrepresented relative to `Male`
+participants.
 
 ```{r}
 #| label: eda-age-distribution
@@ -775,13 +819,20 @@ if (sum(!is.na(adult$diabetes_dx)) == 0) {
 if (!dir.exists("data")) dir.create("data", recursive = TRUE)
 saveRDS(adult, "data/adult_cleaned_2013_2014.rds")
 ```
-    
+
 ## Modeling Frameworks
 
-Three modeling frameworks were compared using identical predictors—standardized age, BMI, sex, and race—and the binary outcome `diabetes_dx`:
-(1) survey-weighted logistic regression to account for the NHANES complex sampling design,
+Three modeling frameworks were compared using identical
+predictors—standardized age, BMI, sex, and race—and the binary outcome
+`diabetes_dx`:
+
+(1) survey-weighted logistic regression to account for the NHANES
+    complex sampling design,
+
 (2) multiple imputation (MICE) to handle missing BMI values, and
-(3) Bayesian logistic regression with weakly informative priors to quantify parameter uncertainty.
+
+(3) Bayesian logistic regression with weakly informative priors to
+    quantify parameter uncertainty.
 
 ### Survey-Weighted Logistic Regression (Design-Based MLE)
 
@@ -818,7 +869,8 @@ adult_clean <- adult %>%
   )
 ```
 
-Below is a structure of the analytic dataset used for regression modeling, showing variable names, types, and sample values (N = 5,349). 
+Below is a structure of the analytic dataset used for regression
+modeling, showing variable names, types, and sample values (N = 5,349).
 
 ```{r}
 #| label: data-structure
@@ -898,24 +950,53 @@ svy_or <- broom::tidy(svy_fit, conf.int = TRUE) %>%
 knitr::kable(svy_or)
 ```
 
-#### Interpretation  
+#### Interpretation
 
-`age_c` and `bmi_c` are the strongest predictors of diabetes in the NHANES 2013–2014 adult cohort, with each 1 SD increase in age nearly tripling the odds of diabetes and higher BMI substantially elevating risk. Males show significantly lower odds of diabetes than females, consistent with established sex differences in metabolic outcomes. Racial and ethnic disparities are evident, with Mexican American, Other Hispanic, Non-Hispanic Black, and Other/Multi-racial adults all showing significantly higher odds of diabetes compared to Non-Hispanic Whites. All predictors were statistically significant (p < 0.05), indicating robust associations across demographic and health characteristics.
+`age_c` and `bmi_c` are the strongest predictors of diabetes in the
+NHANES 2013–2014 adult cohort, with each 1 SD increase in age nearly
+tripling the odds of diabetes and higher BMI substantially elevating
+risk. Males show significantly lower odds of diabetes than females,
+consistent with established sex differences in metabolic outcomes.
+Racial and ethnic disparities are evident, with Mexican American, Other
+Hispanic, Non-Hispanic Black, and Other/Multi-racial adults all showing
+significantly higher odds of diabetes compared to Non-Hispanic Whites.
+All predictors were statistically significant (p \< 0.05), indicating
+robust associations across demographic and health characteristics.
 
 ### Multiple Imputation by Chained Equations
 
-Multiple Imputation by Chained Equations (`MICE`) was implemented as a principled approach for handling missing data [@vanbuuren2011; @vanbuuren2012]. `MICE` iteratively imputes each incomplete variable using regression models based on other variables in the dataset, generating multiple completed datasets that incorporate uncertainty from the imputation process. Estimates are subsequently pooled across imputations using Rubin’s rules to obtain final parameter estimates and confidence intervals.  
+Multiple Imputation by Chained Equations (`MICE`) was implemented as a
+principled approach for handling missing data [@vanbuuren2011;
+@vanbuuren2012]. `MICE` iteratively imputes each incomplete variable
+using regression models based on other variables in the dataset,
+generating multiple completed datasets that incorporate uncertainty from
+the imputation process. Estimates are subsequently pooled across
+imputations using Rubin’s rules to obtain final parameter estimates and
+confidence intervals.
 
-As an alternative to full Bayesian joint modeling, `MICE` provides an efficient and flexible framework for managing missing data through chained regression equations. For large sample sizes (`n ≥ 400`), even with substantial missingness (up to 75%) in a single variable, `MICE` remains robust to non-normality—such as skewed, multimodal, or heavy-tailed distributions—without materially affecting mean structure estimation performance [@vanbuuren2012].  
+As an alternative to full Bayesian joint modeling, `MICE` provides an
+efficient and flexible framework for managing missing data through
+chained regression equations. For large sample sizes (`n ≥ 400`), even
+with substantial missingness (up to 75%) in a single variable, `MICE`
+remains robust to non-normality—such as skewed, multimodal, or
+heavy-tailed distributions—without materially affecting mean structure
+estimation performance [@vanbuuren2012].
 
-In this study, continuous variables were imputed using regression-based methods: `age` via normal linear regression (`norm`) and `BMI` via predictive mean matching (`pmm`) to better preserve the empirical BMI distribution. Categorical variables (`sex` and `race`) were imputed using logistic and polytomous regression models, respectively. Diabetes status (`diabetes_dx`) was treated as an outcome variable and was **not** imputed. Twenty imputations were generated to minimize Monte Carlo error and ensure stable variance estimation.
+In this study, continuous variables were imputed using regression-based
+methods: `age` via normal linear regression (`norm`) and `BMI` via
+predictive mean matching (`pmm`) to better preserve the empirical BMI
+distribution. Categorical variables (`sex` and `race`) were imputed
+using logistic and polytomous regression models, respectively. Diabetes
+status (`diabetes_dx`) was treated as an outcome variable and was
+**not** imputed. Twenty imputations were generated to minimize Monte
+Carlo error and ensure stable variance estimation.
 
-#### Convergence and Data Stability 
+#### Convergence and Data Stability
 
-The chained equation process showed stable convergence across iterations,
-indicating reliable estimation of missing BMI (and, where present, age) values. After MICE,
-the final imputed dataset consisted of *n = 5,592 adults* with all key
-predictor variables completed.
+The chained equation process showed stable convergence across
+iterations, indicating reliable estimation of missing BMI (and, where
+present, age) values. After MICE, the final imputed dataset consisted of
+*n = 5,592 adults* with all key predictor variables completed.
 
 ```{r}
 #| label: model-mice
@@ -1017,10 +1098,12 @@ glimpse(adult_imp1)
 
 #### Descriptive Results (Imputed Dataset)
 
-After imputation, the analytic dataset contained approximately 5,500–5,600 adults.
-The mean age was around 49 years (SD ≈ 17), and the mean BMI was approximately 29 (SD ≈ 7).
-Females represented roughly 52% of participants, and the majority identified as Non-Hispanic White (~43%).
-Diabetes prevalence was about 11%, consistent with population-level NHANES estimates.
+After imputation, the analytic dataset contained approximately
+5,500–5,600 adults. The mean age was around 49 years (SD ≈ 17), and the
+mean BMI was approximately 29 (SD ≈ 7). Females represented roughly 52%
+of participants, and the majority identified as Non-Hispanic White
+(\~43%). Diabetes prevalence was about 11%, consistent with
+population-level NHANES estimates.
 
 ```{r}
 #| label: mice-visuals
@@ -1089,30 +1172,36 @@ knitr::kable(mi_or, caption = mi_caption)
 
 #### Interpretation
 
-- Age and BMI are strong positive predictors of diabetes; each 1 SD increase substantially raises the odds.
+-   Age and BMI are strong positive predictors of diabetes; each 1 SD
+    increase substantially raises the odds.
 
-- Sex: Females show significantly lower odds of diabetes compared to males.
+-   Sex: Females show significantly lower odds of diabetes compared to
+    males.
 
-- race/Ethnicity: All non-White racial/ethnic groups have higher odds of diabetes compared to Non-Hispanic Whites, underscoring persistent disparities in diabetes risk.
+-   race/Ethnicity: All non-White racial/ethnic groups have higher odds
+    of diabetes compared to Non-Hispanic Whites, underscoring persistent
+    disparities in diabetes risk.
 
-- Model significance: All predictors are statistically significant (p < 0.05).
+-   Model significance: All predictors are statistically significant (p
+    \< 0.05).
 
-- Results are consistent with those from the survey-weighted model, confirming robustness to imputation.
+-   Results are consistent with those from the survey-weighted model,
+    confirming robustness to imputation.
 
 ### Bayesian Logistic Regression
 
 Bayesian logistic regression was used to quantify parameter uncertainty
-and compare posterior estimates with the survey-weighted and MICE models.
-Weakly informative priors were used to regularize estimates while
-preserving flexibility in inference.
+and compare posterior estimates with the survey-weighted and MICE
+models. Weakly informative priors were used to regularize estimates
+while preserving flexibility in inference.
 
-**Model Specifications:**
-- Family: Bernoulli with logit link  
-- Data: `adult_imp1` (N = 5,592)  
-- Chains: 4 (2,000 iterations each; 1,000 warmup)  
-- Adaptation delta: 0.95  
-- Weights: normalized NHANES exam weights (`wt_norm`, mean ≈ 1.00, SD ≈ 0.79)  
-- Predictors: standardized age, BMI, sex, and race  
+**Model Specifications:** - Family: Bernoulli with logit link\
+- Data: `adult_imp1` (N = 5,592)\
+- Chains: 4 (2,000 iterations each; 1,000 warmup)\
+- Adaptation delta: 0.95\
+- Weights: normalized NHANES exam weights (`wt_norm`, mean ≈ 1.00, SD ≈
+0.79)\
+- Predictors: standardized age, BMI, sex, and race
 
 #### Define Model and Priors
 
@@ -1229,7 +1318,7 @@ bayes_or <- bayes_fixef %>%
   )
 ```
 
-#### Posterior Odd Ratios (Main Results) 
+#### Posterior Odd Ratios (Main Results)
 
 ```{r}
 #| label: tbl-bayes
@@ -1243,15 +1332,18 @@ dplyr::mutate(bayes_or, dplyr::across(c(OR, LCL, UCL), ~ round(.x, 2)))
 )
 ```
 
-Age and BMI show strong positive associations with diabetes (credible intervals exclude 1).
+Age and BMI show strong positive associations with diabetes (credible
+intervals exclude 1).
 
 Female sex shows lower odds than male (protective factor).
 
-Non-White racial groups have higher odds compared with Whites, consistent with known disparities.
+Non-White racial groups have higher odds compared with Whites,
+consistent with known disparities.
 
-All model parameters exhibit well-defined, unimodal posteriors with narrow credible intervals.
+All model parameters exhibit well-defined, unimodal posteriors with
+narrow credible intervals.
 
-#### Diagnostics and Model Fit 
+#### Diagnostics and Model Fit
 
 ```{r}
 #| label: tbl-bayesR2
@@ -1281,7 +1373,7 @@ Tail_ESS  = .data$ess_tail
 knitr::kable(diag_b, digits = 1)
 ```
 
-All parameters achieved R̂ ≈ 1.00 and effective sample sizes >2,000,
+All parameters achieved R̂ ≈ 1.00 and effective sample sizes \>2,000,
 indicating excellent convergence. The Bayesian R² ≈ 0.13, showing that
 age, BMI, sex, and race explain about 13% of diabetes variability.
 
@@ -1392,12 +1484,16 @@ bayesplot::mcmc_acf(post_array, pars = c("b_age_c", "b_bmi_c"))
 Trace, density, and autocorrelation plots confirm smooth mixing,
 unimodal posteriors, and minimal autocorrelation across chains.
 
-All four chains showed strong convergence with no signs of divergence or non-stationarity.  
-Trace plots revealed stable, overlapping chains with consistent mixing across iterations.  
-Autocorrelation decayed rapidly toward zero, confirming efficient sampling and low dependency between successive draws.  
-Together with R̂ ≈ 1.00 and high effective sample sizes, these diagnostics indicate a well-behaved posterior and reliable inference.
+All four chains showed strong convergence with no signs of divergence or
+non-stationarity.\
+Trace plots revealed stable, overlapping chains with consistent mixing
+across iterations.\
+Autocorrelation decayed rapidly toward zero, confirming efficient
+sampling and low dependency between successive draws.\
+Together with R̂ ≈ 1.00 and high effective sample sizes, these
+diagnostics indicate a well-behaved posterior and reliable inference.
 
-#### Prior vs. Posterior 
+#### Prior vs. Posterior
 
 ```{r}
 #| label: fit-with-priors
@@ -1522,7 +1618,7 @@ distributions, indicating that inference for those parameters was more
 influenced by prior uncertainty than by the observed data. This balance
 confirms appropriate regularization rather than overfitting.
 
-#### Model Fit and Calibration 
+#### Model Fit and Calibration
 
 ```{r}
 #| label: fig-pred-calibration
@@ -1936,7 +2032,14 @@ sample sizes, and stable posterior predictive checks) indicated good
 model performance, results are conditional on the 2013–2014 NHANES cycle
 and may not generalize to later datasets or longitudinal analyses.
 
-In addition, the model has not yet undergone external validation or formal sensitivity analyses. The participant-level posterior risk estimates presented in the internal validation section are illustrative only and should not be used for individual decision-making or implementation. Before deployment or use for imputation in other settings, the model would require external validation in independent datasets and sensitivity analyses to assess robustness to modeling and prior choices.
+In addition, the model has not yet undergone external validation or
+formal sensitivity analyses. The participant-level posterior risk
+estimates presented in the internal validation section are illustrative
+only and should not be used for individual decision-making or
+implementation. Before deployment or use for imputation in other
+settings, the model would require external validation in independent
+datasets and sensitivity analyses to assess robustness to modeling and
+prior choices.
 
 ## Conclusion
 
