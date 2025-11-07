@@ -650,15 +650,16 @@ str(adult)
 plot_intro(adult, title = "Adult Dataset: Variable Types and Completeness")
 ```
 
+### Missing Data Summary
+
 ```{r}
 #| label: missingness-visual
 #| echo: true
 #| message: false
 #| warning: false
-#| fig-cap: "The missingness plot shows minimal data loss across key variables, with only BMI-related fields (bmi, bmi_c, bmi_cat) missing in about 4.3% of records and diabetes_dx missing in 3.1%. All demographic and design variables are complete, indicating that missingness is concentrated in health-related measures and suitable for multiple imputation."
+#| fig-cap: "Missing data were minimal across analytic variables. BMI-related fields (bmi, bmi_c, bmi_cat) showed ~4.3% missingness, and diabetes_dx showed ~3.1%. All demographic and survey design variables were complete, indicating that missingness was limited to health-related measures and appropriate for multiple imputation."
 
-# Visualize missing data pattern for key variables
-
+# Visualize missing data pattern
 plot_missing(adult, title = "Missing Data Pattern (Adult Dataset)")
 ```
 
@@ -667,14 +668,13 @@ plot_missing(adult, title = "Missing Data Pattern (Adult Dataset)")
 #| echo: true
 #| message: false
 #| warning: false
-#| fig-cap: "This table highlights missingness in the key analysis variables only, showing 249 missing values for BMI and 177 for diabetes diagnosis. While other variables are complete, these two were the focus for imputation due to their direct role in the modeling framework."
+
+# Summarize missingness for key analysis variables
 
 miss_tbl <- tibble::tibble(
-Variable = c("`bmi`","`diabetes_dx`"),
-Missing_n = c(sum(is.na(adult_eda$bmi)),
-sum(is.na(adult_eda$diabetes_dx))),
-Missing_pct = round(c(mean(is.na(adult_eda$bmi)),
-mean(is.na(adult_eda$diabetes_dx))) * 100, 1)
+Variable    = c("bmi", "diabetes_dx"),
+Missing_n   = c(sum(is.na(adult_eda$bmi)), sum(is.na(adult_eda$diabetes_dx))),
+Missing_pct = round(c(mean(is.na(adult_eda$bmi)), mean(is.na(adult_eda$diabetes_dx))) * 100, 1)
 )
 
 knitr::kable(
@@ -683,50 +683,21 @@ caption = "Missingness for Key Analysis Variables."
 )
 ```
 
-### Missing Data Summary  
-
-Missingness was low overall (~`r round(mean(is.na(adult_eda$bmi) | is.na(adult_eda$diabetes_dx)) * 100, 1)`%). Gaps were concentrated in `bmi` and `diabetes_dx`; design variables and demographics were complete. Patterns were consistent with MAR.
+Overall missingness was low (~`r round(mean(is.na(adult_eda$bmi) | is.na(adult_eda$diabetes_dx)) * 100, 1)`%).
+Gaps were concentrated in `bmi` (n = 249) and `diabetes_dx` (n = 177), while demographic and design variables were complete.
+This limited pattern of missingness is consistent with a Missing At Random (MAR) mechanism and likely reflects reduced participation in the physical examination component among certain adults.
 
 ```{r}
 #| label: missing-checks
 #| echo: true
-#| include: true
 #| message: false
 #| warning: false
 
-# Summarize missingness by variable
+# Sanity checks for missingness
 
 colSums(is.na(adult_eda))
-
-# Focus on expected variables with NAs
-
 sapply(adult_eda[, c("diabetes_dx", "bmi", "bmi_c", "age")], function(x) sum(is.na(x)))
-
-# Check for missing or invalid source codes
-
-table(merged_data$DIQ010, useNA = "ifany")
-sum(is.na(merged_data$BMXBMI))
 ```
-
-```{r}
-#| label: miss-pcts
-#| echo: true
-#| include: false
-miss_bmi  <- mean(is.na(adult_eda$bmi)) * 100
-miss_diab <- mean(is.na(adult_eda$diabetes_dx)) * 100
-sprintf("Missing BMI: %.1f%%; Missing diabetes_dx: %.1f%%", miss_bmi, miss_diab)
-```
-
-```{r}
-#| label: fig-missing-note
-#| echo: true
-#| include: true
-# (Note: full missingness pattern already visualized above using plot_missing(adult).)
-```
-
-Results indicated that missing values were limited primarily to BMI and diabetes indicators, while demographic and survey design variables were complete.
-
-This pattern likely reflects participation differences in the physical examination component among older adults or individuals with health limitations.
 
 ### Exploratory Data Analysis
 
@@ -777,10 +748,7 @@ ggplot(adult, aes(x = race, fill = factor(diabetes_dx, levels = c(0,1), labels =
 ```
 
 The EDA missingness summary shows approximately
-`r sprintf("%.1f", miss_bmi)`% missing BMI and
-`r sprintf("%.1f", miss_diab)`% missing diabetes status
-(`diabetes_dx`). All design variables (`WTMEC2YR`, `SDMVPSU`,
-`SDMVSTRA`), as well as `age`, `sex`, and `race`, are complete—sex and
+4.3% missing `BMI` and 3.1% missing diabetes diagnosis (`diabetes_dx`). All design variables (`WTMEC2YR`, `SDMVPSU`, `SDMVSTRA`), as well as `age`, `sex`, and `race`, are complete—sex and
 race NAs are encoded as explicit “(Missing)” levels in the EDA view.
 
 ```{r}
