@@ -902,35 +902,13 @@ knitr::kable(svy_or)
 
 `age_c` and `bmi_c` are the strongest predictors of diabetes in the NHANES 2013–2014 adult cohort, with each 1 SD increase in age nearly tripling the odds of diabetes and higher BMI substantially elevating risk. Males show significantly lower odds of diabetes than females, consistent with established sex differences in metabolic outcomes. Racial and ethnic disparities are evident, with Mexican American, Other Hispanic, Non-Hispanic Black, and Other/Multi-racial adults all showing significantly higher odds of diabetes compared to Non-Hispanic Whites. All predictors were statistically significant (p < 0.05), indicating robust associations across demographic and health characteristics.
 
-### Multivariate Imputation by Chained Equations (Pooled Logistic Regression)
+### Multiple Imputation by Chained Equations
 
-Multiple Imputation by Chained Equations (MICE) was used as a principled
-approach for handling missing data [@vanbuuren2011; @vanbuuren2012].
+Multiple Imputation by Chained Equations (`MICE`) was implemented as a principled approach for handling missing data [@vanbuuren2011; @vanbuuren2012]. `MICE` iteratively imputes each incomplete variable using regression models based on other variables in the dataset, generating multiple completed datasets that incorporate uncertainty from the imputation process. Estimates are subsequently pooled across imputations using Rubin’s rules to obtain final parameter estimates and confidence intervals.  
 
-MICE iteratively imputes each incomplete variable using regression
-models based on other variables in the dataset, producing multiple
-completed datasets that reflect uncertainty due to missingness.
+As an alternative to full Bayesian joint modeling, `MICE` provides an efficient and flexible framework for managing missing data through chained regression equations. For large sample sizes (`n ≥ 400`), even with substantial missingness (up to 75%) in a single variable, `MICE` remains robust to non-normality—such as skewed, multimodal, or heavy-tailed distributions—without materially affecting mean structure estimation performance [@vanbuuren2012].  
 
-Estimates are then pooled across imputations using Rubin’s rules to
-generate final parameter estimates and confidence intervals.
-
-MICE, as an alternative to the Bayesian approach, effectively manages
-missing data through chained regression equations without requiring full
-joint modeling of all variables.
-
-For large sample sizes (n ≥ 400), even in the presence of high
-percentages (up to 75%) of missing data in one variable, non-normal
-distributions such as flat densities, heavy tails, skewness, and
-multimodality do not materially affect mean structure estimation
-performance [@vanbuuren2012].
-
-In this study, continuous variables were imputed using regression-based methods: age via normal linear regression (norm) and BMI via predictive mean matching (PMM) to better preserve the empirical BMI distribution.
-
-Categorical variables (sex and race) were imputed using logistic
-and polytomous regression models, respectively. Diabetes status
-(`diabetes_dx`) was treated as an outcome variable and was not imputed.
-Twenty imputations were generated to reduce Monte Carlo error and
-maintain robust variance estimation.
+In this study, continuous variables were imputed using regression-based methods: `age` via normal linear regression (`norm`) and `BMI` via predictive mean matching (`pmm`) to better preserve the empirical BMI distribution. Categorical variables (`sex` and `race`) were imputed using logistic and polytomous regression models, respectively. Diabetes status (`diabetes_dx`) was treated as an outcome variable and was **not** imputed. Twenty imputations were generated to minimize Monte Carlo error and ensure stable variance estimation.
 
 #### Convergence and Data Stability 
 
