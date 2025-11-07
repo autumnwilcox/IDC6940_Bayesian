@@ -818,10 +818,11 @@ adult_clean <- adult %>%
   )
 ```
 
+Below is a structure of the analytic dataset used for regression modeling, showing variable names, types, and sample values (N = 5,349). 
+
 ```{r}
 #| label: data-structure
 #| echo: true
-#| tbl-cap: "Structure of the analytic dataset used for regression modeling, showing variable names, types, and sample values (N = 5,349)."
 
 str(adult_clean[, c("diabetes_dx","sex","race","age_c","bmi_c")])
 ```
@@ -831,7 +832,9 @@ str(adult_clean[, c("diabetes_dx","sex","race","age_c","bmi_c")])
 #| echo: true
 #| tbl-cap: "Distribution of participants by sex (Male = 2,551; Female = 2,798) in the analytic cohort."
 
-table(adult_clean$sex)
+knitr::kable(
+  table(adult_clean$sex)
+)
 ```
 
 ```{r}
@@ -839,7 +842,9 @@ table(adult_clean$sex)
 #| echo: true
 #| tbl-cap: "Race/ethnicity composition of the analytic cohort, with most participants identifying as Non-Hispanic White (n = 2,293) and Non-Hispanic Black (n = 1,101)."
 
-table(adult_clean$race)
+knitr::kable(
+  table(adult_clean$race)
+)
 ```
 
 ```{r}
@@ -847,7 +852,9 @@ table(adult_clean$race)
 #| echo: true
 #| tbl-cap: "Observed diabetes prevalence (binary outcome variable `diabetes_dx`), with 597 diagnosed cases (1 = Yes) and 4,752 non-diabetic participants (0 = No)."
 
-table(adult_clean$diabetes_dx)
+knitr::kable(
+  table(adult_clean$diabetes_dx)
+)
 ```
 
 ```{r}
