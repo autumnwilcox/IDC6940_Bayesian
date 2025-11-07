@@ -199,19 +199,6 @@ imposing strong assumptions:
 Such priors help stabilize estimation in the presence of
 multicollinearity, limited sample size, or potential outliers.
 
-## Advantages of Bayesian Logistic Regression
-
--   **Uncertainty quantification:** Produces full posterior
-    distributions instead of single estimates.
--   **Credible intervals:** Provide the range within which a parameter
-    lies with a specified probability (e.g., 95%).
--   **Flexible priors:** Allow integration of expert knowledge or
-    findings from prior studies.
--   **Probabilistic predictions:** Posterior predictive distributions
-    yield direct probabilities for new or future observations.
--   **Model evaluation:** Posterior predictive checks (PPCs) assess how
-    well simulated outcomes reproduce observed data.
-
 ## Posterior Predictions
 
 Posterior distributions of regression coefficients were used to estimate
@@ -249,6 +236,19 @@ diagnostics:
     to observed data to evaluate fit.
 -   **Bayesian** $R^2$: Quantified the proportion of variance explained
     by predictors, incorporating posterior uncertainty.
+
+## Advantages of Bayesian Logistic Regression
+
+-   **Uncertainty quantification:** Produces full posterior
+    distributions instead of single estimates.
+-   **Credible intervals:** Provide the range within which a parameter
+    lies with a specified probability (e.g., 95%).
+-   **Flexible priors:** Allow integration of expert knowledge or
+    findings from prior studies.
+-   **Probabilistic predictions:** Posterior predictive distributions
+    yield direct probabilities for new or future observations.
+-   **Model evaluation:** Posterior predictive checks (PPCs) assess how
+    well simulated outcomes reproduce observed data.
 
 # Analysis and Results
 
@@ -740,32 +740,6 @@ Approximately 25% of variables were categorical (for example, `sex`, `race`, `di
 Adult `age` ranged from 20 to 80 years, with peak representation between 30 and 50 years and a slight right skew toward older ages. `BMI` was concentrated in the overweight and obese ranges. `Female` participants were slightly over represented relative to `Male` participants.  
 
 ```{r}
-#| label: corr-heatmap-eda
-#| echo: true
-#| fig-cap: "Correlation heatmap (EDA, pairwise-complete) using adult_eda."
-stopifnot(all(c("diabetes_dx","age","bmi") %in% names(adult_eda)))
-
-adult_eda_num <- adult_eda |>
-  dplyr::transmute(
-    diabetes_dx = as.numeric(diabetes_dx),
-    age  = as.numeric(age),
-    bmi  = as.numeric(bmi)
-  )
-
-cmat <- cor(adult_eda_num, use = "pairwise.complete.obs", method = "pearson")
-cor_melt <- reshape2::melt(cmat, varnames = c("Var1","Var2"), value.name = "value")
-
-ggplot(cor_melt, aes(Var1, Var2, fill = value)) +
-  geom_tile(color = "white") +
-  scale_fill_gradient2(low = "blue", mid = "white", high = "red",
-                       midpoint = 0, limits = c(-1, 1), name = "Correlation") +
-  theme_minimal() +
-  labs(title = "Correlation Heatmap (EDA: pairwise-complete)", x = NULL, y = NULL)
-```
-
-The correlation heatmap indicates that both age and BMI are positively associated with diabetes diagnosis, with only modest correlation between age and BMI themselves, suggesting minimal multicollinearity between these key predictors.
-
-```{r}
 #| label: eda-histograms-bars
 #| echo: true
 
@@ -837,6 +811,16 @@ weakly informative priors to quantify uncertainty.
 
 ### Survey-Weighted Logistic Regression (Design-Based MLE)
 
+The NHANES 2013–2014 data use a complex, multistage probability design
+involving strata (`SDMVSTRA`), primary sampling units (PSUs; `SDMVPSU`),
+and examination weights (`WTMEC2YR`) to ensure nationally representative
+estimates [@nchs2014].
+
+Estimates are population-weighted using NHANES survey design variables
+(`WTMEC2YR`, `SDMVSTRA`, `SDMVPSU`). Odds ratios are reported per one
+standard deviation (1 SD) increase in age and BMI, with reference groups
+Male and White.
+
 ```{r}
 #| label: data-clean
 #| echo: true
@@ -897,9 +881,6 @@ svy_or <- broom::tidy(svy_fit, conf.int = TRUE) %>%
   ) %>%
   dplyr::select(term, OR, LCL, UCL, p.value) %>%
   dplyr::filter(term != "(Intercept)")
-
-# View results table
-svy_or
 ```
 
 Design-based odds ratios are summarized in @tbl-survey.
@@ -911,29 +892,8 @@ Design-based odds ratios are summarized in @tbl-survey.
 knitr::kable(svy_or)
 ```
 
-#### Results from Survey-Weighted Logistic Regression
-
-| Predictor | Odds Ratio (OR) | p-value | Interpretation |
-|------------|----------------:|---------:|----------------|
-| **age_c** | 2.98 | <0.001 | Each 1 SD increase in age nearly triples the odds of diabetes. |
-| **bmi_c** | 1.93 | <0.001 | Each 1 SD increase in BMI raises the odds of diabetes by about 93%. |
-| **sexMale** | 1.29 | 0.037 | Males have about 29% higher odds of diabetes compared with females. |
-| **raceHispanic** | 1.81 | <0.001 | Hispanic adults have ~81% higher odds of diabetes compared with Non-Hispanic Whites. |
-| **raceBlack** | 1.60 | 0.009 | Non-Hispanic Black adults have ~60% higher odds of diabetes compared with Non-Hispanic Whites. |
-| **raceOther** | 2.20 | 0.002 | Adults identifying as Other/Multi-racial have more than 2× higher odds of diabetes compared with Non-Hispanic Whites. |
-
 **Interpretation:**  
 Age and BMI are the strongest predictors of diabetes in the NHANES 2013–2014 adult sample, with each 1 SD increase in age nearly tripling diabetes risk and higher BMI contributing substantially to elevated odds. Males show significantly higher odds of diabetes compared to females, consistent with known sex differences in metabolic risk. Racial and ethnic disparities are evident, with Hispanic, Black, and Other/Multi-racial adults all exhibiting significantly higher odds of diabetes than Non-Hispanic Whites. All predictors are statistically significant (p < 0.05), indicating robust associations across demographic and health characteristics.
-
-The NHANES 2013–2014 data use a complex, multistage probability design
-involving strata (`SDMVSTRA`), primary sampling units (PSUs; `SDMVPSU`),
-and examination weights (`WTMEC2YR`) to ensure nationally representative
-estimates [@nchs2014].
-
-Estimates are population-weighted using NHANES survey design variables
-(`WTMEC2YR`, `SDMVSTRA`, `SDMVPSU`). Odds ratios are reported per one
-standard deviation (1 SD) increase in age and BMI, with reference groups
-Male and White.
 
 ### Multivariate Imputation by Chained Equations (Pooled Logistic Regression)
 
@@ -1379,22 +1339,6 @@ yobs <- adult_imp1$diabetes_dx
 ```
 
 ```{r}
-#| label: ppc-dens-overlay
-#| echo: true
-#| cache: false
-#| fig-cap: "Posterior predictive check: density overlay for diabetes outcome."
-
-# Use a modest number of replicated datasets
-
-yrep_small <- brms::posterior_predict(bayes_fit, ndraws = 50)
-
-bayesplot::ppc_dens_overlay(
-y    = yobs,
-yrep = yrep_small
-)
-```
-
-```{r}
 #| label: fig-ppc-bars
 #| fig-cap: "Posterior predictive check: observed vs. replicated outcome distribution (bars)."
 #| echo: true
@@ -1404,65 +1348,27 @@ bayesplot::pp_check(bayes_fit, type = "bars", nsamples = 100)
 ```
 
 ```{r}
-#| label: fig-ppc-mean-sd
-#| fig-cap: "Posterior predictive checks for mean and standard deviation of the binary outcome."
+#| label: fig-ppc-mean
+#| fig-cap: "Posterior predictive checks for mean of the binary outcome."
 #| echo: true
 #| cache: false
 
 yrep <- brms::posterior_predict(bayes_fit, ndraws = 400)
 bayesplot::ppc_stat(y = yobs, yrep = yrep, stat = "mean")
+```
+
+```{r}
+#| label: fig-ppc-sd
+#| fig-cap: "Posterior predictive checks for standard deviation of the binary outcome."
+#| echo: true
+#| cache: false
+
+yrep <- brms::posterior_predict(bayes_fit, ndraws = 400)
 bayesplot::ppc_stat(y = yobs, yrep = yrep, stat = "sd")
 ```
 
 Posterior predictive checks show excellent model calibration: simulated
-means and standard deviations closely match observed data. The model
-accurately reproduces diabetes prevalence (~10–11%) seen in the
-imputed dataset.
-
-#### Internal Validation: Individual-Level Predictions
-
-```{r}
-#| label: posterior-density-participants
-#| echo: true
-#| cache: false
-#| fig-cap: "Posterior predictive distributions for example participants."
-
-adult_means <- adult_imp1 %>% summarise(
-age_mean = mean(age, na.rm = TRUE),
-age_sd   = sd(age, na.rm = TRUE),
-bmi_mean = mean(bmi, na.rm = TRUE),
-bmi_sd   = sd(bmi, na.rm = TRUE)
-)
-
-to_model_row <- function(age_raw, bmi_raw, sex_lab, race_lab) {
-tibble(
-age_c  = (age_raw - adult_means$age_mean)/adult_means$age_sd,
-bmi_c  = (bmi_raw - adult_means$bmi_mean)/adult_means$bmi_sd,
-sex    = factor(sex_lab,   levels = levels(adult_imp1$sex)),
-race  = factor(race_lab, levels = levels(adult_imp1$race)),
-wt_norm = 1
-)
-}
-
-plot_post_density <- function(df_row, title_txt) {
-phat <- posterior_linpred(bayes_fit, newdata = df_row, transform = TRUE)
-ci95 <- quantile(phat, c(0.025, 0.975))
-ggplot(data.frame(pred = as.numeric(phat)), aes(x = pred)) +
-geom_density(fill = "skyblue", alpha = 0.4) +
-geom_vline(xintercept = ci95[1], linetype = "dashed", color = "red") +
-geom_vline(xintercept = ci95[2], linetype = "dashed", color = "red") +
-labs(x = "P(Diabetes = 1)", y = "Density", title = title_txt) +
-theme_minimal()
-}
-
-p1 <- to_model_row(adult$age[1], adult$bmi[1],
-as.character(adult$sex[1]), as.character(adult$race[1]))
-plot_post_density(p1, "Participant 1: Posterior Predictive Distribution (95% CrI)")
-```
-
-Posterior predictive densities for individual participants illustrate
-uncertainty in diabetes risk estimates. Credible intervals quantify
-plausible risk ranges for each profile.
+means and standard deviations closely match observed data.
 
 #### MCMC Diagnostics and Posterior Distributions
 
@@ -1501,43 +1407,6 @@ All four chains showed strong convergence with no signs of divergence or non-sta
 Trace plots revealed stable, overlapping chains with consistent mixing across iterations.  
 Autocorrelation decayed rapidly toward zero, confirming efficient sampling and low dependency between successive draws.  
 Together with R̂ ≈ 1.00 and high effective sample sizes, these diagnostics indicate a well-behaved posterior and reliable inference.
-
-#### Correlation Structure (Imputed Data) 
-
-```{r}
-#| label: corr-heatmap-imputed-adult
-#| echo: true
-#| include: true
-#| cache: false
-#| fig-cap: "Correlation heatmap (imputed dataset: adult_imp1)."
-
-stopifnot(all(c("diabetes_dx","age","bmi") %in% names(adult_imp1)))
-
-corr_matrix_imputed <- cor(
-adult_imp1[, c("diabetes_dx", "age", "bmi")],
-use = "complete.obs",
-method = "pearson"
-)
-
-corr_melted_imputed <- reshape2::melt(
-corr_matrix_imputed,
-varnames = c("Var1","Var2"),
-value.name = "value"
-)
-
-ggplot(corr_melted_imputed, aes(Var1, Var2, fill = value)) +
-geom_tile(color = "white") +
-scale_fill_gradient2(
-low = "blue", mid = "white", high = "red",
-midpoint = 0, limits = c(-1, 1), name = "Correlation"
-) +
-theme_minimal() +
-labs(
-title = "Correlation Heatmap (Imputed Data: adult_imp1)",
-x = "Features",
-y = "Features"
-)
-```
 
 #### Prior vs. Posterior 
 
@@ -1651,24 +1520,6 @@ knitr::asis_output("**Skipped: no matching prior/posterior draws to plot.**")
 }
 ```
 
-```{r}
-#| label: fig-mcmc-areas-selected
-#| fig-cap: "Posterior density areas (95% credible mass) for age, BMI, sex, and race coefficients."
-#| echo: true
-#| cache: false
-#| include: true
-
-par_names <- names(posterior::as_draws_df(bayes_fit))
-want <- c("b_age_c","b_bmi_c","b_sexFemale","b_raceBlack","b_raceHispanic","b_raceOther")
-have <- intersect(want, par_names)
-
-if (length(have)) {
-bayesplot::mcmc_areas(as.array(bayes_fit), pars = have, prob = 0.95)
-} else {
-knitr::asis_output("**No matching slope parameters available to plot.**")
-}
-```
-
 For age and BMI, the posterior densities shift notably away from the
 N(0, 2.5) prior toward positive values and are narrower, indicating
 strong information from the data; for sex, the posterior remains closer
@@ -1683,35 +1534,6 @@ influenced by prior uncertainty than by the observed data. This balance
 confirms appropriate regularization rather than overfitting.
 
 #### Model Fit and Calibration 
-
-```{r}
-#| label: fig-or-forest
-#| fig-cap: "Posterior odds ratios (points) with 95% credible intervals (lines)."
-#| echo: true
-#| cache: false
-#| include: true
-
-or_plot <- bayes_or %>%
-dplyr::filter(term != "Intercept") %>%
-dplyr::mutate(
-term_clean = dplyr::case_when(
-term == "age_c"            ~ "Age (per 1 SD)",
-term == "bmi_c"            ~ "BMI (per 1 SD)",
-term == "sexFemale"        ~ "Female (vs. Male)",
-term == "sexMale"          ~ "Male (vs. Female)",
-term == "raceBlack"       ~ "Black (vs. White)",
-term == "raceHispanic"    ~ "Hispanic (vs. White)",
-term == "raceOther"       ~ "Other (vs. White)",
-TRUE                       ~ term
-)
-)
-
-ggplot(or_plot, aes(x = OR, y = reorder(term_clean, OR))) +
-geom_vline(xintercept = 1, linetype = 2) +
-geom_point() +
-geom_errorbarh(aes(xmin = LCL, xmax = UCL), height = 0.15) +
-labs(x = "Odds ratio (logit model, posterior)", y = NULL)
-```
 
 ```{r}
 #| label: fig-pred-calibration
@@ -1735,17 +1557,32 @@ labs(x = "Mean predicted probability", y = "Observed diabetes (0/1)")
 #| cache: false
 #| include: true
 
-post_pred <- brms::posterior_epred(bayes_fit, summary = FALSE)
-post_prev <- rowMeans(post_pred)
-obs_prev  <- mean(adult_imp1$diabetes_dx, na.rm = TRUE)
-post_prev_mat <- matrix(post_prev, ncol = 1, dimnames = list(NULL, "Prevalence"))
+# 1. Survey-weighted prevalence
+svy_mean <- svymean(~diabetes_dx, nhanes_design_adult, na.rm = TRUE)
 
-p <- bayesplot::mcmc_dens(post_prev_mat)
-p + ggplot2::labs(title = "Posterior diabetes prevalence",
-x = "Predicted prevalence", y = NULL) +
-ggplot2::geom_vline(xintercept = obs_prev, linetype = 2)
+# 2. Posterior predictive prevalence (per draw)
+pp_samples <- brms::posterior_predict(bayes_fit, ndraws = 1000)  # draws x individuals
+pp_proportion <- rowMeans(pp_samples)                            # prevalence per draw
 
-p
+# 3. Build comparison table
+summary_table <- tibble(
+  Method = c("Survey-weighted mean (NHANES)", 
+             "Imputed dataset mean", 
+             "Posterior predictive mean"),
+  diabetes_mean = c(
+    coef(svy_mean),                           # survey-weighted mean
+    mean(adult_imp1$diabetes_dx, na.rm = TRUE),  # imputed dataset
+    mean(pp_proportion)                       # posterior predictive mean
+  ),
+  SE = c(
+    SE(svy_mean),   # survey-weighted SE
+    NA,             # not available for raw mean
+    NA              # not available for posterior predictive mean
+  )
+)
+
+kable(summary_table, digits = 4,
+      caption = "Comparison of Diabetes Prevalence Across Methods")
 ```
 
 The posterior predictive distribution of diabetes prevalence closely
@@ -1847,6 +1684,51 @@ digits = 4,
 caption = "Comparison of Diabetes Prevalence Across Methods"
 )
 ```
+
+#### Internal Validation: Individual-Level Predictions
+
+```{r}
+#| label: posterior-density-participants
+#| echo: true
+#| cache: false
+#| fig-cap: "Posterior predictive distributions for example participants."
+
+adult_means <- adult_imp1 %>% summarise(
+age_mean = mean(age, na.rm = TRUE),
+age_sd   = sd(age, na.rm = TRUE),
+bmi_mean = mean(bmi, na.rm = TRUE),
+bmi_sd   = sd(bmi, na.rm = TRUE)
+)
+
+to_model_row <- function(age_raw, bmi_raw, sex_lab, race_lab) {
+tibble(
+age_c  = (age_raw - adult_means$age_mean)/adult_means$age_sd,
+bmi_c  = (bmi_raw - adult_means$bmi_mean)/adult_means$bmi_sd,
+sex    = factor(sex_lab,   levels = levels(adult_imp1$sex)),
+race  = factor(race_lab, levels = levels(adult_imp1$race)),
+wt_norm = 1
+)
+}
+
+plot_post_density <- function(df_row, title_txt) {
+phat <- posterior_linpred(bayes_fit, newdata = df_row, transform = TRUE)
+ci95 <- quantile(phat, c(0.025, 0.975))
+ggplot(data.frame(pred = as.numeric(phat)), aes(x = pred)) +
+geom_density(fill = "skyblue", alpha = 0.4) +
+geom_vline(xintercept = ci95[1], linetype = "dashed", color = "red") +
+geom_vline(xintercept = ci95[2], linetype = "dashed", color = "red") +
+labs(x = "P(Diabetes = 1)", y = "Density", title = title_txt) +
+theme_minimal()
+}
+
+p1 <- to_model_row(adult$age[1], adult$bmi[1],
+as.character(adult$sex[1]), as.character(adult$race[1]))
+plot_post_density(p1, "Participant 1: Posterior Predictive Distribution (95% CrI)")
+```
+
+Posterior predictive densities for individual participants illustrate
+uncertainty in diabetes risk estimates. Credible intervals quantify
+plausible risk ranges for each profile.
 
 #### Posterior Predictions and Inverse Inference
 
