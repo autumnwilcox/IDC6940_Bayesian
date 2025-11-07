@@ -821,8 +821,7 @@ adult_clean <- adult %>%
 ```{r}
 #| label: data-structure
 #| echo: true
-#| include: true
-#| fig-cap: "Structure of the analytic dataset used for regression modeling, showing variable names, types, and sample values (N = 5,349)."
+#| tbl-cap: "Structure of the analytic dataset used for regression modeling, showing variable names, types, and sample values (N = 5,349)."
 
 str(adult_clean[, c("diabetes_dx","sex","race","age_c","bmi_c")])
 ```
@@ -830,8 +829,7 @@ str(adult_clean[, c("diabetes_dx","sex","race","age_c","bmi_c")])
 ```{r}
 #| label: sex-distribution
 #| echo: true
-#| include: true
-#| fig-cap: "Distribution of participants by sex (Male = 2,551; Female = 2,798) in the analytic cohort."
+#| tbl-cap: "Distribution of participants by sex (Male = 2,551; Female = 2,798) in the analytic cohort."
 
 table(adult_clean$sex)
 ```
@@ -839,8 +837,7 @@ table(adult_clean$sex)
 ```{r}
 #| label: race-distribution
 #| echo: true
-#| include: true
-#| fig-cap: "Race/ethnicity composition of the analytic cohort, with most participants identifying as Non-Hispanic White (n = 2,293) and Non-Hispanic Black (n = 1,101)."
+#| tbl-cap: "Race/ethnicity composition of the analytic cohort, with most participants identifying as Non-Hispanic White (n = 2,293) and Non-Hispanic Black (n = 1,101)."
 
 table(adult_clean$race)
 ```
@@ -848,8 +845,7 @@ table(adult_clean$race)
 ```{r}
 #| label: diabetes-distribution
 #| echo: true
-#| include: true
-#| fig-cap: "Observed diabetes prevalence (binary outcome variable `diabetes_dx`), with 597 diagnosed cases (1 = Yes) and 4,752 non-diabetic participants (0 = No)."
+#| tbl-cap: "Observed diabetes prevalence (binary outcome variable `diabetes_dx`), with 597 diagnosed cases (1 = Yes) and 4,752 non-diabetic participants (0 = No)."
 
 table(adult_clean$diabetes_dx)
 ```
@@ -890,12 +886,13 @@ svy_or <- broom::tidy(svy_fit, conf.int = TRUE) %>%
 ```{r}
 #| label: tbl-svylogit
 #| echo: true
-#| fig-cap: "Survey-weighted logistic regression: odds ratios (OR) and 95% confidence intervals for diabetes diagnosis among adults (NHANES 2013–2014)."
+#| tbl-cap: "Survey-weighted logistic regression: odds ratios (OR) and 95% confidence intervals for diabetes diagnosis among adults (NHANES 2013–2014)."
 
 knitr::kable(svy_or)
 ```
 
-**Interpretation:**  
+#### Interpretation  
+
 `age_c` and `bmi_c` are the strongest predictors of diabetes in the NHANES 2013–2014 adult cohort, with each 1 SD increase in age nearly tripling the odds of diabetes and higher BMI substantially elevating risk. Males show significantly lower odds of diabetes than females, consistent with established sex differences in metabolic outcomes. Racial and ethnic disparities are evident, with Mexican American, Other Hispanic, Non-Hispanic Black, and Other/Multi-racial adults all showing significantly higher odds of diabetes compared to Non-Hispanic Whites. All predictors were statistically significant (p < 0.05), indicating robust associations across demographic and health characteristics.
 
 ### Multivariate Imputation by Chained Equations (Pooled Logistic Regression)
@@ -928,7 +925,8 @@ and polytomous regression models, respectively. Diabetes status
 Twenty imputations were generated to reduce Monte Carlo error and
 maintain robust variance estimation.
 
-**Convergence and Data Stability:**  
+#### Convergence and Data Stability 
+
 The chained equation process showed stable convergence across iterations,
 indicating reliable estimation of missing BMI (and, where present, age) values. After MICE,
 the final imputed dataset consisted of *n = 5,592 adults* with all key
@@ -1032,7 +1030,7 @@ adult_imp1 <- mice::complete(imp, 1) %>%
 glimpse(adult_imp1)
 ```
 
-**Descriptive Results (Imputed Dataset):**
+#### Descriptive Results (Imputed Dataset)
 
 After imputation, the analytic dataset contained approximately 5,500–5,600 adults.
 The mean age was around 49 years (SD ≈ 17), and the mean BMI was approximately 29 (SD ≈ 7).
@@ -1104,7 +1102,7 @@ mi_caption <- paste0(mi_caption, " Odds ratios are per 1 SD for age and BMI.")
 knitr::kable(mi_or, caption = mi_caption)
 ```
 
-**Interpretation**
+#### Interpretation
 
 - Age and BMI are strong positive predictors of diabetes; each 1 SD increase substantially raises the odds.
 
