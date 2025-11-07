@@ -186,7 +186,7 @@ be directly interpreted as probabilities.
 Weakly informative priors were used to regularize estimation without
 imposing strong assumptions:
 
--   **Regression coefficients:** $N(0, 2.5)$, providing gentle
+-   **Regression Coefficients:** $N(0, 2.5)$, providing gentle
     regularization while allowing substantial variation in plausible
     effects [@gelman2008; @vandeschoot2021].
 -   **Intercept:** Student’s t-distribution prior, $t(3, 0, 10)$
@@ -204,14 +204,13 @@ multicollinearity, limited sample size, or potential outliers.
 Posterior distributions of regression coefficients were used to estimate
 the probability of the outcome for given predictor values. This allows
 statements such as:
-
-| Given the predictors, the probability of the outcome lies between X% and Y%.
+> Given the predictors, the probability of the outcome lies between X% and Y%.
 
 Posterior predictions account for two key sources of uncertainty:
 
-1.  **Parameter uncertainty:** Variability in estimated model
+1.  **Parameter Uncertainty:** Variability in estimated model
     coefficients.
-2.  **Predictive uncertainty:** Variability in possible future outcomes
+2.  **Predictive Uncertainty:** Variability in possible future outcomes
     given those parameters.
 
 In Bayesian analysis, all unknown quantities—coefficients, means,
@@ -223,32 +222,32 @@ their posterior distributions.
 Model quality and convergence were assessed using standard Bayesian
 diagnostics:
 
--   **Posterior sampling:** Conducted via Markov Chain Monte
+-   **Posterior Sampling:** Conducted via Markov Chain Monte
     Carlo (MCMC) using the No-U-Turn Sampler (NUTS), a variant of
     Hamiltonian Monte Carlo (HMC) [@austin2021]. Four chains were run
     with sufficient warm-up iterations to ensure convergence.
--   **Convergence metrics:** The potential scale reduction factor
+-   **Convergence Metrics:** The potential scale reduction factor
     ($\hat{R}$) and effective sample size (ESS) were used to verify
     stability and mixing across chains.
--   **Autocorrelation checks:** Ensured independence between successive
+-   **Autocorrelation Checks:** Ensured independence between successive
     draws.
--   **Posterior predictive checks (PPCs):** Compared simulated outcomes
+-   **Posterior Predictive Checks (PPCs):** Compared simulated outcomes
     to observed data to evaluate fit.
 -   **Bayesian** $R^2$: Quantified the proportion of variance explained
     by predictors, incorporating posterior uncertainty.
 
 ## Advantages of Bayesian Logistic Regression
 
--   **Uncertainty quantification:** Produces full posterior
+-   **Uncertainty Quantification:** Produces full posterior
     distributions instead of single estimates.
--   **Credible intervals:** Provide the range within which a parameter
+-   **Credible Intervals:** Provide the range within which a parameter
     lies with a specified probability (e.g., 95%).
--   **Flexible priors:** Allow integration of expert knowledge or
+-   **Flexible Priors:** Allow integration of expert knowledge or
     findings from prior studies.
--   **Probabilistic predictions:** Posterior predictive distributions
+-   **Probabilistic Predictions:** Posterior predictive distributions
     yield direct probabilities for new or future observations.
--   **Model evaluation:** Posterior predictive checks (PPCs) assess how
-    well simulated outcomes reproduce observed data.
+-   **Model Evaluation:** PPCs assess how well simulated outcomes
+    reproduce observed data.
 
 # Analysis and Results
 
@@ -378,18 +377,18 @@ Covariates included:
 - `sex` (male, female)  
 - `race` (four ethnicity levels: White, Black, Hispanic, Other)  
 
-This approach accounts for NHANES’ complex sampling design, producing unbiased parameter estimates and valid inference for U.S. adults.  
+This approach accounts for NHANES’ complex sampling design, producing unbiased parameter estimates and valid inference for U.S. adults.
 
 | Step | Description |
 |------|-------------|
-| **Weighting** | Used the **`survey`** package to calculate weighted means and standard deviations for all variables. |
+| **Weighting** | Used the **`survey`** package to calculate weighted means for key variables (e.g., age and diabetes status) and to estimate design effects and effective sample size for the complex survey design. |
 | **Standardization** | Centered and standardized BMI and age (`bmi_c`, `age_c`) for use in regression models. |
-| **Age Categorization** | Recoded into intervals: 20–<30, 30–<40, 40–<50, 50–<60, 60–<70, and 70–80 years. |
+| **Age Categorization** | Not implemented in the analytic dataset (continuous `age` retained). Reference retained for potential descriptive grouping (20–<30, 30–<40, 40–<50, 50–<60, 60–<70, 70–80). |
 | **BMI Categorization** | Recoded as: <18.5 (Underweight), 18.5–<25 (Normal), 25–<30 (Overweight), 30–<35 (Obesity I), 35–<40 (Obesity II), ≥40 (Obesity III). |
-| **Ethnicity Recoding** | `RIDRETH1` recoded as: 1 = Mexican American, 2 = Other Hispanic, 3 = Non-Hispanic White, 4 = Non-Hispanic Black, 5 = Other/Multi, then collapsed to four analytical levels (`race`): White, Black, Hispanic, Other. |
-| **Special Codes** | Transformed nonresponse codes (e.g., 3, 7) to `NA`. These missing codes were evaluated for potential nonrandom patterns (MAR/MNAR). |
-| **Missing Data** | Retained and visualized missing values to assess their pattern and informativeness before multiple imputation. |
-| **Final Dataset** | Created the cleaned analytic dataset (`adult`) using *Non-Hispanic White* and *Male* as reference groups for modeling. |
+| **Ethnicity Recoding** | `RIDRETH1` recoded as: 1 = Mexican American, 2 = Other Hispanic, 3 = Non-Hispanic White, 4 = Non-Hispanic Black, 5 = Other/Multi; then `NH White` set as the reference level (five analytical levels retained). |
+| **Special Codes** | Transformed nonresponse codes (e.g., 3, 7, 9) to `NA`. These missing codes were evaluated for potential nonrandom patterns (MAR/MNAR). |
+| **Missing Data** | Retained and visualized missing values (primarily in BMI and diabetes status) to assess their pattern and informativeness before multiple imputation. |
+| **Final Dataset** | Created the cleaned analytic dataset (`adult`) using *Non-Hispanic White* and *Male* as reference groups for modeling, preserving NHANES survey design variables (`WTMEC2YR`, `SDMVPSU`, `SDMVSTRA`). |
 
 ```{r}
 #| label: adult-eda
@@ -572,11 +571,10 @@ tbl1_dat <- adult %>%
     bmi_cat,
     sex,
     race,
-    # CHANGE: make diabetes_dx a factor so it plays nice with pivot_longer()
     diabetes_dx = factor(diabetes_dx, levels = c(0, 1), labels = c("No", "Yes"))
   )
 
-# Continuous summaries: n, missing, mean, sd, min, max
+# Continuous summaries: N, missing, mean, sd, min, max
 cont_vars <- c("age", "bmi")
 
 cont_sum <- tbl1_dat %>%
@@ -584,21 +582,19 @@ cont_sum <- tbl1_dat %>%
   pivot_longer(everything(), names_to = "Variable", values_to = "value") %>%
   group_by(Variable) %>%
   summarise(
-    N          = sum(!is.na(value)),
-    Missing    = sum(is.na(value)),
-    Mean       = mean(value, na.rm = TRUE),
-    SD         = sd(value, na.rm = TRUE),
-    Min        = min(value, na.rm = TRUE),
-    Max        = max(value, na.rm = TRUE),
+    N       = sum(!is.na(value)),
+    Missing = sum(is.na(value)),
+    Mean    = round(mean(value, na.rm = TRUE), 2),
+    SD      = round(sd(value, na.rm = TRUE), 2),
+    Min     = round(min(value, na.rm = TRUE), 1),
+    Max     = round(max(value, na.rm = TRUE), 1),
     .groups = "drop"
-  ) %>%
-  mutate(across(c(Mean, SD, Min, Max), ~round(.x, 2)))
+  )
 
 # Categorical summaries: counts and percents
 cat_vars <- c("sex", "race", "diabetes_dx", "bmi_cat")
 
 cat_sum <- tbl1_dat %>%
-  # CHANGE: ensure all cat vars are factors and include NA as an explicit "(Missing)" level
   mutate(across(all_of(cat_vars),
                 ~ forcats::fct_explicit_na(as.factor(.x), na_level = "(Missing)"))) %>%
   select(all_of(cat_vars)) %>%
@@ -609,16 +605,17 @@ cat_sum <- tbl1_dat %>%
   ungroup() %>%
   arrange(Variable, desc(n))
 
-kable(cont_sum, caption = "Table 1a. Continuous variables (age, BMI): N, missing, mean (SD), range.")
-kable(cat_sum,  caption = "Table 1b. Categorical variables (sex, race, diabetes_dx, bmi_cat): counts and percentages.")
+# Render tables
+kable(cont_sum,
+      caption = "Table 1a. Continuous variables (age, BMI): N, missing, mean (SD), range.") %>%
+  kable_styling(full_width = FALSE)
+
+kable(cat_sum,
+      caption = "Table 1b. Categorical variables (sex, race, diabetes_dx, bmi_cat): counts and percentages.") %>%
+  kable_styling(full_width = FALSE)
 ```
 
-Table 1a and 1b summarize the analytic variables included in subsequent
-models. Mean age and BMI values indicate an adult cohort spanning a wide
-range of body composition, while categorical summaries confirm balanced
-sex representation and sufficient sample sizes across race/ethnicity
-categories. These variables were standardized and used as predictors in
-all modeling frameworks.
+Table 1a and 1b summarize the analytic variables included in subsequent models. Mean age and BMI values indicate an adult cohort spanning a wide range of body composition, while categorical summaries confirm balanced sex representation and sufficient sample sizes across race/ethnicity categories. These variables were standardized and used as predictors in all modeling frameworks (analytic cohort N = 5,769 adults ≥ 20 years).
 
 ```{r}
 #| label: adult-n
@@ -629,7 +626,7 @@ adult_n <- nrow(adult)
 
 ```{r}
 #| label: tbl-adult
-#| tbl-cap: !expr sprintf("Excerpt of the NHANES 2013–2014 adult cohort (age ≥ 20; N = %s) with derived and standardized variables.", format(adult_n, big.mark = ","))
+#| tbl-cap: !expr sprintf("Excerpt of the cleaned NHANES 2013–2014 adult cohort (age ≥ 20; N = 5,769) with derived and standardized variables.", format(adult_n, big.mark = ","))
 knitr::kable(head(adult))
 ```
 
@@ -644,12 +641,13 @@ variable (`diabetes_dx`).
 #| echo: true
 #| message: false
 #| warning: false
+#| #| fig-cap: "The visual overview indicates that 75% of variables are continuous and 25% are categorical, with no completely missing columns. Approximately 92.7% of rows are fully complete, and only 1.3% of observations contain missing values, suggesting minimal data loss prior to imputation."
 
 # Textual structure and preview
 str(adult)
 
 # Visual structure and type overview
-plot_intro(adult, title = "Adult dataset: variable types and completeness")
+plot_intro(adult, title = "Adult Dataset: Variable Types and Completeness")
 ```
 
 ```{r}
@@ -657,11 +655,11 @@ plot_intro(adult, title = "Adult dataset: variable types and completeness")
 #| echo: true
 #| message: false
 #| warning: false
-#| fig-cap: "Missingness overview for the adult dataset."
+#| fig-cap: "The missingness plot shows minimal data loss across key variables, with only BMI-related fields (bmi, bmi_c, bmi_cat) missing in about 4.3% of records and diabetes_dx missing in 3.1%. All demographic and design variables are complete, indicating that missingness is concentrated in health-related measures and suitable for multiple imputation."
 
 # Visualize missing data pattern for key variables
 
-plot_missing(adult, title = "Missing data pattern (Adult dataset)")
+plot_missing(adult, title = "Missing Data Pattern (Adult Dataset)")
 ```
 
 ```{r}
@@ -669,6 +667,7 @@ plot_missing(adult, title = "Missing data pattern (Adult dataset)")
 #| echo: true
 #| message: false
 #| warning: false
+#| fig-cap: "This table highlights missingness in the key analysis variables only, showing 249 missing values for BMI and 177 for diabetes diagnosis. While other variables are complete, these two were the focus for imputation due to their direct role in the modeling framework."
 
 miss_tbl <- tibble::tibble(
 Variable = c("`bmi`","`diabetes_dx`"),
@@ -680,7 +679,7 @@ mean(is.na(adult_eda$diabetes_dx))) * 100, 1)
 
 knitr::kable(
 miss_tbl,
-caption = "Missingness for key analysis variables."
+caption = "Missingness for Key Analysis Variables."
 )
 ```
 
