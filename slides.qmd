@@ -142,7 +142,10 @@ editor: visual
 
 ## Exploratory Data Analysis (EDA)
 
-::: {style="font-size: 0.85em"}
+::: panel-tabset
+
+### Summary
+::: {style="font-size: 0.8em"}
 -   **Missing Data:**
     -   Low overall (≈3–4%) in BMI and diabetes variables
     -   Addressed using *MICE*
@@ -154,6 +157,10 @@ editor: visual
     -   Females slightly lower prevalence than males
 -   **Key Takeaway:**
     -   Observed relationships align with prior epidemiologic research, confirming a solid analytical foundation.
+:::
+
+### Visualization
+![](figs/bmi_by_diabetes.png){width="80%" fig-align="center" fig-cap="BMI Distribution by Diabetes Status (NHANES 2013–2014)"}
 :::
 
 ------------------------------------------------------------------------

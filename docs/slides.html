@@ -368,7 +368,11 @@ Prepare a unified dataset for survey-weighted, imputed, and Bayesian logistic re
 </section>
 <section id="exploratory-data-analysis-eda" class="slide level2">
 <h2>Exploratory Data Analysis (EDA)</h2>
-<div style="font-size: 0.85em">
+<div class="panel-tabset">
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Summary</a></li><li><a href="#tabset-2-2">Visualization</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1">
+<div style="font-size: 0.8em">
 <ul>
 <li><strong>Missing Data:</strong>
 <ul>
@@ -390,6 +394,16 @@ Prepare a unified dataset for survey-weighted, imputed, and Bayesian logistic re
 <li>Observed relationships align with prior epidemiologic research, confirming a solid analytical foundation.</li>
 </ul></li>
 </ul>
+</div>
+</div>
+<div id="tabset-2-2">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/bmi_by_diabetes.png" class="quarto-figure quarto-figure-center" style="width:80.0%" data-fig-cap="BMI Distribution by Diabetes Status (NHANES 2013–2014)"></p>
+</figure>
+</div>
+</div>
+</div>
 </div>
 </section>
 <section id="modeling-framework" class="slide level2">
@@ -414,9 +428,9 @@ Compare coefficient stability, uncertainty estimation, and overall model fit acr
 <section class="slide level2">
 
 <div class="panel-tabset">
-<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Bayesian Model Code</a></li><li><a href="#tabset-2-2">Priors &amp; Settings</a></li><li><a href="#tabset-2-3">Diagnostics Code</a></li></ul>
+<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-3-1">Bayesian Model Code</a></li><li><a href="#tabset-3-2">Priors &amp; Settings</a></li><li><a href="#tabset-3-3">Diagnostics Code</a></li></ul>
 <div class="tab-content">
-<div id="tabset-2-1">
+<div id="tabset-3-1">
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a aria-hidden="true" tabindex="-1"></a><span class="co"># Bayesian logistic regression using brms</span></span>
 <span id="cb1-2"><a aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms)</span>
@@ -434,7 +448,7 @@ Compare coefficient stability, uncertainty estimation, and overall model fit acr
 <span id="cb1-14"><a aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
-<div id="tabset-2-2">
+<div id="tabset-3-2">
 <ul>
 <li><p><strong>Priors</strong>:</p>
 <ul>
@@ -451,7 +465,7 @@ Compare coefficient stability, uncertainty estimation, and overall model fit acr
 </ul></li>
 </ul>
 </div>
-<div id="tabset-2-3">
+<div id="tabset-3-3">
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bayes_fit)                  <span class="co"># coefficient summaries and Rhat</span></span>
 <span id="cb2-2"><a aria-hidden="true" tabindex="-1"></a><span class="fu">bayes_R2</span>(bayes_fit)                 <span class="co"># Bayesian R²</span></span>
@@ -552,9 +566,9 @@ Compare coefficient stability, uncertainty estimation, and overall model fit acr
 <section class="slide level2">
 
 <div class="panel-tabset">
-<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-3-1">Code</a></li><li><a href="#tabset-3-2">Key Findings</a></li><li><a href="#tabset-3-3">Trace Plots</a></li></ul>
+<ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-4-1">Code</a></li><li><a href="#tabset-4-2">Key Findings</a></li><li><a href="#tabset-4-3">Trace Plots</a></li></ul>
 <div class="tab-content">
-<div id="tabset-3-1">
+<div id="tabset-4-1">
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize Bayesian model results</span></span>
 <span id="cb3-2"><a aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bayes_fit)</span>
@@ -563,7 +577,7 @@ Compare coefficient stability, uncertainty estimation, and overall model fit acr
 <span id="cb3-5"><a aria-hidden="true" tabindex="-1"></a><span class="fu">bayes_R2</span>(bayes_fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
-<div id="tabset-3-2">
+<div id="tabset-4-2">
 <ul>
 <li>All Rhat ≈ 1.00 → strong convergence</li>
 <li>ESS &gt; 2000 → adequate sampling</li>
@@ -571,7 +585,7 @@ Compare coefficient stability, uncertainty estimation, and overall model fit acr
 <li>Posterior means consistent with frequentist results</li>
 </ul>
 </div>
-<div id="tabset-3-3">
+<div id="tabset-4-3">
 <p><img data-src="figs/trace_age_bmi.png" style="width:90.0%"></p>
 </div>
 </div>
@@ -580,15 +594,15 @@ Compare coefficient stability, uncertainty estimation, and overall model fit acr
 <section class="slide level2">
 
 <div class="panel-tabset">
-<ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-4-1">Posterior Predictive Check</a></li><li><a href="#tabset-4-2">Posterior Plot</a></li></ul>
+<ul id="tabset-5" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-5-1">Posterior Predictive Check</a></li><li><a href="#tabset-5-2">Posterior Plot</a></li></ul>
 <div class="tab-content">
-<div id="tabset-4-1">
+<div id="tabset-5-1">
 <ul>
 <li>Posterior predictive checks (PPCs) evaluate how well the model reproduces observed data.</li>
 <li>Here, replicated outcomes from the posterior closely match the observed diabetes prevalence, indicating good model calibration.</li>
 </ul>
 </div>
-<div id="tabset-4-2">
+<div id="tabset-5-2">
 <p><img data-src="figs/posterior_dists.png" style="width:90.0%"></p>
 </div>
 </div>
@@ -597,19 +611,19 @@ Compare coefficient stability, uncertainty estimation, and overall model fit acr
 <section class="slide level2">
 
 <div class="panel-tabset">
-<ul id="tabset-5" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-5-1">Code</a></li><li><a href="#tabset-5-2">Plot</a></li><li><a href="#tabset-5-3">Interpretation</a></li></ul>
+<ul id="tabset-6" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-6-1">Code</a></li><li><a href="#tabset-6-2">Plot</a></li><li><a href="#tabset-6-3">Interpretation</a></li></ul>
 <div class="tab-content">
-<div id="tabset-5-1">
+<div id="tabset-6-1">
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a aria-hidden="true" tabindex="-1"></a><span class="co"># Posterior predictive check comparing observed vs. simulated outcomes</span></span>
 <span id="cb4-2"><a aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(bayes_fit, <span class="at">nsamples =</span> <span class="dv">100</span>) <span class="sc">+</span></span>
 <span id="cb4-3"><a aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Posterior Predictive Check: Observed vs. Replicated Outcomes"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
-<div id="tabset-5-2">
+<div id="tabset-6-2">
 <p><img data-src="figs/pp_check.png" style="width:90.0%"></p>
 </div>
-<div id="tabset-5-3">
+<div id="tabset-6-3">
 <ul>
 <li>The PPC plot compares <strong>predicted vs.&nbsp;observed</strong> outcomes.</li>
 <li><strong>Strong overlap</strong> between simulated and actual data → good model fit.</li>
