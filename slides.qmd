@@ -3,7 +3,7 @@ title: "Bayesian Logistic Regression for Predicting Diabetes Risk"
 subtitle: |
   NHANES 2013–2014 Analysis  
   
-  **Namita Mishra & Autumn Wilcox**  
+  **Namita Mishra & Autumn Wilcox**\ 
   December 13, 2025
 format:
   revealjs:

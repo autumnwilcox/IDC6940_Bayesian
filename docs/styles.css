@@ -55,22 +55,6 @@
   position: relative;
 }
 
-/* === Add UWF Logo to Footer === */
-.reveal .footer::after {
-  content: "";
-  background-image: url('https://upload.wikimedia.org/wikipedia/en/2/26/University_of_West_Florida_seal.svg');
-  background-size: 26px 26px;
-  background-repeat: no-repeat;
-  background-position: right center;
-  display: inline-block;
-  width: 26px;
-  height: 26px;
-  position: absolute;
-  right: 0.8em;
-  bottom: 0.3em;
-  opacity: 0.85;
-}
-
 /* Title slide gradient */
 .reveal .slide:first-of-type {
   background: linear-gradient(135deg, var(--uwf-blue), var(--uwf-green));
