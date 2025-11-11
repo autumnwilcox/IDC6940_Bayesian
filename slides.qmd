@@ -159,8 +159,12 @@ editor: visual
     -   Observed relationships align with prior epidemiologic research, confirming a solid analytical foundation.
 :::
 
-### Visualization
+### BMI Distribution
 ![](figs/bmi_by_diabetes.png){width="80%" fig-align="center" fig-cap="BMI Distribution by Diabetes Status (NHANES 2013–2014)"}
+
+### Race/Ethnicity Distribution
+![](figs/diabetes_by_race.png){width="80%" fig-align="center" fig-cap="Diabetes Prevalence by Race/Ethnicity (NHANES 2013–2014)"}
+
 :::
 
 ------------------------------------------------------------------------

@@ -914,7 +914,7 @@
     "href": "slides.html#exploratory-data-analysis-eda",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Exploratory Data Analysis (EDA)",
-    "text": "Exploratory Data Analysis (EDA)\n\nSummaryVisualization\n\n\n\n\nMissing Data:\n\nLow overall (≈3–4%) in BMI and diabetes variables\nAddressed using MICE\n\nOutcome Distribution:\n\nDiabetes prevalence ≈ 11% among U.S. adults\n\nPredictor Patterns:\n\nHigher age and BMI strongly associated with diabetes\nNon-Hispanic Black and Hispanic adults show higher prevalence\nFemales slightly lower prevalence than males\n\nKey Takeaway:\n\nObserved relationships align with prior epidemiologic research, confirming a solid analytical foundation."
+    "text": "Exploratory Data Analysis (EDA)\n\nSummaryBMI DistributionRace/Ethnicity Distribution\n\n\n\n\nMissing Data:\n\nLow overall (≈3–4%) in BMI and diabetes variables\nAddressed using MICE\n\nOutcome Distribution:\n\nDiabetes prevalence ≈ 11% among U.S. adults\n\nPredictor Patterns:\n\nHigher age and BMI strongly associated with diabetes\nNon-Hispanic Black and Hispanic adults show higher prevalence\nFemales slightly lower prevalence than males\n\nKey Takeaway:\n\nObserved relationships align with prior epidemiologic research, confirming a solid analytical foundation."
   },
   {
     "objectID": "slides.html#modeling-framework",
