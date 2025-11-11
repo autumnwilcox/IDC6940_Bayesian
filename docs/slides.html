@@ -206,35 +206,43 @@ December 13, 2025</p><p></p>
 <section id="introduction" class="slide level2 scrollable">
 <h2>Introduction</h2>
 <ul>
-<li><strong>Diabetes mellitus (DM)</strong> affects over 37 million U.S. adults.</li>
-<li>Key risk factors: <strong>age</strong>, <strong>BMI</strong>, <strong>sex</strong>, and <strong>race/ethnicity</strong>.</li>
-<li>Traditional logistic regression can yield unstable estimates with missing data or small subgroups.</li>
-<li><strong>Bayesian logistic regression</strong> integrates prior information and quantifies uncertainty more transparently.</li>
-<li>This study compares three frameworks using NHANES 2013–2014 data:
+<li><strong>Diabetes mellitus (DM)</strong> affects over <strong>37 million U.S. adults</strong>.<br>
+</li>
+<li>Major risk factors include <strong>age</strong>, <strong>BMI</strong>, <strong>sex</strong>, and <strong>race/ethnicity</strong>.<br>
+</li>
+<li>Traditional logistic regression can produce <strong>unstable estimates</strong> with missing data or small subgroups.<br>
+</li>
+<li><strong>Bayesian logistic regression</strong> addresses these issues by incorporating <strong>prior information</strong> and providing <strong>richer uncertainty estimates</strong>.<br>
+</li>
+<li>This analysis compares three modeling frameworks using <strong>NHANES 2013–2014</strong> data:
 <ol type="1">
-<li>Survey-weighted logistic regression</li>
-<li>Multiple imputation (MICE)</li>
+<li>Survey-weighted logistic regression<br>
+</li>
+<li>Multiple Imputation by Chained Equations (MICE)<br>
+</li>
 <li>Bayesian logistic regression (<em>brms</em> in R)</li>
 </ol></li>
 </ul>
 </section>
 <section id="background-motivation" class="slide level2">
 <h2>Background &amp; Motivation</h2>
-<div style="font-size: 0.8em">
+<div style="font-size: 0.85em">
 <ul>
 <li><strong>Why Bayesian?</strong>
 <ul>
-<li>Traditional logistic regression may yield unstable estimates with missing data or small subgroup sizes.</li>
-<li>Bayesian inference incorporates prior information and provides full uncertainty quantification through posterior distributions.</li>
+<li>Traditional logistic regression can produce unstable estimates with missing data or small subgroups.<br>
+</li>
+<li>Bayesian inference incorporates prior knowledge and fully quantifies uncertainty through posterior distributions.</li>
 </ul></li>
 <li><strong>Prior Research</strong>
 <ul>
-<li>Bayesian methods have been used successfully in epidemiology to model chronic diseases and improve parameter stability.</li>
-<li>Few studies have compared Bayesian and frequentist logistic regression for diabetes using nationally representative data.</li>
+<li>Bayesian models have improved parameter stability in epidemiologic studies.<br>
+</li>
+<li>However, few analyses directly compare Bayesian and frequentist logistic regression for diabetes prediction.</li>
 </ul></li>
 <li><strong>Goal</strong>
 <ul>
-<li>Evaluate whether Bayesian logistic regression offers improved interpretability and stability compared with frequentist methods using NHANES 2013–2014.</li>
+<li>Assess whether Bayesian logistic regression improves interpretability and stability compared to frequentist approaches using NHANES 2013–2014 data.</li>
 </ul></li>
 </ul>
 </div>
@@ -244,13 +252,15 @@ December 13, 2025</p><p></p>
 <ul>
 <li><strong>Dataset:</strong> NHANES 2013–2014
 <ul>
-<li>n = 5,769 adults aged ≥20 years</li>
+<li>n = 5,769 adults aged ≥20 years<br>
+</li>
 <li>Variables: age, BMI, sex, race/ethnicity, and doctor-diagnosed diabetes</li>
 </ul></li>
 <li><strong>Survey Design:</strong>
 <ul>
-<li>Complex, multistage sampling with strata, clusters, and sample weights</li>
-<li>Weights normalized and treated as importance weights in modeling</li>
+<li>Multistage, complex sampling with strata, clusters, and sample weights<br>
+</li>
+<li>Weights were normalized and used as importance weights during modeling</li>
 </ul></li>
 </ul>
 </section>
@@ -258,11 +268,10 @@ December 13, 2025</p><p></p>
 <h2>Dataset Overview</h2>
 <div style="font-size: 0.75em">
 <ul>
-<li><strong>Source:</strong> National Health and Nutrition Examination Survey (NHANES) 2013–2014<br>
-</li>
-<li><strong>Cohort:</strong> 5,769 adults aged ≥20 years<br>
-</li>
-<li><strong>Merged Components:</strong>
+<li><p><strong>Source:</strong> NHANES 2013–2014<br>
+</p></li>
+<li><p><strong>Cohort:</strong> 5,769 adults aged ≥20 years</p></li>
+<li><p><strong>Merged Components:</strong></p>
 <ul>
 <li>DEMO_H (Demographics)<br>
 </li>
@@ -270,85 +279,87 @@ December 13, 2025</p><p></p>
 </li>
 <li>DIQ_H (Diabetes Questionnaire)</li>
 </ul></li>
-<li><strong>Outcome:</strong> Doctor-diagnosed diabetes (<code>diabetes_dx</code>)<br>
-</li>
-<li><strong>Predictors:</strong>
+<li><p><strong>Outcome:</strong> Doctor-diagnosed diabetes (<code>diabetes_dx</code>)</p></li>
+<li><p><strong>Predictors:</strong></p>
 <ul>
-<li>Age (standardized)<br>
+<li>Age (standardized z-score)<br>
 </li>
-<li>BMI (standardized)<br>
+<li>BMI (standardized z-score)<br>
 </li>
-<li>Sex (binary: Female vs Male)<br>
+<li>Sex (Female vs Male)<br>
 </li>
-<li>Race/Ethnicity (Non-Hispanic White = reference)</li>
+<li>Race/Ethnicity (Non-Hispanic White reference group)</li>
 </ul></li>
-<li><strong>Purpose:</strong> Create a unified analytic dataset suitable for survey-weighted, imputed, and Bayesian logistic regression models.</li>
+<li><p><strong>Purpose:</strong><br>
+Prepare a unified dataset for survey-weighted, imputed, and Bayesian logistic regression models.</p></li>
 </ul>
 </div>
 </section>
 <section id="data-preparation" class="slide level2">
 <h2>Data Preparation</h2>
 <ul>
-<li><p><strong>Missing Data:</strong></p>
+<li><strong>Missing Data:</strong>
 <ul>
-<li>Addressed using <em>Multiple Imputation by Chained Equations (MICE)</em></li>
+<li>Handled using <em>Multiple Imputation by Chained Equations (MICE)</em></li>
 </ul></li>
-<li><p><strong>Standardization:</strong></p>
+<li><strong>Standardization:</strong>
 <ul>
-<li>Continuous predictors (age, BMI) converted to z-scores for comparability</li>
+<li>Continuous predictors (Age, BMI) converted to z-scores for comparability</li>
 </ul></li>
-<li><p><strong>Recoding:</strong></p>
+<li><strong>Recoding:</strong>
 <ul>
-<li>Demographic variables simplified into analysis categories (e.g., race/ethnicity groups, binary sex indicator)</li>
+<li>Simplified categorical variables (e.g., binary Sex, grouped Race/Ethnicity)</li>
 </ul></li>
-<li><p><strong>Goal:</strong></p>
+<li><strong>Goal:</strong>
 <ul>
-<li>Create a clean, analysis-ready dataset consistent across modeling frameworks</li>
+<li>Produce a clean, standardized dataset for all three modeling frameworks</li>
 </ul></li>
 </ul>
 </section>
 <section id="modeling-workflow" class="slide level2">
 <h2>Modeling Workflow</h2>
-<div style="font-size: 0.7em">
+<div style="font-size: 0.75em">
 <div class="panel-tabset">
-<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">Steps 1-3</a></li><li><a href="#tabset-1-2">Steps 4-6</a></li></ul>
+<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">Steps 1–3: Data Preparation</a></li><li><a href="#tabset-1-2">Steps 4–6: Modeling &amp; Evaluation</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1">
-<p>Step 1 — Data Acquisition</p>
 <ul>
-<li><p>NHANES 2013–2014 (DEMO_H, BMX_H, DIQ_H)</p></li>
-<li><p>Adults aged ≥20 years (n = 5,769)</p></li>
-<li><p>Merged via participant ID <code>SEQN</code></p></li>
-</ul>
-<p>Step 2 — Preprocessing</p>
+<li><strong>Step 1 – Acquisition:</strong>
 <ul>
-<li><p>Standardized <strong>age</strong> and <strong>BMI</strong></p></li>
-<li><p>Recoded <strong>sex</strong> and <strong>race/ethnicity</strong></p></li>
-<li><p>Created z-scores for comparability</p></li>
-</ul>
-<p>Step 3 — Imputation</p>
+<li>NHANES 2013–2014 (DEMO_H, BMX_H, DIQ_H);</li>
+<li>n = 5,769 adults aged ≥20 years</li>
+</ul></li>
+<li><strong>Step 2 – Preprocessing:</strong>
 <ul>
-<li><p>Addressed missingness using <em>MICE</em></p></li>
-<li><p>Produced a complete, analysis-ready dataset</p></li>
+<li>Standardized age &amp; BMI, recoded sex and race/ethnicity</li>
+</ul></li>
+<li><strong>Step 3 – Imputation:</strong>
+<ul>
+<li>Addressed missingness using <em>MICE</em> to create a complete dataset</li>
+</ul></li>
 </ul>
 </div>
 <div id="tabset-1-2">
-<p>Step 4 — Modeling Frameworks</p>
 <ul>
-<li><p><strong>Survey-Weighted Logistic Regression</strong> (design-based MLE)</p></li>
-<li><p><strong>MICE-Imputed Logistic Regression</strong> (Rubin’s rules)</p></li>
-<li><p><strong>Bayesian Logistic Regression</strong> (<em>brms</em>, Hamiltonian Monte Carlo)</p></li>
-</ul>
-<p>Step 5 — Diagnostics &amp; Evaluation</p>
+<li><strong>Step 4 – Modeling Frameworks:</strong>
 <ul>
-<li><p>( ), ESS &gt; 2000</p></li>
-<li><p>Posterior predictive checks for calibration</p></li>
-<li><p>Bayesian (R^2 )</p></li>
-</ul>
-<p>Step 6 — Interpretation</p>
+<li>Survey-weighted logistic regression (design-based MLE)</li>
+<li>MICE-imputed logistic regression (Rubin’s rules)</li>
+<li>Bayesian logistic regression (<em>brms</em>, Hamiltonian Monte Carlo)</li>
+</ul></li>
+<li><strong>Step 5 – Diagnostics:</strong>
 <ul>
-<li><p>Compared coefficients across models</p></li>
-<li><p>Identified consistent diabetes predictors</p></li>
+<li>R-hat values ≈ 1.00 indicate strong convergence</li>
+<li>Effective sample sizes (ESS) &gt; 2000 confirm sufficient sampling</li>
+<li>Posterior predictive checks and Bayesian R² ≈ 0.13 show good model fit</li>
+</ul></li>
+<li><strong>Step 6 – Interpretation:</strong>
+<ul>
+<li>Compared parameter estimates across all frameworks</li>
+<li>Identified consistent predictors: higher age and BMI increase diabetes risk</li>
+<li>Female sex showed a protective effect; race/ethnicity differences remained significant</li>
+<li>Bayesian credible intervals provided clear uncertainty quantification</li>
+</ul></li>
 </ul>
 </div>
 </div>
@@ -357,47 +368,53 @@ December 13, 2025</p><p></p>
 </section>
 <section id="exploratory-data-analysis-eda" class="slide level2">
 <h2>Exploratory Data Analysis (EDA)</h2>
-<div style="font-size: 0.8em">
+<div style="font-size: 0.85em">
 <ul>
-<li><strong>Missingness</strong>
+<li><strong>Missing Data:</strong>
 <ul>
-<li>Low overall: ~3–4% in BMI and diabetes variables<br>
-</li>
-<li>Addressed via Multiple Imputation by Chained Equations (MICE)</li>
+<li>Low overall (≈3–4%) in BMI and diabetes variables</li>
+<li>Addressed using <em>MICE</em></li>
 </ul></li>
-<li><strong>Outcome Distribution</strong>
+<li><strong>Outcome Distribution:</strong>
 <ul>
-<li>Diabetes prevalence ≈ 11% among U.S. adults (2013–2014)</li>
+<li>Diabetes prevalence ≈ 11% among U.S. adults</li>
 </ul></li>
-<li><strong>Predictor Patterns</strong>
+<li><strong>Predictor Patterns:</strong>
 <ul>
-<li>Older adults and higher BMI groups show higher diabetes rates<br>
-</li>
-<li>Non-Hispanic Black and Hispanic groups have elevated prevalence<br>
-</li>
+<li>Higher age and BMI strongly associated with diabetes</li>
+<li>Non-Hispanic Black and Hispanic adults show higher prevalence</li>
 <li>Females slightly lower prevalence than males</li>
 </ul></li>
-<li><strong>Key Takeaway</strong>
+<li><strong>Key Takeaway:</strong>
 <ul>
-<li>The relationships among age, BMI, sex, and race align with prior epidemiologic research, suggesting a sound analytic foundation.</li>
+<li>Observed relationships align with prior epidemiologic research, confirming a solid analytical foundation.</li>
 </ul></li>
 </ul>
 </div>
 </section>
-<section id="modeling-framework" class="slide level2 scrollable">
+<section id="modeling-framework" class="slide level2">
 <h2>Modeling Framework</h2>
-<p><strong>Approaches Compared</strong></p>
-<ol type="1">
-<li><p>Survey-weighted logistic regression</p></li>
-<li><p>MICE-imputed logistic regression (Rubin’s rules)</p></li>
-<li><p>Bayesian logistic regression (<em>brms</em>, Hamiltonian Monte Carlo)</p></li>
-</ol>
-<p><strong>Goal:</strong> Compare coefficient stability, uncertainty quantification, and overall model fit across frameworks.</p>
+<ul>
+<li><strong>Survey-Weighted Logistic Regression</strong>
+<ul>
+<li>Accounts for NHANES’ complex sampling design (strata, clusters, weights)</li>
+</ul></li>
+<li><strong>MICE-Imputed Logistic Regression</strong>
+<ul>
+<li>Combines results across multiple imputations using Rubin’s rules</li>
+</ul></li>
+<li><strong>Bayesian Logistic Regression</strong> (<em>brms</em>, Hamiltonian Monte Carlo)
+<ul>
+<li>Incorporates prior information and provides full uncertainty quantification</li>
+</ul></li>
+</ul>
+<p><strong>Goal:</strong><br>
+Compare coefficient stability, uncertainty estimation, and overall model fit across all three frameworks.</p>
 </section>
 <section class="slide level2">
 
 <div class="panel-tabset">
-<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Bayesian Model Code</a></li><li><a href="#tabset-2-2">Priors &amp; Settings</a></li><li><a href="#tabset-2-3">Diagnostics</a></li></ul>
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Bayesian Model Code</a></li><li><a href="#tabset-2-2">Priors &amp; Settings</a></li><li><a href="#tabset-2-3">Diagnostics Code</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1">
 <div class="cell">
@@ -418,18 +435,20 @@ December 13, 2025</p><p></p>
 </div>
 </div>
 <div id="tabset-2-2">
-<p><strong>Priors</strong>:</p>
+<ul>
+<li><p><strong>Priors</strong>:</p>
 <ul>
 <li><p>Slopes: Normal(0, 2.5)</p></li>
 <li><p>Intercept: Student-t(3, 0, 10)</p></li>
-</ul>
-<p><strong>Sampling</strong>:</p>
+</ul></li>
+<li><p><strong>Sampling</strong>:</p>
 <ul>
 <li>4 chains × 2000 iterations (1000 warm-up)</li>
-</ul>
-<p><strong>Diagnostics expected</strong>:</p>
+</ul></li>
+<li><p><strong>Diagnostics Expected</strong>:</p>
 <ul>
 <li>Rhat ≈ 1.00, ESS &gt; 2000, Bayesian R² ≈ 0.13</li>
+</ul></li>
 </ul>
 </div>
 <div id="tabset-2-3">
@@ -445,20 +464,29 @@ December 13, 2025</p><p></p>
 <section id="model-comparison" class="slide level2">
 <h2>Model Comparison</h2>
 <ul>
-<li>All three modeling frameworks identified <strong>the same key predictors</strong> of diabetes risk: higher age, higher BMI, sex, and race/ethnicity.<br>
-</li>
-<li><strong>Effect sizes</strong> were nearly identical across survey-weighted, MICE-imputed, and Bayesian models.<br>
-</li>
-<li>Minor variation in interval widths reflects different treatments of uncertainty.</li>
+<li><strong>Consistent Predictors Across All Models:</strong>
+<ul>
+<li>Higher <strong>age</strong> and <strong>BMI</strong> → increased diabetes risk</li>
+<li><strong>Female sex</strong> → lower odds</li>
+<li><strong>Race/ethnicity</strong> differences persisted</li>
+</ul></li>
+<li><strong>Effect Sizes:</strong>
+<ul>
+<li>Nearly identical across survey-weighted, imputed, and Bayesian frameworks</li>
+</ul></li>
+<li><strong>Uncertainty:</strong>
+<ul>
+<li>Minor variation in interval widths reflects each model’s uncertainty treatment</li>
+</ul></li>
 </ul>
 </section>
 <section id="model-comparison-summary" class="slide level2">
 <h2>Model Comparison Summary</h2>
 <div style="font-size: 0.8em">
 <ul>
-<li><p>All frameworks identified the same significant predictors: <strong>age, BMI, sex, and race/ethnicity.</strong></p></li>
-<li><p>Bayesian estimates matched frequentist models in magnitude and direction, confirming robustness.</p></li>
-<li><p>Minor differences in interval width reflect each model’s treatment of uncertainty.</p></li>
+<li><strong>All frameworks</strong> identified the same significant predictors: <strong>age, BMI, sex, and race/ethnicity.</strong></li>
+<li><strong>Bayesian estimates</strong> matched frequentist models in magnitude and direction, confirming robustness.</li>
+<li><strong>Interval widths</strong> varied slightly due to differences in how each framework handles uncertainty.</li>
 </ul>
 <table class="caption-top">
 <colgroup>
@@ -507,8 +535,18 @@ December 13, 2025</p><p></p>
 <section id="bayesian-performance" class="slide level2">
 <h2>Bayesian Performance</h2>
 <ul>
-<li>The Bayesian model showed <strong>excellent convergence and calibration</strong>, with results closely matching the survey-weighted and imputed logistic regressions.</li>
-<li>Parameter estimates were stable, and credible intervals provided clear uncertainty quantification.</li>
+<li><strong>Excellent convergence and calibration</strong>
+<ul>
+<li>R-hat values around 1.00 and effective sample sizes above 2000 indicate strong chain mixing and reliable sampling</li>
+</ul></li>
+<li><strong>Stable parameter estimates</strong>
+<ul>
+<li>Nearly identical to survey-weighted and imputed models</li>
+</ul></li>
+<li><strong>Credible intervals</strong>
+<ul>
+<li>Clearly represent uncertainty and confirm overall model robustness</li>
+</ul></li>
 </ul>
 </section>
 <section class="slide level2">
@@ -573,12 +611,12 @@ December 13, 2025</p><p></p>
 </div>
 <div id="tabset-5-3">
 <ul>
-<li><p>The PPC plot shows the distribution of predicted vs observed outcomes.</p></li>
-<li><p>A strong overlap indicates the Bayesian model fits the observed data well.</p></li>
-<li><p>Simulated outcomes align closely with the observed prevalence of diabetes.</p></li>
-<li><p>Confirms the model is well-calibrated and not overfitting.</p></li>
-<li><p>Supports adequacy of priors and model structure.</p></li>
-<li><p>Reinforces overall reliability of the Bayesian framework.</p></li>
+<li>The PPC plot compares <strong>predicted vs.&nbsp;observed</strong> outcomes.</li>
+<li><strong>Strong overlap</strong> between simulated and actual data → good model fit.</li>
+<li><strong>Simulated outcomes</strong> accurately reflect real diabetes prevalence.</li>
+<li>Confirms model is <strong>well-calibrated</strong> and <strong>not overfitting</strong>.</li>
+<li>Supports adequacy of priors and overall Bayesian structure.</li>
+<li>Reinforces reliability of the Bayesian framework.</li>
 </ul>
 </div>
 </div>
@@ -588,28 +626,20 @@ December 13, 2025</p><p></p>
 <h2>Discussion, Limitations &amp; Conclusion</h2>
 <div style="font-size: 0.8em">
 <ul>
-<li><strong>Conclusion:</strong> Bayesian inference complements frequentist methods by enhancing transparency and reproducibility, offering richer uncertainty quantification through credible intervals and PPCs.</li>
-<li><strong>Key Findings:</strong> Age and BMI strongest predictors; sex protective; race disparities persistent.<br>
-</li>
-<li><strong>Consistency:</strong> Bayesian, survey-weighted, and imputed models produced nearly identical results.<br>
-</li>
-<li><strong>Advantages:</strong> Bayesian approach improved interpretability via credible intervals and PPCs.<br>
-</li>
-<li><strong>Limitations:</strong> Single imputed dataset, approximate weighting, non-tuned priors, limited to 2013–2014 cycle.<br>
-</li>
-<li><strong>Conclusion:</strong> Bayesian inference complements frequentist methods by enhancing transparency, uncertainty estimation, and reproducibility.</li>
+<li><strong>Key Findings:</strong> Age and BMI were the strongest predictors; sex was protective; racial disparities persisted.</li>
+<li><strong>Consistency:</strong> All three models — Bayesian, survey-weighted, and MICE-imputed — yielded nearly identical results.</li>
+<li><strong>Advantages:</strong> The Bayesian approach enhanced interpretability, providing richer uncertainty estimates via credible intervals and PPCs.</li>
+<li><strong>Limitations:</strong> Used a single imputed dataset, approximate weighting, and non-tuned priors limited to the 2013–2014 cycle.</li>
+<li><strong>Conclusion:</strong> Bayesian inference complements frequentist methods by improving transparency, interpretability, and uncertainty quantification.</li>
 </ul>
 </div>
 </section>
 <section id="key-takeaways" class="slide level2">
 <h2>Key Takeaways</h2>
 <ul>
-<li>Consistent results across all three models<br>
-</li>
-<li>Bayesian adds clarity through credible intervals and model diagnostics<br>
-</li>
-<li>Excellent convergence and calibration confirm reliability<br>
-</li>
+<li>Consistent results across all three modeling frameworks</li>
+<li>Bayesian approach adds clarity through credible intervals and PPCs</li>
+<li>Strong convergence and calibration confirm reliability</li>
 <li>Future work: extend to later NHANES cycles and hierarchical priors</li>
 </ul>
 </section>
@@ -619,24 +649,17 @@ December 13, 2025</p><p></p>
 <ul>
 <li><strong>Expand Temporal Scope</strong>
 <ul>
-<li>Integrate multiple NHANES cycles to assess changes in diabetes risk over time.</li>
+<li>Incorporate additional NHANES cycles to assess temporal trends.</li>
 </ul></li>
 <li><strong>Model Refinement</strong>
 <ul>
-<li>Incorporate hierarchical priors to capture subgroup and population-level variation.<br>
-</li>
-<li>Explore Bayesian model averaging for improved predictive performance.</li>
+<li>Use hierarchical priors to capture subgroup variation.</li>
+<li>Explore Bayesian model averaging for improved predictive accuracy.</li>
 </ul></li>
 <li><strong>Validation</strong>
 <ul>
-<li>Conduct external validation in independent datasets.<br>
-</li>
-<li>Perform sensitivity analyses to assess robustness to prior choices and imputation assumptions.</li>
-</ul></li>
-<li><strong>Broader Application</strong>
-<ul>
-<li>Extend this framework to related chronic disease outcomes (e.g., hypertension, metabolic syndrome).<br>
-</li>
+<li>Perform external validation on independent datasets.</li>
+<li>Conduct sensitivity analyses for priors and imputation assumptions.</li>
 </ul></li>
 </ul>
 </div>
