@@ -17,10 +17,6 @@ execute:
 format:
   html:
     code-fold: true 
-  pdf: 
-    toc: true
-    number-sections: true
-    geometry: margin=1in
 
 bibliography: references.bib
 reference-section-title: "References"
@@ -399,7 +395,7 @@ This approach accounts for NHANES’ complex sampling design, producing
 unbiased parameter estimates and valid inference for U.S. adults.
 
 | Step | Description |
-|------------------------|------------------------------------------------|
+|-------------------------|-----------------------------------------------|
 | **Weighting** | Used the **`survey`** package to calculate weighted means for key variables (e.g., age and diabetes status) and to estimate design effects and effective sample size for the complex survey design. |
 | **Standardization** | Centered and standardized BMI and age (`bmi_c`, `age_c`) for use in regression models. |
 | **Age Categorization** | Not implemented in the analytic dataset (continuous `age` retained). Reference retained for potential descriptive grouping (20–\<30, 30–\<40, 40–\<50, 50–\<60, 60–\<70, 70–80). |
@@ -1151,7 +1147,11 @@ theme_minimal() +
 theme(legend.position = "none")
 ```
 
-The boxplot in Figure \@ref(fig-bmi-diabetes-box) is **descriptive**: it summarizes the median, spread, and outliers in BMI for participants with and without diabetes. The visibly higher median and wider spread in the diabetes group reinforce the positive association between excess adiposity and diabetes risk seen in later regression models.
+The boxplot in Figure \@ref(fig-bmi-diabetes-box) is **descriptive**: it
+summarizes the median, spread, and outliers in BMI for participants with
+and without diabetes. The visibly higher median and wider spread in the
+diabetes group reinforce the positive association between excess
+adiposity and diabetes risk seen in later regression models.
 
 ```{r}
 #| label: pred-bmi
@@ -1165,7 +1165,11 @@ labs(x = "BMI", y = "Probability of Diabetes", title = "Predicted Probability of
 theme_minimal()
 ```
 
-In contrast to the descriptive boxplot, Figure \@ref(fig-pred-bmi) is **inferential**: it displays the regression-based fitted probability of diabetes across the BMI continuum. The non-linear, increasing curve and its confidence band summarize how modeled diabetes risk escalates with higher BMI.
+In contrast to the descriptive boxplot, Figure \@ref(fig-pred-bmi) is
+**inferential**: it displays the regression-based fitted probability of
+diabetes across the BMI continuum. The non-linear, increasing curve and
+its confidence band summarize how modeled diabetes risk escalates with
+higher BMI.
 
 ```{r}
 #| label: tbl-mice
@@ -1611,7 +1615,10 @@ to the prior with more overlap, indicating weaker evidence.
 The overlay of prior and posterior densities illustrates that
 informative updates occurred primarily for BMI, age, and race
 coefficients, which showed distinct posterior shifts relative to the
-priors. In contrast, weaker predictors such as sex displayed overlapping distributions, indicating that inference for those parameters was more influenced by prior uncertainty than by the observed data. This balance confirms appropriate regularization rather than overfitting.
+priors. In contrast, weaker predictors such as sex displayed overlapping
+distributions, indicating that inference for those parameters was more
+influenced by prior uncertainty than by the observed data. This balance
+confirms appropriate regularization rather than overfitting.
 
 #### Model Fit and Calibration
 
@@ -1708,7 +1715,12 @@ labs(
 theme_minimal()
 ```
 
-The survey-weighted NHANES diabetes prevalence was approximately **8.9%**, whereas the Bayesian model’s posterior predictive mean prevalence was also in the **8–9%** range. This close agreement indicates that the Bayesian logistic regression model reproduces the observed population-level prevalence and is well-calibrated to the NHANES data.
+The survey-weighted NHANES diabetes prevalence was approximately
+**8.9%**, whereas the Bayesian model’s posterior predictive mean
+prevalence was also in the **8–9%** range. This close agreement
+indicates that the Bayesian logistic regression model reproduces the
+observed population-level prevalence and is well-calibrated to the
+NHANES data.
 
 ```{r}
 #| label: prevalence-summary
@@ -1787,7 +1799,10 @@ as.character(adult$sex[1]), as.character(adult$race[1]))
 plot_post_density(p1, "Participant 1: Posterior Predictive Distribution (95% CrI)")
 ```
 
-Posterior predictive densities for individual participants illustrate the uncertainty in diabetes risk estimates. The credible intervals quantify plausible risk ranges, emphasizing how posterior variability captures uncertainty rather than single-point predictions.
+Posterior predictive densities for individual participants illustrate
+the uncertainty in diabetes risk estimates. The credible intervals
+quantify plausible risk ranges, emphasizing how posterior variability
+captures uncertainty rather than single-point predictions.
 
 #### Posterior Predictions and Inverse Inference
 
@@ -1853,7 +1868,12 @@ ggplot(pred_df, aes(x = bmi_c, y = prob_mean)) +
   theme_bw()
 ```
 
-Inverse inference explores what BMI value would yield a given diabetes risk under the posterior model. In this example, predicted diabetes probability remains near 1.0 across most BMI values, suggesting that other covariates (e.g., age or race) dominate predicted risk in this profile. The “target BMI ≈ 18” marks the approximate threshold for a 30% risk under this participant’s conditions.
+Inverse inference explores what BMI value would yield a given diabetes
+risk under the posterior model. In this example, predicted diabetes
+probability remains near 1.0 across most BMI values, suggesting that
+other covariates (e.g., age or race) dominate predicted risk in this
+profile. The “target BMI ≈ 18” marks the approximate threshold for a 30%
+risk under this participant’s conditions.
 
 ## Results
 
@@ -1951,7 +1971,10 @@ knitr::kable(all_tbl, align = c("l","l","c"))
 Across all three frameworks—survey-weighted (MLE), multiple imputation,
 and Bayesian—age and BMI were consistently associated with higher odds
 of doctor-diagnosed diabetes. Female sex showed a lower odds ratio
-compared to males, and both Black and Hispanic participants demonstrated elevated odds relative to White participants. The similarity of effect sizes across frameworks underscores the robustness of these predictors to different modeling assumptions and missing-data treatments.
+compared to males, and both Black and Hispanic participants demonstrated
+elevated odds relative to White participants. The similarity of effect
+sizes across frameworks underscores the robustness of these predictors
+to different modeling assumptions and missing-data treatments.
 
 ## Discussion and Limitations
 
@@ -1959,7 +1982,9 @@ compared to males, and both Black and Hispanic participants demonstrated elevate
 
 The Bayesian logistic regression framework produced results that were
 highly consistent with both the survey-weighted and MICE-pooled
-frequentist models. Age and BMI remained the most influential predictors of doctor-diagnosed diabetes, each showing a strong and positive association with diabetes risk.
+frequentist models. Age and BMI remained the most influential predictors
+of doctor-diagnosed diabetes, each showing a strong and positive
+association with diabetes risk.
 
 Unlike classical maximum likelihood estimation, the Bayesian approach
 directly quantified uncertainty through posterior distributions,
@@ -1968,8 +1993,11 @@ statements. The alignment between Bayesian and design-based estimates
 supports the robustness of these associations and highlights the
 practicality of Bayesian modeling for complex, weighted population data.
 
-Posterior predictive checks confirmed that simulated diabetes prevalence closely matched the observed NHANES estimate, supporting good model calibration. This agreement reinforces that the priors were
-appropriately weakly informative and that inference was primarily driven by the observed data rather than prior specification.
+Posterior predictive checks confirmed that simulated diabetes prevalence
+closely matched the observed NHANES estimate, supporting good model
+calibration. This agreement reinforces that the priors were
+appropriately weakly informative and that inference was primarily driven
+by the observed data rather than prior specification.
 
 Overall, this study demonstrates that Bayesian inference complements
 traditional epidemiologic methods by maintaining interpretability while
@@ -1978,51 +2006,60 @@ survey data.
 
 ### Limitations
 
-While this analysis demonstrates the value of Bayesian logistic
+While this analysis highlights the strengths of Bayesian logistic
 regression for epidemiologic modeling, several limitations should be
 acknowledged.
 
-First, the use of a single imputed dataset for the Bayesian model—rather
-than full joint modeling of imputation uncertainty—may understate total
-variance.
+First, the Bayesian model used a single imputed dataset rather than
+jointly modeling imputation uncertainty, which may lead to a modest
+understatement of total variance.
 
-Second, NHANES exam weights were normalized and treated as importance
-weights, which approximate but do not fully reproduce design-based
-inference.
+Second, NHANES examination weights were normalized and treated as
+importance weights. This approach approximates—but does not fully
+replicate—design-based inference and may slightly affect standard error
+estimation.
 
 Third, the weakly informative priors $N(0, 2.5)$ for slopes and
-Student-t(3, 0, 10) for the intercept were not empirically tuned;
-alternative prior specifications could slightly alter posterior
-intervals.
+Student-t(3, 0, 10) for the intercept were not empirically tuned.
+Alternative prior choices could marginally shift posterior intervals or
+reduce shrinkage.
 
-Finally, although convergence diagnostics (R̂ ≈ 1, sufficient effective
+Fourth, although convergence diagnostics (R̂ ≈ 1.00, large effective
 sample sizes, and stable posterior predictive checks) indicated good
-model performance, results are conditional on the 2013–2014 NHANES cycle and may not generalize to later datasets or longitudinal analyses.
+model performance, results are conditional on the 2013–2014 NHANES cycle
+and may not generalize to later survey waves or longitudinal
+applications.
 
-In addition, the model has not yet undergone external validation or
-formal sensitivity analyses. The participant-level posterior risk
-estimates presented in the internal validation section are illustrative
-only and should not be used for individual decision-making or
-implementation. Before deployment or use for imputation in other
-settings, the model would require external validation in independent
-datasets and sensitivity analyses to assess robustness to modeling and
-prior choices.
+Finally, the model has not undergone external validation or formal
+sensitivity analyses. The participant-level posterior risk estimates
+presented here are intended for illustration only and should not be used
+for individual prediction or clinical decision-making. Before external
+deployment or use in other settings, the model would require validation
+in independent datasets and sensitivity analyses to evaluate robustness
+to both modeling assumptions and prior specifications.
 
 ## Conclusion
 
-The Bayesian, survey-weighted, and imputed logistic regression
-frameworks all identified consistent predictors of diabetes risk in U.S. adults: advancing age, higher BMI, sex (lower odds for females), and non-White race/ethnicity.
+The Bayesian, survey-weighted, and multiple-imputation logistic
+regression frameworks all identified consistent predictors of diabetes
+risk among U.S. adults: advancing age, higher BMI, sex (lower odds for
+females), and non-White race/ethnicity. These convergent findings
+reinforce the robustness of core risk factors and the validity of the
+analytic approach across modeling paradigms.
 
 The Bayesian model produced estimates nearly identical in direction and
-magnitude to the frequentist results while providing a more
-comprehensive assessment of uncertainty through posterior distributions
-and credible intervals.
+magnitude to the frequentist results while offering richer uncertainty
+quantification through posterior distributions, credible intervals, and
+posterior predictive checks. Diagnostics (R̂ ≈ 1.00, large effective
+sample sizes, and Bayesian R² ≈ 0.13) confirmed model convergence and
+good fit, demonstrating that weakly informative priors effectively
+regularized estimation without distorting inference.
 
-These consistent findings across modeling frameworks underscore the
-robustness of core risk factors and support the use of Bayesian
-inference for epidemiologic research involving complex survey data.
-
-By incorporating prior information and using MCMC to sample from the
-full posterior distribution, Bayesian inference enhances model
-transparency and interpretability. Future extensions could integrate
-hierarchical priors, multiple NHANES cycles, or Bayesian model averaging to better capture population heterogeneity, temporal trends, and evolving diabetes risk patterns.
+Collectively, these results underscore the value of Bayesian inference
+in epidemiologic research involving complex survey data. By integrating
+prior information and leveraging MCMC sampling to approximate the full
+posterior distribution, Bayesian models enhance transparency,
+interpretability, and reproducibility. Future extensions could
+incorporate hierarchical priors, combine multiple NHANES cycles, or
+explore Bayesian model averaging to better capture population
+heterogeneity, temporal trends, and evolving diabetes risk patterns.
