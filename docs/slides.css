@@ -38,3 +38,8 @@
   font-size: 0.85em;
   opacity: 0.7;
 }
+
+/* Global font size for all slides */
+.reveal section {
+  font-size: 0.85em;
+}

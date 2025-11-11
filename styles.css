@@ -1,0 +1,100 @@
+.reveal section {
+  font-size: 0.85em;
+}
+
+/* === UWF Themed Reveal.js Styling === */
+
+/* Main colors (UWF palette) */
+:root {
+  --uwf-blue: #003366;
+  --uwf-green: #78be20;
+  --uwf-gray: #e6e6e6;
+}
+
+/* Background & text */
+.reveal {
+  background-color: white;
+  color: #1a1a1a;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Headings */
+.reveal h1, .reveal h2, .reveal h3 {
+  color: var(--uwf-blue);
+  font-weight: 700;
+}
+
+/* Accents (like links and highlights) */
+.reveal a {
+  color: var(--uwf-green);
+  text-decoration: none;
+}
+.reveal a:hover {
+  color: var(--uwf-blue);
+}
+
+/* Horizontal rules */
+.reveal hr {
+  border: 1px solid var(--uwf-green);
+  margin: 1em 0;
+}
+
+/* Lists and table text */
+.reveal ul, .reveal ol, .reveal table {
+  color: #222;
+  font-size: 0.95em;
+}
+
+/* Footer styling */
+.reveal .footer {
+  background-color: var(--uwf-blue);
+  color: white;
+  padding: 0.3em 0.8em;
+  border-radius: 6px;
+  font-size: 0.85em;
+  position: relative;
+}
+
+/* === Add UWF Logo to Footer === */
+.reveal .footer::after {
+  content: "";
+  background-image: url('https://upload.wikimedia.org/wikipedia/en/2/26/University_of_West_Florida_seal.svg');
+  background-size: 26px 26px;
+  background-repeat: no-repeat;
+  background-position: right center;
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  position: absolute;
+  right: 0.8em;
+  bottom: 0.3em;
+  opacity: 0.85;
+}
+
+/* Title slide gradient */
+.reveal .slide:first-of-type {
+  background: linear-gradient(135deg, var(--uwf-blue), var(--uwf-green));
+  color: white;
+}
+.reveal .slide:first-of-type h1,
+.reveal .slide:first-of-type h2 {
+  color: white;
+}
+
+/* Tables */
+.reveal table th {
+  background-color: var(--uwf-blue);
+  color: white;
+}
+.reveal table td {
+  border: 1px solid var(--uwf-gray);
+  padding: 0.4em 0.8em;
+}
+
+/* Code or inline highlights */
+.reveal code {
+  background-color: var(--uwf-gray);
+  color: var(--uwf-blue);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}
