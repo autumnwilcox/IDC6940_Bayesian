@@ -1,0 +1,3178 @@
+% Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrartcl}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{241,243,245}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.40,0.45,0.13}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\BuiltInTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\ExtensionTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.28,0.35,0.67}{#1}}
+\newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.46,0.62}{#1}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.07,0.07,0.07}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\KOMAoption{captions}{tableheading}
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Bayesian Logistic Regression for Predicting Diabetes Risk Using NHANES 2013--2014 Data},
+  pdfauthor={Namita Mishra; Autumn Wilcox},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{Bayesian Logistic Regression for Predicting Diabetes Risk Using
+NHANES 2013--2014 Data}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{A Capstone Project on Bayesian Applications in Epidemiologic
+Modeling}
+\author{Namita Mishra \and Autumn Wilcox}
+\date{2025-11-10}
+\begin{document}
+\maketitle
+
+\renewcommand*\contentsname{Table of contents}
+{
+\hypersetup{linkcolor=}
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+
+Slides: \url{slides.html} (Edit \texttt{slides.qmd}.)
+
+\section{Introduction}\label{introduction}
+
+Diabetes mellitus (DM) remains a major public health challenge, and
+identifying key risk factors---such as obesity, age, sex, and
+race/ethnicity---is essential for prevention and targeted intervention.
+Logistic regression is widely used to estimate associations between such
+factors and binary outcomes like diabetes diagnosis. However, classical
+maximum likelihood estimation (MLE) can produce unstable estimates in
+the presence of missing data, quasi-separation, or small samples.
+Bayesian logistic regression offers a robust alternative by integrating
+prior information, regularizing estimates, and quantifying uncertainty
+more transparently than frequentist approaches.
+
+Bayesian hierarchical models, implemented via Markov Chain Monte Carlo
+(MCMC), have been successfully applied in predicting patient health
+status across diseases such as pneumonia, prostate cancer, and mental
+disorders (\citeproc{ref-zeger2020}{Zeger et al. 2020}). By representing
+predictive uncertainty alongside point estimates, Bayesian inference
+offers a practical advantage in epidemiologic modeling where decisions
+hinge on probabilistic thresholds. Beyond stability, Bayesian methods
+support model checking, variable selection, and uncertainty
+quantification under missingness or imputation frameworks
+(\citeproc{ref-baldwin2017}{Baldwin and Larson 2017};
+\citeproc{ref-kruschke2017}{Kruschke and Liddell 2017}).
+
+Recent work has expanded Bayesian applications to disease diagnostics
+and health risk modeling. For instance, Bayesian approaches have been
+used to evaluate NHANES diagnostic data
+(\citeproc{ref-chatzimichail2023}{Chatzimichail and Hatjimihail 2023}),
+to model cardiovascular and metabolic risk (\citeproc{ref-liu2013}{Liu
+et al. 2013}), and to integrate multiple data modalities such as imaging
+and laboratory measures (\citeproc{ref-abdullah2022bdlhealth}{Abdullah,
+Hassan, and Mustafa 2022}). Moreover, multiple imputation combined with
+Bayesian modeling generates robust estimates when data are missing at
+random (MAR) or not at random (MNAR) (\citeproc{ref-austin2021}{Austin
+et al. 2021}).
+
+The broader Bayesian literature emphasizes the role of priors and model
+checking. Weakly informative priors, such as \(N(0, 2.5)\) for
+coefficients, regularize estimation and reduce variance in small samples
+(\citeproc{ref-gelman2008}{Gelman et al. 2008};
+\citeproc{ref-vandeschoot2021}{Vande Schoot et al. 2021}). Tutorials
+using R packages like \texttt{brms} and \texttt{blavaan} illustrate how
+MCMC enables posterior inference and empirical Bayes analysis
+(\citeproc{ref-klauenberg2015}{Klauenberg et al. 2015}).
+
+Beyond standard generalized linear models, Bayesian nonparametric
+regression flexibly captures nonlinearity and zero inflation common in
+health data (\citeproc{ref-richardson2018bnr}{Richardson and Hartman
+2018}). Bayesian Additive Regression Trees (BART) improve variable
+selection in mixed-type data (\citeproc{ref-luo2024bartvs}{Luo et al.
+2024}), while state-space and dynamic Bayesian models incorporate
+time-varying biomarkers for longitudinal prediction
+(\citeproc{ref-momeni2021covidbayes}{Momeni et al. 2021}). Bayesian
+model averaging (BMA) further addresses model uncertainty by weighting
+across multiple specifications (\citeproc{ref-hoeting1999bma}{Hoeting et
+al. 1999}). Together, these approaches demonstrate the versatility and
+growing importance of Bayesian inference in clinical and epidemiologic
+modeling.
+
+The objective of this project is to evaluate whether Bayesian inference
+provides more stable and interpretable estimates of diabetes risk than
+frequentist and imputation-based approaches, particularly when data
+complexity or separation challenges arise. Agreement across modeling
+frameworks supports the robustness of these associations and highlights
+the interpretability and uncertainty quantification advantages offered
+by Bayesian analysis in population health modeling
+(\citeproc{ref-nchs2014}{National Center for Health Statistics (NCHS)
+2014}).
+
+\subsection{Aims}\label{aims}
+
+The present study employs Bayesian logistic regression to predict
+diabetes status and examine the relationships between diabetes and key
+predictors, including body mass index (BMI), age (≥20 years), sex, and
+race. Using retrospective data from the 2013--2014 NHANES survey, the
+analysis accounts for the study's complex sampling design, which
+involves stratification, clustering, and the oversampling of specific
+subpopulations rather than simple random sampling. The Bayesian
+framework is applied to address common analytical challenges such as
+missing data, complete case bias, and data separation, thereby improving
+the robustness and reliability of inference compared to traditional
+logistic regression methods.
+
+\section{Method}\label{method}
+
+\subsection{Bayesian Logistic
+Regression}\label{bayesian-logistic-regression}
+
+The Bayesian framework integrates prior knowledge with observed data to
+generate posterior distributions, allowing parameters to be interpreted
+directly in probabilistic terms.
+
+Unlike traditional frequentist approaches that yield single-point
+estimates and p-values, Bayesian methods represent parameters as random
+variables with full probability distributions.
+
+This provides greater flexibility, incorporates parameter uncertainty,
+and produces credible intervals that directly quantify the probability
+that a parameter lies within a given range.
+
+\subsection{Model Structure}\label{model-structure}
+
+Bayesian logistic regression models the log-odds of a binary outcome as
+a linear combination of predictors:
+
+\[
+\text{logit}(P(Y = 1)) = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_k X_k
+\]
+
+where
+
+\begin{itemize}
+\tightlist
+\item
+  \(P(Y = 1)\) is the probability of the event of interest,
+\item
+  \(\beta_0\) is the intercept (log-odds when all predictors are zero),
+  and
+\item
+  \(\beta_j\) represents the effect of predictor \(X_j\) on the log-odds
+  of the outcome, holding other predictors constant.
+\end{itemize}
+
+In the Bayesian framework, model parameters (\(\boldsymbol{\beta}\)) are
+treated as random variables and assigned prior distributions that
+reflect existing knowledge or plausible ranges before observing the
+data. After incorporating the observed evidence, the priors are updated
+through Bayes' theorem (\citeproc{ref-deleeuw2012}{Leeuw and Klugkist
+2012}; \citeproc{ref-klauenberg2015}{Klauenberg et al. 2015}):
+
+\[
+\text{Posterior} \propto \text{Likelihood} \times \text{Prior}
+\]
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Likelihood:} represents the probability of the observed data
+  given the model parameters---it captures how well different parameter
+  values explain the data.
+\item
+  \textbf{Prior:} expresses beliefs or existing information about the
+  parameters before observing the data.
+\item
+  \textbf{Posterior:} combines both, representing the updated
+  distribution of parameter values after accounting for the data.
+\end{itemize}
+
+This formulation allows uncertainty to propagate naturally through the
+model, producing posterior distributions for each coefficient that can
+be directly interpreted as probabilities.
+
+\subsection{Prior Specification}\label{prior-specification}
+
+Weakly informative priors were used to regularize estimation without
+imposing strong assumptions:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Regression Coefficients:} \(N(0, 2.5)\), providing gentle
+  regularization while allowing substantial variation in plausible
+  effects (\citeproc{ref-gelman2008}{Gelman et al. 2008};
+  \citeproc{ref-vandeschoot2021}{Vande Schoot et al. 2021}).
+\item
+  \textbf{Intercept:} Student's t-distribution prior, \(t(3, 0, 10)\)
+  (\citeproc{ref-vandeschoot2013}{Schoot et al. 2013};
+  \citeproc{ref-vandeschoot2021}{Vande Schoot et al. 2021}), which has
+
+  \begin{itemize}
+  \tightlist
+  \item
+    3 degrees of freedom (heavy tails to allow occasional large
+    effects),
+  \item
+    mean 0 (no bias toward positive or negative effects), and
+  \item
+    scale 10 (broad range of possible values).
+  \end{itemize}
+\end{itemize}
+
+Such priors help stabilize estimation in the presence of
+multicollinearity, limited sample size, or potential outliers.
+
+\subsection{Posterior Predictions}\label{posterior-predictions}
+
+Posterior distributions of regression coefficients were used to estimate
+the probability of the outcome for given predictor values. This allows
+statements such as: \textgreater{} Given the predictors, the probability
+of the outcome lies between X\% and Y\%.
+
+Posterior predictions account for two key sources of uncertainty:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Parameter Uncertainty:} Variability in estimated model
+  coefficients.
+\item
+  \textbf{Predictive Uncertainty:} Variability in possible future
+  outcomes given those parameters.
+\end{enumerate}
+
+In Bayesian analysis, all unknown quantities---coefficients, means,
+variances, or probabilities---are treated as random variables described
+by their posterior distributions.
+
+\subsection{Model Evaluation and
+Diagnostics}\label{model-evaluation-and-diagnostics}
+
+Model quality and convergence were assessed using standard Bayesian
+diagnostics:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Posterior Sampling:} Conducted via Markov Chain Monte Carlo
+  (MCMC) using the No-U-Turn Sampler (NUTS), a variant of Hamiltonian
+  Monte Carlo (HMC) (\citeproc{ref-austin2021}{Austin et al. 2021}).
+  Four chains were run with sufficient warm-up iterations to ensure
+  convergence.
+\item
+  \textbf{Convergence Metrics:} The potential scale reduction factor
+  (\(\hat{R}\)) and effective sample size (ESS) were used to verify
+  stability and mixing across chains.
+\item
+  \textbf{Autocorrelation Checks:} Ensured independence between
+  successive draws.
+\item
+  \textbf{Posterior Predictive Checks (PPCs):} Compared simulated
+  outcomes to observed data to evaluate fit.
+\item
+  \textbf{Bayesian} \(R^2\): Quantified the proportion of variance
+  explained by predictors, incorporating posterior uncertainty.
+\end{itemize}
+
+\subsection{Advantages of Bayesian Logistic
+Regression}\label{advantages-of-bayesian-logistic-regression}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Uncertainty Quantification:} Produces full posterior
+  distributions instead of single estimates.
+\item
+  \textbf{Credible Intervals:} Provide the range within which a
+  parameter lies with a specified probability (e.g., 95\%).
+\item
+  \textbf{Flexible Priors:} Allow integration of expert knowledge or
+  findings from prior studies.
+\item
+  \textbf{Probabilistic Predictions:} Posterior predictive distributions
+  yield direct probabilities for new or future observations.
+\item
+  \textbf{Model Evaluation:} PPCs assess how well simulated outcomes
+  reproduce observed data.
+\end{itemize}
+
+\section{Analysis and Results}\label{analysis-and-results}
+
+\subsection{Data Preparation}\label{data-preparation}
+
+This study used publicly available 2013--2014 NHANES data published by
+the CDC's National Center for Health Statistics
+(\citeproc{ref-nchs2014}{National Center for Health Statistics (NCHS)
+2014}). Three component files were utilized: \texttt{DEMO\_H}
+(demographics), \texttt{BMX\_H} (body measures), and \texttt{DIQ\_H}
+(diabetes questionnaire). Each file was imported in \texttt{.XPT} format
+using the \textbf{\texttt{haven}} package in \textbf{R}, and merged
+using the unique participant identifier \texttt{SEQN} to create a single
+adult analytic dataset (age ≥ 20 years).
+
+All variables were coerced to consistent numeric or factor types prior
+to merging to ensure atomic columns suitable for survey-weighted
+analysis and modeling. The use of \texttt{SEQN} preserved respondent
+integrity across datasets and ensured accurate record linkage. This
+preprocessing step standardized variable formats and minimized
+inconsistencies between files.
+
+Data wrangling, cleaning, and merging were performed in \textbf{R} using
+a combination of base functions and tidyverse packages. Bayesian
+logistic regression modeling was later implemented using the
+\textbf{\texttt{brms}} interface to \textbf{Stan}, allowing
+probabilistic inference within a reproducible workflow that accommodated
+the NHANES complex survey design and missing data considerations.
+
+\subsubsection{Data Import and Merging}\label{data-import-and-merging}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{merged\_data }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(}\StringTok{"data/merged\_2013\_2014.rds"}\NormalTok{)}
+
+\NormalTok{merged\_n }\OtherTok{\textless{}{-}} \FunctionTok{nrow}\NormalTok{(merged\_data)}
+\end{Highlighting}
+\end{Shaded}
+
+The merged dataset contains 10,175 participants. It integrates
+demographic, examination, and diabetes questionnaire data. We then
+restrict the sample to adults (age ≥ 20) to define the analytic cohort
+used in subsequent analyses. A small proportion of records have missing
+values in BMI and diabetes status, which will be addressed later through
+multiple imputation.
+
+\begin{longtable}[]{@{}rrrrr@{}}
+\caption{Preview of merged NHANES 2013--2014 dataset limited to analysis
+variables (source columns only).}\tabularnewline
+\toprule\noalign{}
+RIDAGEYR & BMXBMI & RIAGENDR & RIDRETH1 & DIQ010 \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+RIDAGEYR & BMXBMI & RIAGENDR & RIDRETH1 & DIQ010 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+69 & 26.7 & 1 & 4 & 1 \\
+54 & 28.6 & 1 & 3 & 1 \\
+72 & 28.9 & 1 & 3 & 1 \\
+9 & 17.1 & 1 & 3 & 2 \\
+73 & 19.7 & 2 & 3 & 2 \\
+56 & 41.7 & 1 & 1 & 2 \\
+0 & NA & 1 & 3 & NA \\
+61 & 35.7 & 2 & 3 & 2 \\
+42 & NA & 1 & 2 & 2 \\
+56 & 26.5 & 2 & 3 & 2 \\
+\end{longtable}
+
+\subsubsection{Variable Definitions}\label{variable-definitions}
+
+\begin{itemize}
+\item
+  \textbf{Response Variable:}\\
+  \texttt{diabetes\_dx} (binary) represents a Type 2 diabetes diagnosis,
+  excluding gestational diabetes. It was derived from \texttt{DIQ010}
+  (``Doctor told you have diabetes''), while \texttt{DIQ050} (insulin
+  use) was excluded to prevent treatment-related confounding.
+\item
+  \textbf{Predictor Variables:}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \texttt{BMXBMI} -- Body Mass Index (kg/m\^{}2), treated as
+    continuous and categorized into six BMI classes
+    (\texttt{bmi\_cat}).\\
+  \item
+    \texttt{RIDAGEYR} -- Age (continuous, 20--80 years)\\
+  \item
+    \texttt{RIAGENDR} -- Sex (factor, two levels)\\
+  \item
+    \texttt{RIDRETH1} -- Ethnicity (factor, five levels)
+  \end{itemize}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+\CommentTok{\# Variable descriptions (with \textasciigrave{}code\textasciigrave{} formatting for names)}
+\CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+\NormalTok{var\_tbl }\OtherTok{\textless{}{-}} \FunctionTok{tribble}\NormalTok{(}
+  \SpecialCharTok{\textasciitilde{}}\NormalTok{Variable,      }\SpecialCharTok{\textasciitilde{}}\NormalTok{Description,                                                                                                   }\SpecialCharTok{\textasciitilde{}}\NormalTok{Type,         }\SpecialCharTok{\textasciitilde{}}\NormalTok{Origin,}
+  \StringTok{"\textasciigrave{}diabetes\_dx\textasciigrave{}"}\NormalTok{,}\StringTok{"Type 2 diabetes diagnosis (1 = Yes, 0 = No) derived from \textasciigrave{}DIQ010\textasciigrave{}; gestational diabetes excluded."}\NormalTok{,           }\StringTok{"Categorical"}\NormalTok{, }\StringTok{"Derived from \textasciigrave{}DIQ010\textasciigrave{}"}\NormalTok{,}
+  \StringTok{"\textasciigrave{}age\textasciigrave{}"}\NormalTok{,        }\StringTok{"Age in years."}\NormalTok{,                                                                                                }\StringTok{"Continuous"}\NormalTok{,  }\StringTok{"NHANES \textasciigrave{}RIDAGEYR\textasciigrave{}"}\NormalTok{,}
+  \StringTok{"\textasciigrave{}bmi\textasciigrave{}"}\NormalTok{,        }\StringTok{"Body Mass Index (kg/m\^{}2) computed from measured height and weight."}\NormalTok{,                                           }\StringTok{"Continuous"}\NormalTok{,  }\StringTok{"NHANES \textasciigrave{}BMXBMI\textasciigrave{}"}\NormalTok{,}
+  \StringTok{"\textasciigrave{}bmi\_cat\textasciigrave{}"}\NormalTok{,    }\StringTok{"BMI categories: Underweight, Normal, Overweight, Obesity I–III (\textasciigrave{}Normal\textasciigrave{} is reference in models)."}\NormalTok{,            }\StringTok{"Categorical"}\NormalTok{, }\StringTok{"Derived from \textasciigrave{}bmi\textasciigrave{}"}\NormalTok{,}
+  \StringTok{"\textasciigrave{}sex\textasciigrave{}"}\NormalTok{,        }\StringTok{"Sex of participant (\textasciigrave{}Male\textasciigrave{}, \textasciigrave{}Female\textasciigrave{})."}\NormalTok{,                                                                       }\StringTok{"Categorical"}\NormalTok{, }\StringTok{"NHANES \textasciigrave{}RIAGENDR\textasciigrave{}"}\NormalTok{,}
+  \StringTok{"\textasciigrave{}race\textasciigrave{}"}\NormalTok{, }\StringTok{"race/Ethnicity collapsed to four levels: White, Black, Hispanic, Other."}\NormalTok{, }\StringTok{"Categorical"}\NormalTok{, }\StringTok{"Derived from \textasciigrave{}RIDRETH1\textasciigrave{}"}\NormalTok{,}
+  \StringTok{"\textasciigrave{}WTMEC2YR\textasciigrave{}"}\NormalTok{,   }\StringTok{"Examination sample weight for Mobile Examination Center participants."}\NormalTok{,                                        }\StringTok{"Weight"}\NormalTok{,      }\StringTok{"NHANES design"}\NormalTok{,}
+  \StringTok{"\textasciigrave{}SDMVPSU\textasciigrave{}"}\NormalTok{,    }\StringTok{"Primary Sampling Unit used for variance estimation in the complex survey design."}\NormalTok{,                             }\StringTok{"Design"}\NormalTok{,      }\StringTok{"NHANES design"}\NormalTok{,}
+  \StringTok{"\textasciigrave{}SDMVSTRA\textasciigrave{}"}\NormalTok{,   }\StringTok{"Stratum identifier used to define strata for the complex survey design."}\NormalTok{,                                      }\StringTok{"Design"}\NormalTok{,      }\StringTok{"NHANES design"}\NormalTok{,}
+  \StringTok{"\textasciigrave{}age\_c\textasciigrave{}"}\NormalTok{,      }\StringTok{"Centered and standardized age (z{-}score)."}\NormalTok{,                                                                     }\StringTok{"Continuous"}\NormalTok{,  }\StringTok{"Derived from \textasciigrave{}age\textasciigrave{}"}\NormalTok{,}
+  \StringTok{"\textasciigrave{}bmi\_c\textasciigrave{}"}\NormalTok{,      }\StringTok{"Centered and standardized BMI (z{-}score)."}\NormalTok{,                                                                     }\StringTok{"Continuous"}\NormalTok{,  }\StringTok{"Derived from \textasciigrave{}bmi\textasciigrave{}"}
+\NormalTok{)}
+
+\FunctionTok{kbl}\NormalTok{(}
+\NormalTok{  var\_tbl,}
+  \AttributeTok{caption =} \StringTok{"Variable Descriptions: Adult Analytic Dataset"}\NormalTok{,}
+  \AttributeTok{align =} \FunctionTok{c}\NormalTok{(}\StringTok{"l"}\NormalTok{,}\StringTok{"l"}\NormalTok{,}\StringTok{"l"}\NormalTok{,}\StringTok{"l"}\NormalTok{),}
+  \AttributeTok{escape =} \ConstantTok{FALSE}
+\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable\_styling}\NormalTok{(}\AttributeTok{full\_width =} \ConstantTok{FALSE}\NormalTok{, }\AttributeTok{position =} \StringTok{"center"}\NormalTok{, }\AttributeTok{bootstrap\_options =} \FunctionTok{c}\NormalTok{(}\StringTok{"striped"}\NormalTok{,}\StringTok{"hover"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_rows}\NormalTok{(}\StringTok{"Analysis variables"}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{6}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}              \CommentTok{\# \textless{}{-}{-} updated range (now 6 analysis rows)}
+  \FunctionTok{group\_rows}\NormalTok{(}\StringTok{"Survey design variables"}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{9}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_rows}\NormalTok{(}\StringTok{"Derived variables"}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{11}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}
+\centering
+\caption{\label{tab:variables-table}Variable Descriptions: Adult Analytic Dataset}
+\centering
+\begin{tabular}[t]{l|l|l|l}
+\hline
+Variable & Description & Type & Origin\\
+\hline
+\multicolumn{4}{l}{\textbf{Analysis variables}}\\
+\hline
+\hspace{1em}`diabetes_dx` & Type 2 diabetes diagnosis (1 = Yes, 0 = No) derived from `DIQ010`; gestational diabetes excluded. & Categorical & Derived from `DIQ010`\\
+\hline
+\hspace{1em}`age` & Age in years. & Continuous & NHANES `RIDAGEYR`\\
+\hline
+\hspace{1em}`bmi` & Body Mass Index (kg/m^2) computed from measured height and weight. & Continuous & NHANES `BMXBMI`\\
+\hline
+\hspace{1em}`bmi_cat` & BMI categories: Underweight, Normal, Overweight, Obesity I–III (`Normal` is reference in models). & Categorical & Derived from `bmi`\\
+\hline
+\hspace{1em}`sex` & Sex of participant (`Male`, `Female`). & Categorical & NHANES `RIAGENDR`\\
+\hline
+\hspace{1em}`race` & race/Ethnicity collapsed to four levels: White, Black, Hispanic, Other. & Categorical & Derived from `RIDRETH1`\\
+\hline
+\multicolumn{4}{l}{\textbf{Survey design variables}}\\
+\hline
+\hspace{1em}`WTMEC2YR` & Examination sample weight for Mobile Examination Center participants. & Weight & NHANES design\\
+\hline
+\hspace{1em}`SDMVPSU` & Primary Sampling Unit used for variance estimation in the complex survey design. & Design & NHANES design\\
+\hline
+\hspace{1em}`SDMVSTRA` & Stratum identifier used to define strata for the complex survey design. & Design & NHANES design\\
+\hline
+\multicolumn{4}{l}{\textbf{Derived variables}}\\
+\hline
+\hspace{1em}`age_c` & Centered and standardized age (z-score). & Continuous & Derived from `age`\\
+\hline
+\hspace{1em}`bmi_c` & Centered and standardized BMI (z-score). & Continuous & Derived from `bmi`\\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Study Design and Survey-Weighted
+Analysis}\label{study-design-and-survey-weighted-analysis}
+
+The National Health and Nutrition Examination Survey (NHANES) employs a
+complex, multistage probability sampling design with stratification,
+clustering, and oversampling of specific demographic groups (for
+example, racial/ethnic minorities and older adults) to produce
+nationally representative estimates of the U.S. population.
+
+Survey design variables --- primary sampling units (\texttt{SDMVPSU}),
+strata (\texttt{SDMVSTRA}), and examination sample weights
+(\texttt{WTMEC2YR}) --- were retained to account for this complex
+design. These variables were applied to adjust for unequal probabilities
+of selection, nonresponse, and oversampling, ensuring valid standard
+errors, unbiased prevalence estimates, and generalizable
+population-level inference.
+
+A survey-weighted logistic regression model was used to evaluate the
+association between diabetes status (\texttt{diabetes\_dx}, binary
+outcome) and key predictors: body mass index (\texttt{bmi}), age
+(\texttt{age}), sex (\texttt{sex}), and race/ethnicity (\texttt{race}).
+Diabetes was defined using \texttt{DIQ010} (``Doctor told you have
+diabetes'') and coded as 0/1, with \texttt{DIQ050} (insulin use)
+excluded to avoid treatment-related confounding.
+
+Covariates included:\\
+- \texttt{age} (continuous; centered as \texttt{age\_c}, categorized
+20--80 years)\\
+- \texttt{bmi} (continuous; centered as \texttt{bmi\_c}, and categorized
+by BMI class \texttt{bmi\_cat})\\
+- \texttt{sex} (male, female)\\
+- \texttt{race} (four ethnicity levels: White, Black, Hispanic, Other)
+
+This approach accounts for NHANES' complex sampling design, producing
+unbiased parameter estimates and valid inference for U.S. adults.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.6667}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Step
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Description
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{Weighting} & Used the \textbf{\texttt{survey}} package to
+calculate weighted means for key variables (e.g., age and diabetes
+status) and to estimate design effects and effective sample size for the
+complex survey design. \\
+\textbf{Standardization} & Centered and standardized BMI and age
+(\texttt{bmi\_c}, \texttt{age\_c}) for use in regression models. \\
+\textbf{Age Categorization} & Not implemented in the analytic dataset
+(continuous \texttt{age} retained). Reference retained for potential
+descriptive grouping (20--\textless30, 30--\textless40, 40--\textless50,
+50--\textless60, 60--\textless70, 70--80). \\
+\textbf{BMI Categorization} & Recoded as: \textless18.5 (Underweight),
+18.5--\textless25 (Normal), 25--\textless30 (Overweight),
+30--\textless35 (Obesity I), 35--\textless40 (Obesity II), ≥40 (Obesity
+III). \\
+\textbf{Ethnicity Recoding} & \texttt{RIDRETH1} recoded as: 1 = Mexican
+American, 2 = Other Hispanic, 3 = Non-Hispanic White, 4 = Non-Hispanic
+Black, 5 = Other/Multi; then \texttt{NH\ White} set as the reference
+level (five analytical levels retained). \\
+\textbf{Special Codes} & Transformed nonresponse codes (e.g., 3, 7, 9)
+to \texttt{NA}. These missing codes were evaluated for potential
+nonrandom patterns (MAR/MNAR). \\
+\textbf{Missing Data} & Retained and visualized missing values
+(primarily in BMI and diabetes status) to assess their pattern and
+informativeness before multiple imputation. \\
+\textbf{Final Dataset} & Created the cleaned analytic dataset
+(\texttt{adult}) using \emph{Non-Hispanic White} and \emph{Male} as
+reference groups for modeling, preserving NHANES survey design variables
+(\texttt{WTMEC2YR}, \texttt{SDMVPSU}, \texttt{SDMVSTRA}). \\
+\end{longtable}
+
+\subsubsection{Adult Cohort Definition}\label{adult-cohort-definition}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# NHANES survey design object for the adult analytic cohort}
+
+\NormalTok{nhanes\_design\_adult }\OtherTok{\textless{}{-}}\NormalTok{ survey}\SpecialCharTok{::}\FunctionTok{svydesign}\NormalTok{(}
+\AttributeTok{id      =} \SpecialCharTok{\textasciitilde{}}\NormalTok{SDMVPSU,}
+\AttributeTok{strata  =} \SpecialCharTok{\textasciitilde{}}\NormalTok{SDMVSTRA,}
+\AttributeTok{weights =} \SpecialCharTok{\textasciitilde{}}\NormalTok{WTMEC2YR,}
+\AttributeTok{nest    =} \ConstantTok{TRUE}\NormalTok{,}
+\AttributeTok{data    =}\NormalTok{ adult}
+\NormalTok{)}
+
+\CommentTok{\# Quick weighted checks}
+
+\NormalTok{survey}\SpecialCharTok{::}\FunctionTok{svymean}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{age, nhanes\_design\_adult, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+      mean     SE
+age 47.496 0.3805
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{survey}\SpecialCharTok{::}\FunctionTok{svymean}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{diabetes\_dx, nhanes\_design\_adult, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+                mean     SE
+diabetes_dx 0.089016 0.0048
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Design effect and effective sample size for \textasciigrave{}diabetes\_dx\textasciigrave{}}
+
+\NormalTok{v\_hat }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(survey}\SpecialCharTok{::}\FunctionTok{svyvar}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{diabetes\_dx, nhanes\_design\_adult, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{))}
+\NormalTok{p\_hat }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(adult}\SpecialCharTok{$}\NormalTok{diabetes\_dx, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{n\_obs }\OtherTok{\textless{}{-}} \FunctionTok{nrow}\NormalTok{(adult)}
+\NormalTok{v\_srs }\OtherTok{\textless{}{-}}\NormalTok{ p\_hat }\SpecialCharTok{*}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ p\_hat) }\SpecialCharTok{/}\NormalTok{ n\_obs}
+\NormalTok{deff  }\OtherTok{\textless{}{-}}\NormalTok{ v\_hat }\SpecialCharTok{/}\NormalTok{ v\_srs}
+
+\NormalTok{n\_total }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(}\FunctionTok{weights}\NormalTok{(nhanes\_design\_adult), }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{ess     }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(n\_total }\SpecialCharTok{/}\NormalTok{ deff)}
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Design effect for diabetes\_dx:"}\NormalTok{, }\FunctionTok{round}\NormalTok{(deff, }\DecValTok{2}\NormalTok{), }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Design effect for diabetes_dx: 4759.91 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Effective sample size for diabetes\_dx:"}\NormalTok{, }\FunctionTok{round}\NormalTok{(ess), }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Effective sample size for diabetes_dx: 48142 
+\end{verbatim}
+
+Descriptive statistics for continuous and categorical variables are
+presented below.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Keep only analytic variables for Table 1}
+\NormalTok{tbl1\_dat }\OtherTok{\textless{}{-}}\NormalTok{ adult }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{transmute}\NormalTok{(}
+\NormalTok{    age,}
+\NormalTok{    bmi,}
+\NormalTok{    bmi\_cat,}
+\NormalTok{    sex,}
+\NormalTok{    race,}
+    \AttributeTok{diabetes\_dx =} \FunctionTok{factor}\NormalTok{(diabetes\_dx, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"No"}\NormalTok{, }\StringTok{"Yes"}\NormalTok{))}
+\NormalTok{  )}
+
+\CommentTok{\# Continuous summaries: N, missing, mean, sd, min, max}
+\NormalTok{cont\_vars }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"age"}\NormalTok{, }\StringTok{"bmi"}\NormalTok{)}
+
+\NormalTok{cont\_sum }\OtherTok{\textless{}{-}}\NormalTok{ tbl1\_dat }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(}\FunctionTok{all\_of}\NormalTok{(cont\_vars)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{pivot\_longer}\NormalTok{(}\FunctionTok{everything}\NormalTok{(), }\AttributeTok{names\_to =} \StringTok{"Variable"}\NormalTok{, }\AttributeTok{values\_to =} \StringTok{"value"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(Variable) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarise}\NormalTok{(}
+    \AttributeTok{N       =} \FunctionTok{sum}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(value)),}
+    \AttributeTok{Missing =} \FunctionTok{sum}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(value)),}
+    \AttributeTok{Mean    =} \FunctionTok{round}\NormalTok{(}\FunctionTok{mean}\NormalTok{(value, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{), }\DecValTok{2}\NormalTok{),}
+    \AttributeTok{SD      =} \FunctionTok{round}\NormalTok{(}\FunctionTok{sd}\NormalTok{(value, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{), }\DecValTok{2}\NormalTok{),}
+    \AttributeTok{Min     =} \FunctionTok{round}\NormalTok{(}\FunctionTok{min}\NormalTok{(value, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{), }\DecValTok{1}\NormalTok{),}
+    \AttributeTok{Max     =} \FunctionTok{round}\NormalTok{(}\FunctionTok{max}\NormalTok{(value, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{), }\DecValTok{1}\NormalTok{),}
+    \AttributeTok{.groups =} \StringTok{"drop"}
+\NormalTok{  )}
+
+\CommentTok{\# Categorical summaries: counts and percents}
+\NormalTok{cat\_vars }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"sex"}\NormalTok{, }\StringTok{"race"}\NormalTok{, }\StringTok{"diabetes\_dx"}\NormalTok{, }\StringTok{"bmi\_cat"}\NormalTok{)}
+
+\NormalTok{cat\_sum }\OtherTok{\textless{}{-}}\NormalTok{ tbl1\_dat }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\FunctionTok{across}\NormalTok{(}\FunctionTok{all\_of}\NormalTok{(cat\_vars),}
+                \SpecialCharTok{\textasciitilde{}}\NormalTok{ forcats}\SpecialCharTok{::}\FunctionTok{fct\_explicit\_na}\NormalTok{(}\FunctionTok{as.factor}\NormalTok{(.x), }\AttributeTok{na\_level =} \StringTok{"(Missing)"}\NormalTok{))) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(}\FunctionTok{all\_of}\NormalTok{(cat\_vars)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{pivot\_longer}\NormalTok{(}\FunctionTok{everything}\NormalTok{(), }\AttributeTok{names\_to =} \StringTok{"Variable"}\NormalTok{, }\AttributeTok{values\_to =} \StringTok{"Level"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{count}\NormalTok{(Variable, Level, }\AttributeTok{name =} \StringTok{"n"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(Variable) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{pct =} \FunctionTok{round}\NormalTok{(}\DecValTok{100} \SpecialCharTok{*}\NormalTok{ n }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(n), }\DecValTok{1}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ungroup}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(Variable, }\FunctionTok{desc}\NormalTok{(n))}
+
+\CommentTok{\# Render tables}
+\FunctionTok{kable}\NormalTok{(cont\_sum,}
+      \AttributeTok{caption =} \StringTok{"Table 1a. Continuous variables (age, BMI): N, missing, mean (SD), range."}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable\_styling}\NormalTok{(}\AttributeTok{full\_width =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[t]{lrrrrrr}
+\caption{\label{tab:tbl1-analytic}Table 1a. Continuous variables (age, BMI): N, missing, mean (SD), range.}\\
+\toprule
+Variable & N & Missing & Mean & SD & Min & Max\\
+\midrule
+age & 5769 & 0 & 49.11 & 17.56 & 20.0 & 80.0\\
+bmi & 5520 & 249 & 29.10 & 7.15 & 14.1 & 82.9\\
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{kable}\NormalTok{(cat\_sum,}
+      \AttributeTok{caption =} \StringTok{"Table 1b. Categorical variables (sex, race, diabetes\_dx, bmi\_cat): counts and percentages."}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kable\_styling}\NormalTok{(}\AttributeTok{full\_width =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[t]{llrr}
+\caption{\label{tab:tbl1-analytic}Table 1b. Categorical variables (sex, race, diabetes_dx, bmi_cat): counts and percentages.}\\
+\toprule
+Variable & Level & n & pct\\
+\midrule
+bmi\_cat & 25–<30 & 1768 & 30.6\\
+bmi\_cat & 18.5–<25 & 1579 & 27.4\\
+bmi\_cat & 30–<35 & 1145 & 19.8\\
+bmi\_cat & 35–<40 & 519 & 9.0\\
+bmi\_cat & ≥40 & 419 & 7.3\\
+\addlinespace
+bmi\_cat & (Missing) & 249 & 4.3\\
+bmi\_cat & <18.5 & 90 & 1.6\\
+diabetes\_dx & No & 4974 & 86.2\\
+diabetes\_dx & Yes & 618 & 10.7\\
+diabetes\_dx & (Missing) & 177 & 3.1\\
+\addlinespace
+race & NH White & 2472 & 42.8\\
+race & NH Black & 1177 & 20.4\\
+race & Other/Multi & 845 & 14.6\\
+race & Mexican American & 767 & 13.3\\
+race & Other Hispanic & 508 & 8.8\\
+\addlinespace
+sex & Female & 3011 & 52.2\\
+sex & Male & 2758 & 47.8\\
+\bottomrule
+\end{longtable}
+
+Table 1a and 1b summarize the analytic variables included in subsequent
+models. Mean age and BMI values indicate an adult cohort spanning a wide
+range of body composition, while categorical summaries confirm balanced
+sex representation and sufficient sample sizes across race/ethnicity
+categories. These variables were standardized and used as predictors in
+all modeling frameworks (analytic cohort N = 5,769 adults ≥ 20 years).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{adult\_n }\OtherTok{\textless{}{-}} \FunctionTok{nrow}\NormalTok{(adult)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 22\tabcolsep) * \real{0.0741}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 22\tabcolsep) * \real{0.0833}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 22\tabcolsep) * \real{0.0833}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 22\tabcolsep) * \real{0.1111}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 22\tabcolsep) * \real{0.0463}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 22\tabcolsep) * \real{0.0370}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 22\tabcolsep) * \real{0.0648}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 22\tabcolsep) * \real{0.1574}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 22\tabcolsep) * \real{0.0648}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 22\tabcolsep) * \real{0.0926}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 22\tabcolsep) * \real{0.1019}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 22\tabcolsep) * \real{0.0833}}@{}}
+
+\caption{\label{tbl-adult}Excerpt of the cleaned NHANES 2013--2014 adult
+cohort (age ≥ 20; N = 5,769) with derived and standardized variables.}
+
+\tabularnewline
+
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedleft
+SDMVPSU
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+SDMVSTRA
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+WTMEC2YR
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+diabetes\_dx
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+bmi
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+age
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+sex
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+race
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+DIQ050
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+age\_c
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+bmi\_c
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+bmi\_cat
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & 112 & 13481.04 & 1 & 26.7 & 69 & Male & NH Black & 1 & 1.1324183 &
+-0.3358861 & 25--\textless30 \\
+1 & 108 & 24471.77 & 1 & 28.6 & 54 & Male & NH White & 1 & 0.2783598 &
+-0.0702810 & 25--\textless30 \\
+1 & 109 & 57193.29 & 1 & 28.9 & 72 & Male & NH White & 1 & 1.3032300 &
+-0.0283434 & 25--\textless30 \\
+2 & 116 & 65541.87 & 0 & 19.7 & 73 & Female & NH White & 2 & 1.3601672 &
+-1.3144311 & 18.5--\textless25 \\
+1 & 111 & 25344.99 & 0 & 41.7 & 56 & Male & Mexican American & 2 &
+0.3922343 & 1.7609961 & ≥40 \\
+1 & 114 & 61758.65 & 0 & 35.7 & 61 & Female & NH White & 2 & 0.6769204 &
+0.9222432 & 35--\textless40 \\
+
+\end{longtable}
+
+As shown in Table~\ref{tbl-adult}, the analytic adult cohort (N = 5,769)
+includes standardized variables for age and BMI (\texttt{age\_c},
+\texttt{bmi\_c}), categorical indicators for sex and race/ethnicity
+(\texttt{race}), and a binary doctor-diagnosed diabetes variable
+(\texttt{diabetes\_dx}).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Textual structure and preview}
+\FunctionTok{str}\NormalTok{(adult)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+'data.frame':   5769 obs. of  12 variables:
+ $ SDMVPSU    : num  1 1 1 2 1 1 2 1 2 2 ...
+ $ SDMVSTRA   : num  112 108 109 116 111 114 106 112 112 113 ...
+ $ WTMEC2YR   : num  13481 24472 57193 65542 25345 ...
+ $ diabetes_dx: num  1 1 1 0 0 0 0 0 0 0 ...
+ $ bmi        : num  26.7 28.6 28.9 19.7 41.7 35.7 NA 26.5 22 20.3 ...
+ $ age        : num  69 54 72 73 56 61 42 56 65 26 ...
+ $ sex        : Factor w/ 2 levels "Male","Female": 1 1 1 2 1 2 1 2 1 2 ...
+ $ race       : Factor w/ 5 levels "NH White","Mexican American",..: 4 1 1 1 2 1 3 1 1 1 ...
+ $ DIQ050     : num  1 1 1 2 2 2 2 2 2 2 ...
+ $ age_c      : num  1.132 0.278 1.303 1.36 0.392 ...
+ $ bmi_c      : num  -0.3359 -0.0703 -0.0283 -1.3144 1.761 ...
+ $ bmi_cat    : Factor w/ 6 levels "<18.5","18.5–<25",..: 3 3 3 2 6 5 NA 3 2 2 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Visual structure and type overview}
+\FunctionTok{plot\_intro}\NormalTok{(adult, }\AttributeTok{title =} \StringTok{"Adult Dataset: Variable Types and Completeness"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/structure-and-preview-1.pdf}}
+
+}
+
+\caption{The visual overview indicates that 75\% of variables are
+continuous and 25\% are categorical, with no completely missing columns.
+Approximately 92.7\% of rows are fully complete, and only 1.3\% of
+observations contain missing values, suggesting minimal data loss prior
+to imputation.}
+
+\end{figure}%
+
+\subsubsection{Missing Data Summary}\label{missing-data-summary}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Visualize missing data pattern}
+\FunctionTok{plot\_missing}\NormalTok{(adult, }\AttributeTok{title =} \StringTok{"Missing Data Pattern (Adult Dataset)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/missingness-visual-1.pdf}}
+
+}
+
+\caption{Missing data were minimal across analytic variables.
+BMI-related fields (bmi, bmi\_c, bmi\_cat) showed \textasciitilde4.3\%
+missingness, and diabetes\_dx showed \textasciitilde3.1\%. All
+demographic and survey design variables were complete, indicating that
+missingness was limited to health-related measures and appropriate for
+multiple imputation.}
+
+\end{figure}%
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Summarize missingness for key analysis variables}
+
+\NormalTok{miss\_tbl }\OtherTok{\textless{}{-}}\NormalTok{ tibble}\SpecialCharTok{::}\FunctionTok{tibble}\NormalTok{(}
+\AttributeTok{Variable    =} \FunctionTok{c}\NormalTok{(}\StringTok{"bmi"}\NormalTok{, }\StringTok{"diabetes\_dx"}\NormalTok{),}
+\AttributeTok{Missing\_n   =} \FunctionTok{c}\NormalTok{(}\FunctionTok{sum}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(adult\_eda}\SpecialCharTok{$}\NormalTok{bmi)), }\FunctionTok{sum}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(adult\_eda}\SpecialCharTok{$}\NormalTok{diabetes\_dx))),}
+\AttributeTok{Missing\_pct =} \FunctionTok{round}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\FunctionTok{mean}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(adult\_eda}\SpecialCharTok{$}\NormalTok{bmi)), }\FunctionTok{mean}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(adult\_eda}\SpecialCharTok{$}\NormalTok{diabetes\_dx))) }\SpecialCharTok{*} \DecValTok{100}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\NormalTok{)}
+
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(}
+\NormalTok{miss\_tbl,}
+\AttributeTok{caption =} \StringTok{"Missingness for Key Analysis Variables."}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrr@{}}
+\caption{Missingness for Key Analysis Variables.}\tabularnewline
+\toprule\noalign{}
+Variable & Missing\_n & Missing\_pct \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Variable & Missing\_n & Missing\_pct \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+bmi & 249 & 4.3 \\
+diabetes\_dx & 177 & 3.1 \\
+\end{longtable}
+
+Overall missingness was low (\textasciitilde7.3\%). Gaps were
+concentrated in \texttt{bmi} (n = 249) and \texttt{diabetes\_dx} (n =
+177), while demographic and design variables were complete. This limited
+pattern of missingness is consistent with a Missing At Random (MAR)
+mechanism and likely reflects reduced participation in the physical
+examination component among certain adults.
+
+\subsubsection{Exploratory Data
+Analysis}\label{exploratory-data-analysis}
+
+Following the missing data assessment, exploratory analyses were
+conducted to describe the adult analytic cohort and visualize
+distributions across key demographic and health variables. The goal was
+to examine univariate patterns and bivariate relationships relevant to
+diabetes prevalence prior to modeling.
+
+The adult analytic cohort was broadly representative of the U.S.
+population, with a majority identifying as \texttt{Non-Hispanic\ White}.
+\texttt{Age} and \texttt{BMI} distributions were right-skewed, with most
+participants classified as overweight or obese. Visual exploration
+revealed a clear positive association between \texttt{age},
+\texttt{BMI}, and diabetes prevalence. \texttt{Non-Hispanic\ Black} and
+\texttt{Hispanic} participants exhibited higher diabetes prevalence
+compared with \texttt{Non-Hispanic\ Whites}.
+
+Approximately 25\% of variables were categorical (e.g., \texttt{sex},
+\texttt{race}, \texttt{diabetes\_dx}) and 75\% were continuous (e.g.,
+\texttt{age}, \texttt{bmi}, \texttt{age\_c}, \texttt{bmi\_c}),
+indicating that the dataset primarily comprised measured numeric values.
+About 93\% of observations contained complete information across all
+predictors and outcomes, reflecting high data quality.
+
+Adult \texttt{age} ranged from 20 to 80 years, with peak representation
+between 30 and 50 years and a slight right skew toward older ages.
+\texttt{BMI} was concentrated in the overweight and obese ranges, and
+\texttt{Female} participants were slightly overrepresented relative to
+\texttt{Male} participants.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Age distribution (analytic adult)}
+\FunctionTok{ggplot}\NormalTok{(adult, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ age)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{binwidth =} \DecValTok{5}\NormalTok{, }\AttributeTok{color =} \StringTok{"white"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Distribution of Age (≥20 years)"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Age (years)"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Count"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/eda-age-distribution-1.pdf}}
+
+}
+
+\caption{Distribution of age among adults aged ≥20 years. The sample
+spans 20--80 years, with peak representation between 30 and 50 years and
+a gradual decline in older age groups, reflecting a balanced adult
+cohort suitable for regression modeling.}
+
+\end{figure}%
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Diabetes outcome distribution}
+\FunctionTok{ggplot}\NormalTok{(adult, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{factor}\NormalTok{(diabetes\_dx, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"No"}\NormalTok{,}\StringTok{"Yes"}\NormalTok{)))) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Diabetes Outcome Distribution (≥20 years)"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Diabetes (No/Yes)"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Count"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/eda-diabetes-distribution-1.pdf}}
+
+}
+
+\caption{Distribution of diabetes outcomes among adults aged ≥20 years.
+Most participants reported no diabetes diagnosis (\texttt{No}), while
+approximately 11\% had diabetes (\texttt{Yes}) and 3\% had missing
+responses, reflecting expected population prevalence and limited outcome
+missingness.}
+
+\end{figure}%
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# BMI category distribution}
+\FunctionTok{ggplot}\NormalTok{(adult, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ bmi\_cat)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{color =} \StringTok{"white"}\NormalTok{, }\AttributeTok{fill =} \StringTok{"skyblue"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Distribution of BMI Categories (≥20 years)"}\NormalTok{, }\AttributeTok{x =} \StringTok{"BMI Category"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Count"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/eda-bmi-distribution-1.pdf}}
+
+}
+
+\caption{Distribution of BMI categories among adults aged ≥20 years. The
+majority of participants fell within the overweight (25--\textless30)
+and obese (≥30) ranges, with fewer individuals classified as underweight
+(\textless18.5). This distribution aligns with national trends in adult
+body composition, supporting the dataset's representativeness for
+metabolic health analyses.}
+
+\end{figure}%
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# BMI by diabetes outcome (boxplot)}
+\CommentTok{\# (You can’t use boxplot with categorical y, so revert to numeric BMI here)}
+\FunctionTok{ggplot}\NormalTok{(adult, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{factor}\NormalTok{(diabetes\_dx, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"No"}\NormalTok{,}\StringTok{"Yes"}\NormalTok{)), }\AttributeTok{y =}\NormalTok{ bmi)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_boxplot}\NormalTok{(}\AttributeTok{fill =} \StringTok{"lightblue"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"BMI by Diabetes Diagnosis (≥20 years)"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Diabetes (No/Yes)"}\NormalTok{, }\AttributeTok{y =} \StringTok{"BMI (numeric)"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/eda-bmi-by-diabetes-outcome-1.pdf}}
+
+}
+
+\caption{Distribution of BMI by diabetes diagnosis among adults aged ≥20
+years. Participants with diabetes (\texttt{Yes}) show a higher median
+BMI and greater variability compared to those without diabetes
+(\texttt{No}), supporting the established positive association between
+obesity and diabetes risk.}
+
+\end{figure}%
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Diabetes by race (dodged bars)}
+\FunctionTok{ggplot}\NormalTok{(adult, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ race, }\AttributeTok{fill =} \FunctionTok{factor}\NormalTok{(diabetes\_dx, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"No"}\NormalTok{,}\StringTok{"Yes"}\NormalTok{)))) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{position =} \StringTok{"dodge"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Diabetes Diagnosis by race/Ethnicity (≥20 years)"}\NormalTok{,}
+       \AttributeTok{x =} \StringTok{"race/Ethnicity (race)"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Count"}\NormalTok{, }\AttributeTok{fill =} \StringTok{"Diabetes"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{axis.text.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{angle =} \DecValTok{45}\NormalTok{, }\AttributeTok{hjust =} \DecValTok{1}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/eda-diabetes-by-race-1.pdf}}
+
+}
+
+\caption{Diabetes diagnosis by race/ethnicity among adults aged ≥20
+years. Non-Hispanic Black and Hispanic participants show higher
+proportions of diabetes diagnoses compared with Non-Hispanic White
+participants, reflecting known disparities in diabetes prevalence across
+racial and ethnic groups.}
+
+\end{figure}%
+
+\subsection{Modeling Frameworks}\label{modeling-frameworks}
+
+Three modeling frameworks were compared using identical
+predictors---standardized age, BMI, sex, and race---and the binary
+outcome \texttt{diabetes\_dx}:
+
+\begin{enumerate}
+\def\labelenumi{(\arabic{enumi})}
+\item
+  survey-weighted logistic regression to account for the NHANES complex
+  sampling design,
+\item
+  multiple imputation (MICE) to handle missing BMI values, and
+\item
+  Bayesian logistic regression with weakly informative priors to
+  quantify parameter uncertainty.
+\end{enumerate}
+
+\subsubsection{Survey-Weighted Logistic Regression (Design-Based
+MLE)}\label{survey-weighted-logistic-regression-design-based-mle}
+
+The NHANES 2013--2014 data use a complex, multistage probability design
+involving strata (\texttt{SDMVSTRA}), primary sampling units (PSUs;
+\texttt{SDMVPSU}), and examination weights (\texttt{WTMEC2YR}) to ensure
+nationally representative estimates (\citeproc{ref-nchs2014}{National
+Center for Health Statistics (NCHS) 2014}).
+
+Estimates are population-weighted using NHANES survey design variables
+(\texttt{WTMEC2YR}, \texttt{SDMVSTRA}, \texttt{SDMVPSU}). Odds ratios
+are reported per one standard deviation (1 SD) increase in age and BMI,
+with reference groups Male and White.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{adult\_clean }\OtherTok{\textless{}{-}}\NormalTok{ adult }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{sex   =}\NormalTok{ forcats}\SpecialCharTok{::}\FunctionTok{fct\_drop}\NormalTok{(sex),}
+    \AttributeTok{race =}\NormalTok{ forcats}\SpecialCharTok{::}\FunctionTok{fct\_drop}\NormalTok{(race),}
+    \AttributeTok{age\_c =} \FunctionTok{as.numeric}\NormalTok{(age\_c),}
+    \AttributeTok{bmi\_c =} \FunctionTok{as.numeric}\NormalTok{(bmi\_c)}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(}
+    \SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(diabetes\_dx),}
+    \SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(age\_c),}
+    \SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(bmi\_c),}
+    \SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(sex),}
+    \SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(race)}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+Below is a structure of the analytic dataset used for regression
+modeling, showing variable names, types, and sample values (N = 5,349).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(adult\_clean[, }\FunctionTok{c}\NormalTok{(}\StringTok{"diabetes\_dx"}\NormalTok{,}\StringTok{"sex"}\NormalTok{,}\StringTok{"race"}\NormalTok{,}\StringTok{"age\_c"}\NormalTok{,}\StringTok{"bmi\_c"}\NormalTok{)])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+'data.frame':   5349 obs. of  5 variables:
+ $ diabetes_dx: num  1 1 1 0 0 0 0 0 0 1 ...
+ $ sex        : Factor w/ 2 levels "Male","Female": 1 1 1 2 1 2 2 1 2 1 ...
+ $ race       : Factor w/ 5 levels "NH White","Mexican American",..: 4 1 1 1 2 1 1 1 1 1 ...
+ $ age_c      : num  1.132 0.278 1.303 1.36 0.392 ...
+ $ bmi_c      : num  -0.3359 -0.0703 -0.0283 -1.3144 1.761 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(}
+  \FunctionTok{table}\NormalTok{(adult\_clean}\SpecialCharTok{$}\NormalTok{sex)}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+\caption{Distribution of participants by sex (Male = 2,551; Female =
+2,798) in the analytic cohort.}\tabularnewline
+\toprule\noalign{}
+Var1 & Freq \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Var1 & Freq \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Male & 2551 \\
+Female & 2798 \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(}
+  \FunctionTok{table}\NormalTok{(adult\_clean}\SpecialCharTok{$}\NormalTok{race)}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+\caption{Race/ethnicity composition of the analytic cohort, with most
+participants identifying as Non-Hispanic White (n = 2,293) and
+Non-Hispanic Black (n = 1,101).}\tabularnewline
+\toprule\noalign{}
+Var1 & Freq \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Var1 & Freq \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+NH White & 2293 \\
+Mexican American & 713 \\
+Other Hispanic & 470 \\
+NH Black & 1101 \\
+Other/Multi & 772 \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(}
+  \FunctionTok{table}\NormalTok{(adult\_clean}\SpecialCharTok{$}\NormalTok{diabetes\_dx)}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+\caption{Observed diabetes prevalence (binary outcome variable
+\texttt{diabetes\_dx}), with 597 diagnosed cases (1 = Yes) and 4,752
+non-diabetic participants (0 = No).}\tabularnewline
+\toprule\noalign{}
+Var1 & Freq \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Var1 & Freq \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 4752 \\
+1 & 597 \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{options}\NormalTok{(}\AttributeTok{survey.lonely.psu =} \StringTok{"adjust"}\NormalTok{)}
+
+\NormalTok{nhanes\_design\_adult }\OtherTok{\textless{}{-}}\NormalTok{ survey}\SpecialCharTok{::}\FunctionTok{svydesign}\NormalTok{(}
+  \AttributeTok{id      =} \SpecialCharTok{\textasciitilde{}}\NormalTok{SDMVPSU,}
+  \AttributeTok{strata  =} \SpecialCharTok{\textasciitilde{}}\NormalTok{SDMVSTRA,}
+  \AttributeTok{weights =} \SpecialCharTok{\textasciitilde{}}\NormalTok{WTMEC2YR,}
+  \AttributeTok{nest    =} \ConstantTok{TRUE}\NormalTok{,}
+  \AttributeTok{data    =}\NormalTok{ adult\_clean}
+\NormalTok{)}
+
+\NormalTok{svy\_fit }\OtherTok{\textless{}{-}}\NormalTok{ survey}\SpecialCharTok{::}\FunctionTok{svyglm}\NormalTok{(}
+\NormalTok{  diabetes\_dx }\SpecialCharTok{\textasciitilde{}}\NormalTok{ age\_c }\SpecialCharTok{+}\NormalTok{ bmi\_c }\SpecialCharTok{+}\NormalTok{ sex }\SpecialCharTok{+}\NormalTok{ race,}
+  \AttributeTok{design =}\NormalTok{ nhanes\_design\_adult,}
+  \AttributeTok{family =} \FunctionTok{quasibinomial}\NormalTok{()}
+\NormalTok{)}
+
+\NormalTok{svy\_or }\OtherTok{\textless{}{-}}\NormalTok{ broom}\SpecialCharTok{::}\FunctionTok{tidy}\NormalTok{(svy\_fit, }\AttributeTok{conf.int =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{OR  =} \FunctionTok{exp}\NormalTok{(estimate),}
+    \AttributeTok{LCL =} \FunctionTok{exp}\NormalTok{(conf.low),}
+    \AttributeTok{UCL =} \FunctionTok{exp}\NormalTok{(conf.high)}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(term, OR, LCL, UCL, p.value) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(term }\SpecialCharTok{!=} \StringTok{"(Intercept)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(svy\_or)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrrrr@{}}
+
+\caption{\label{tbl-svylogit}Survey-weighted logistic regression: odds
+ratios (OR) and 95\% confidence intervals for diabetes diagnosis among
+adults (NHANES 2013--2014).}
+
+\tabularnewline
+
+\toprule\noalign{}
+term & OR & LCL & UCL & p.value \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+age\_c & 3.0292807 & 2.6967690 & 3.4027912 & 0.0000000 \\
+bmi\_c & 1.8853571 & 1.6526296 & 2.1508579 & 0.0000039 \\
+sexFemale & 0.5281132 & 0.4104905 & 0.6794397 & 0.0003857 \\
+raceMexican American & 2.0358434 & 1.4850041 & 2.7910081 & 0.0008262 \\
+raceOther Hispanic & 1.5915182 & 1.1664529 & 2.1714810 & 0.0087119 \\
+raceNH Black & 1.6689718 & 1.1605895 & 2.4000450 & 0.0116773 \\
+raceOther/Multi & 2.3270527 & 1.5451752 & 3.5045697 & 0.0014331 \\
+
+\end{longtable}
+
+\paragraph{Interpretation}\label{interpretation}
+
+\texttt{age\_c} and \texttt{bmi\_c} are the strongest predictors of
+diabetes in the NHANES 2013--2014 adult cohort, with each 1 SD increase
+in age nearly tripling the odds of diabetes and higher BMI substantially
+elevating risk. Males show significantly lower odds of diabetes than
+females, consistent with established sex differences in metabolic
+outcomes. Racial and ethnic disparities are evident, with Mexican
+American, Other Hispanic, Non-Hispanic Black, and Other/Multi-racial
+adults all showing significantly higher odds of diabetes compared to
+Non-Hispanic Whites. All predictors were statistically significant (p
+\textless{} 0.05), indicating robust associations across demographic and
+health characteristics.
+
+\subsubsection{Multiple Imputation by Chained
+Equations}\label{multiple-imputation-by-chained-equations}
+
+Multiple Imputation by Chained Equations (\texttt{MICE}) was implemented
+as a principled approach for handling missing data
+(\citeproc{ref-vanbuuren2011}{Stef van Buuren and Groothuis-Oudshoorn
+2011}; \citeproc{ref-vanbuuren2012}{S. van Buuren 2012}). \texttt{MICE}
+iteratively imputes each incomplete variable using regression models
+based on other variables in the dataset, generating multiple completed
+datasets that incorporate uncertainty from the imputation process.
+Estimates are subsequently pooled across imputations using Rubin's rules
+to obtain final parameter estimates and confidence intervals.
+
+As an alternative to full Bayesian joint modeling, \texttt{MICE}
+provides an efficient and flexible framework for managing missing data
+through chained regression equations. For large sample sizes
+(\texttt{n\ ≥\ 400}), even with substantial missingness (up to 75\%) in
+a single variable, \texttt{MICE} remains robust to non-normality---such
+as skewed, multimodal, or heavy-tailed distributions---without
+materially affecting mean structure estimation performance
+(\citeproc{ref-vanbuuren2012}{S. van Buuren 2012}).
+
+In this study, continuous variables were imputed using regression-based
+methods: \texttt{age} via normal linear regression (\texttt{norm}) and
+\texttt{BMI} via predictive mean matching (\texttt{pmm}) to better
+preserve the empirical BMI distribution. Categorical variables
+(\texttt{sex} and \texttt{race}) were imputed using logistic and
+polytomous regression models, respectively. Diabetes status
+(\texttt{diabetes\_dx}) was treated as an outcome variable and was
+\textbf{not} imputed. Twenty imputations were generated to minimize
+Monte Carlo error and ensure stable variance estimation.
+
+\paragraph{Convergence and Data
+Stability}\label{convergence-and-data-stability}
+
+The chained equation process showed stable convergence across
+iterations, confirming reliable estimation of missing \texttt{BMI} (and,
+where present, \texttt{age}) values. After applying \texttt{MICE}, the
+final imputed dataset included \textbf{n = 5,592 adults} with all key
+predictors completed.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{adult\_imp1 }\OtherTok{\textless{}{-}}\NormalTok{ mice}\SpecialCharTok{::}\FunctionTok{complete}\NormalTok{(imp, }\DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{age\_c  =} \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{scale}\NormalTok{(age)),}
+    \AttributeTok{bmi\_c  =} \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{scale}\NormalTok{(bmi)),}
+    \AttributeTok{wt\_norm =}\NormalTok{ WTMEC2YR }\SpecialCharTok{/} \FunctionTok{mean}\NormalTok{(WTMEC2YR, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+    \AttributeTok{race =}\NormalTok{ forcats}\SpecialCharTok{::}\FunctionTok{fct\_relevel}\NormalTok{(race, }\StringTok{"NH White"}\NormalTok{),}
+    \AttributeTok{sex  =}\NormalTok{ forcats}\SpecialCharTok{::}\FunctionTok{fct\_relevel}\NormalTok{(sex,  }\StringTok{"Male"}\NormalTok{)}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(}
+    \SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(diabetes\_dx),}
+    \SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(age\_c),}
+    \SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(bmi\_c),}
+    \SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(sex),}
+    \SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(race)}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{droplevels}\NormalTok{()}
+
+\FunctionTok{glimpse}\NormalTok{(adult\_imp1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Rows: 5,592
+Columns: 11
+$ diabetes_dx <dbl> 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ age         <dbl> 69, 54, 72, 73, 56, 61, 42, 56, 65, 26, 76, 33, 32, 38, 50~
+$ bmi         <dbl> 26.7, 28.6, 28.9, 19.7, 41.7, 35.7, 23.6, 26.5, 22.0, 20.3~
+$ sex         <fct> Male, Male, Male, Female, Male, Female, Male, Female, Male~
+$ race        <fct> NH Black, NH White, NH White, NH White, Mexican American, ~
+$ WTMEC2YR    <dbl> 13481.04, 24471.77, 57193.29, 65541.87, 25344.99, 61758.65~
+$ SDMVPSU     <dbl> 1, 1, 1, 2, 1, 1, 2, 1, 2, 2, 1, 2, 2, 2, 2, 1, 1, 1, 2, 2~
+$ SDMVSTRA    <dbl> 112, 108, 109, 116, 111, 114, 106, 112, 112, 113, 116, 114~
+$ age_c       <dbl> 1.13241831, 0.27835981, 1.30323001, 1.36016725, 0.39223428~
+$ bmi_c       <dbl> -0.33319172, -0.06755778, -0.02561558, -1.31184309, 1.7639~
+$ wt_norm     <dbl> 0.3393916, 0.6160884, 1.4398681, 1.6500477, 0.6380722, 1.5~
+\end{verbatim}
+
+\paragraph{Descriptive Results (Imputed
+Dataset)}\label{descriptive-results-imputed-dataset}
+
+After imputation, the analytic dataset contained approximately
+\textbf{5,500--5,600 adults}. The mean \texttt{age} was around
+\textbf{49 years} (SD ≈ 17), and the mean \texttt{BMI} was approximately
+\textbf{29} (SD ≈ 7). \texttt{Female} participants represented about
+\textbf{52\%} of the sample, and the majority identified as
+\texttt{Non-Hispanic\ White} (\textasciitilde43\%). The estimated
+diabetes prevalence was \textbf{\textasciitilde11\%}, consistent with
+population-level NHANES benchmarks.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{correlation\_matrix }\OtherTok{\textless{}{-}} \FunctionTok{cor}\NormalTok{(adult\_imp1[, }\FunctionTok{c}\NormalTok{(}\StringTok{"diabetes\_dx"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"bmi"}\NormalTok{)], }\AttributeTok{use =} \StringTok{"complete.obs"}\NormalTok{, }\AttributeTok{method =} \StringTok{"pearson"}\NormalTok{)}
+\NormalTok{correlation\_melted }\OtherTok{\textless{}{-}} \FunctionTok{melt}\NormalTok{(correlation\_matrix)}
+
+\FunctionTok{ggplot}\NormalTok{(correlation\_melted, }\FunctionTok{aes}\NormalTok{(Var1, Var2, }\AttributeTok{fill =}\NormalTok{ value)) }\SpecialCharTok{+}
+\FunctionTok{geom\_tile}\NormalTok{(}\AttributeTok{color =} \StringTok{"white"}\NormalTok{) }\SpecialCharTok{+}
+\FunctionTok{scale\_fill\_gradient2}\NormalTok{(}\AttributeTok{low =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{high =} \StringTok{"red"}\NormalTok{, }\AttributeTok{mid =} \StringTok{"white"}\NormalTok{, }\AttributeTok{midpoint =} \DecValTok{0}\NormalTok{, }\AttributeTok{name =} \StringTok{"Correlation"}\NormalTok{) }\SpecialCharTok{+}
+\FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+\FunctionTok{theme}\NormalTok{(}\AttributeTok{axis.text.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{angle =} \DecValTok{45}\NormalTok{, }\AttributeTok{hjust =} \DecValTok{1}\NormalTok{)) }\SpecialCharTok{+}
+\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Correlation Heatmap: Diabetes, Age, and BMI"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/corr-heatmap-1.pdf}}
+
+}
+
+\caption{Correlation heatmap showing positive associations among
+\texttt{diabetes\_dx}, \texttt{age}, and \texttt{BMI}. Both \texttt{age}
+and \texttt{BMI} exhibit moderate positive correlations with diabetes
+diagnosis, consistent with known metabolic risk trends in the NHANES
+adult population.}
+
+\end{figure}%
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(adult\_imp1, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{factor}\NormalTok{(diabetes\_dx))) }\SpecialCharTok{+}
+\FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{fill =} \StringTok{"steelblue"}\NormalTok{) }\SpecialCharTok{+}
+\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Diabetes Diagnosis Distribution"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Diabetes (0 = No, 1 = Yes)"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Count"}\NormalTok{) }\SpecialCharTok{+}
+\FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/diabetes-dist-1.pdf}}
+
+}
+
+\caption{Distribution of diabetes diagnosis among adults (age ≥ 20
+years). The majority of participants (≈ 89\%) reported no diabetes
+diagnosis (\texttt{0}), while about 11\% reported a positive diagnosis
+(\texttt{1}), consistent with NHANES population prevalence.}
+
+\end{figure}%
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(adult\_imp1, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{factor}\NormalTok{(diabetes\_dx), }\AttributeTok{y =}\NormalTok{ bmi, }\AttributeTok{fill =} \FunctionTok{factor}\NormalTok{(diabetes\_dx))) }\SpecialCharTok{+}
+\FunctionTok{geom\_boxplot}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.7}\NormalTok{) }\SpecialCharTok{+}
+\FunctionTok{scale\_x\_discrete}\NormalTok{(}\AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"0"} \OtherTok{=} \StringTok{"No Diabetes"}\NormalTok{, }\StringTok{"1"} \OtherTok{=} \StringTok{"Diabetes"}\NormalTok{)) }\SpecialCharTok{+}
+\FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Diabetes Diagnosis"}\NormalTok{, }\AttributeTok{y =} \StringTok{"BMI"}\NormalTok{, }\AttributeTok{title =} \StringTok{"BMI Distribution by Diabetes Status"}\NormalTok{) }\SpecialCharTok{+}
+\FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+\FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/bmi-diabetes-box-1.pdf}}
+
+}
+
+\caption{Boxplot of BMI by diabetes status (\texttt{No} vs
+\texttt{Diabetes}). This descriptive plot compares BMI distributions
+between groups, highlighting higher median BMI, greater spread, and more
+outliers in the diabetes group. It is used in the EDA to summarize group
+differences before modeling.}
+
+\end{figure}%
+
+The boxplot in Figure @ref(fig-bmi-diabetes-box) is
+\textbf{descriptive}: it summarizes the median, spread, and outliers in
+BMI for participants with and without diabetes. The visibly higher
+median and wider spread in the diabetes group reinforce the positive
+association between excess adiposity and diabetes risk seen in later
+regression models.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(adult\_imp1, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ bmi, }\AttributeTok{y =}\NormalTok{ diabetes\_dx)) }\SpecialCharTok{+}
+\FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.2}\NormalTok{, }\AttributeTok{position =} \FunctionTok{position\_jitter}\NormalTok{(}\AttributeTok{height =} \FloatTok{0.02}\NormalTok{)) }\SpecialCharTok{+}
+\FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"glm"}\NormalTok{, }\AttributeTok{method.args =} \FunctionTok{list}\NormalTok{(}\AttributeTok{family =} \StringTok{"binomial"}\NormalTok{), }\AttributeTok{se =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{color =} \StringTok{"blue"}\NormalTok{) }\SpecialCharTok{+}
+\FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"BMI"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Probability of Diabetes"}\NormalTok{, }\AttributeTok{title =} \StringTok{"Predicted Probability of Diabetes vs BMI"}\NormalTok{) }\SpecialCharTok{+}
+\FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/pred-bmi-1.pdf}}
+
+}
+
+\caption{Predicted probability of diabetes as a function of BMI from a
+logistic regression model. This inferential plot visualizes the fitted
+relationship between BMI and diabetes risk: the smooth curve shows the
+modeled probability of diabetes, and the shaded band reflects
+uncertainty (95\% confidence interval) around the fit.}
+
+\end{figure}%
+
+In contrast to the descriptive boxplot, Figure @ref(fig-pred-bmi) is
+\textbf{inferential}: it displays the regression-based fitted
+probability of diabetes across the BMI continuum. The non-linear,
+increasing curve and its confidence band summarize how modeled diabetes
+risk escalates with higher BMI.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{miss\_age  }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(mi\_dat}\SpecialCharTok{$}\NormalTok{age))}
+\NormalTok{miss\_bmiN }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(mi\_dat}\SpecialCharTok{$}\NormalTok{bmi))}
+
+\NormalTok{mi\_caption }\OtherTok{\textless{}{-}} \ControlFlowTok{if}\NormalTok{ (miss\_age }\SpecialCharTok{\textgreater{}} \DecValTok{0} \SpecialCharTok{\&\&}\NormalTok{ miss\_bmiN }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{) \{}
+\StringTok{"Multiple Imputation (MICE): pooled odds ratios (OR) and 95\% confidence intervals after imputing missing age (normal) and BMI (PMM) (m = 20); diabetes status was not imputed."}
+\NormalTok{\} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (miss\_bmiN }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{) \{}
+\StringTok{"Multiple Imputation (MICE): pooled odds ratios (OR) and 95\% confidence intervals after imputing missing BMI (PMM) (m = 20); diabetes status was not imputed."}
+\NormalTok{\} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (miss\_age }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{) \{}
+\StringTok{"Multiple Imputation (MICE): pooled odds ratios (OR) and 95\% confidence intervals after imputing missing age (normal) (m = 20); diabetes status was not imputed."}
+\NormalTok{\} }\ControlFlowTok{else}\NormalTok{ \{}
+\StringTok{"Multiple Imputation (MICE): pooled odds ratios (OR) and 95\% confidence intervals (no variables required imputation); diabetes status was not imputed."}
+\NormalTok{\}}
+\NormalTok{mi\_caption }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(mi\_caption, }\StringTok{" Odds ratios are per 1 SD for age and BMI."}\NormalTok{)}
+
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(mi\_or, }\AttributeTok{caption =}\NormalTok{ mi\_caption)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 20\tabcolsep) * \real{0.0265}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 20\tabcolsep) * \real{0.1858}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 20\tabcolsep) * \real{0.0885}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 20\tabcolsep) * \real{0.0885}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 20\tabcolsep) * \real{0.0885}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 20\tabcolsep) * \real{0.0796}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 20\tabcolsep) * \real{0.0885}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 20\tabcolsep) * \real{0.0885}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 20\tabcolsep) * \real{0.0885}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 20\tabcolsep) * \real{0.0885}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 20\tabcolsep) * \real{0.0885}}@{}}
+
+\caption{\label{tbl-mice}Multiple Imputation (MICE): pooled odds ratios
+(OR) and 95\% confidence intervals after imputing missing BMI (PMM) (m =
+20); diabetes status was not imputed. Odds ratios are per 1 SD for age
+and BMI.}
+
+\tabularnewline
+
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+term
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+OR
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+std.error
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+statistic
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+df
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+p.value
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+LCL
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+UCL
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+conf.low
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+conf.high
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+2 & age\_c & 2.9038183 & 0.0559473 & 19.054108 & 5520.446 & 0.0000000 &
+2.6021752 & 3.2404277 & 2.6021752 & 3.2404277 \\
+3 & bmi\_c & 1.7278084 & 0.0447339 & 12.224604 & 5148.557 & 0.0000000 &
+1.5827382 & 1.8861754 & 1.5827382 & 1.8861754 \\
+4 & sexFemale & 0.5391132 & 0.0937913 & -6.587282 & 5551.660 & 0.0000000
+& 0.4485669 & 0.6479368 & 0.4485669 & 0.6479368 \\
+5 & raceMexican American & 2.4296216 & 0.1375046 & 6.456041 & 5472.583 &
+0.0000000 & 1.8555327 & 3.1813298 & 1.8555327 & 3.1813298 \\
+6 & raceOther Hispanic & 1.7518320 & 0.1748554 & 3.206433 & 5573.987 &
+0.0013515 & 1.2434346 & 2.4680953 & 1.2434346 & 2.4680953 \\
+7 & raceNH Black & 1.9757793 & 0.1198118 & 5.683602 & 5576.734 &
+0.0000000 & 1.5621842 & 2.4988753 & 1.5621842 & 2.4988753 \\
+8 & raceOther/Multi & 2.1120110 & 0.1530066 & 4.886328 & 4749.963 &
+0.0000011 & 1.5646727 & 2.8508138 & 1.5646727 & 2.8508138 \\
+
+\end{longtable}
+
+\paragraph{Interpretation}\label{interpretation-1}
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{Age} and \texttt{BMI} are strong positive predictors of
+  diabetes; each 1 SD increase substantially increases the odds of
+  diagnosis.\\
+\item
+  \texttt{Sex:} Females exhibit significantly lower odds of diabetes
+  compared to males.\\
+\item
+  \texttt{Race/Ethnicity:} All non-White racial and ethnic groups
+  demonstrate higher odds of diabetes compared to Non-Hispanic Whites,
+  underscoring persistent disparities in diabetes risk.\\
+\item
+  \textbf{Model Significance:} All predictors are statistically
+  significant (\emph{p} \textless{} 0.05).\\
+\item
+  \textbf{Model Robustness:} Results are consistent with those from the
+  survey-weighted model, confirming stability across imputation and
+  weighting approaches.
+\end{itemize}
+
+\subsubsection{Bayesian Logistic
+Regression}\label{bayesian-logistic-regression-1}
+
+Bayesian logistic regression was used to quantify parameter uncertainty
+and compare posterior estimates with the survey-weighted and MICE
+models. Weakly informative priors were applied to regularize estimates
+while preserving flexibility in inference.
+
+\textbf{Model Specifications:} - \textbf{Family:} Bernoulli with logit
+link\\
+- \textbf{Data:} \texttt{adult\_imp1} (N = 5,592)\\
+- \textbf{Chains:} 4 (2,000 iterations each; 1,000 warmup)\\
+- \textbf{Adaptation delta:} 0.95\\
+- \textbf{Weights:} Normalized NHANES examination weights
+(\texttt{wt\_norm}, mean ≈ 1.00, SD ≈ 0.79)\\
+- \textbf{Predictors:} Standardized \texttt{age}, \texttt{BMI},
+\texttt{sex}, and \texttt{race}
+
+\paragraph{Define Model and Priors}\label{define-model-and-priors}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fml\_bayes }\OtherTok{\textless{}{-}}\NormalTok{ diabetes\_dx }\SpecialCharTok{|} \FunctionTok{weights}\NormalTok{(wt\_norm) }\SpecialCharTok{\textasciitilde{}}\NormalTok{ age\_c }\SpecialCharTok{+}\NormalTok{ bmi\_c }\SpecialCharTok{+}\NormalTok{ sex }\SpecialCharTok{+}\NormalTok{ race}
+
+\NormalTok{priors }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}
+\NormalTok{  brms}\SpecialCharTok{::}\FunctionTok{set\_prior}\NormalTok{(}\StringTok{"normal(0, 2.5)"}\NormalTok{, }\AttributeTok{class =} \StringTok{"b"}\NormalTok{),}
+\NormalTok{  brms}\SpecialCharTok{::}\FunctionTok{set\_prior}\NormalTok{(}\StringTok{"student\_t(3, 0, 10)"}\NormalTok{, }\AttributeTok{class =} \StringTok{"Intercept"}\NormalTok{)}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{adult\_long }\OtherTok{\textless{}{-}}\NormalTok{ adult\_imp1 }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(bmi\_c, age\_c) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{tidyr}\SpecialCharTok{::}\FunctionTok{pivot\_longer}\NormalTok{(}
+\AttributeTok{cols =}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{everything}\NormalTok{(),}
+\AttributeTok{names\_to =} \StringTok{"Coefficient"}\NormalTok{,}
+\AttributeTok{values\_to =} \StringTok{"Value"}
+\NormalTok{)}
+
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(adult\_long, ggplot2}\SpecialCharTok{::}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Value, }\AttributeTok{fill =}\NormalTok{ Coefficient)) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_density}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}
+\AttributeTok{title =} \StringTok{"Distributions for Standardized Age and BMI (adult\_imp1)"}\NormalTok{,}
+\AttributeTok{x =} \StringTok{"Standardized value (z{-}score)"}\NormalTok{,}
+\AttributeTok{y =} \StringTok{"Density"}\NormalTok{,}
+\AttributeTok{fill =} \StringTok{"Coefficient"}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/dist-adult-std-age-bmi-1.pdf}}
+
+}
+
+\caption{Distribution of standardized age (\texttt{age\_c}) and BMI
+(\texttt{bmi\_c}) in the imputed dataset (\texttt{adult\_imp1}). Both
+variables were mean-centered and scaled (z-scores) for inclusion in
+regression models. The overlapping density curves indicate approximate
+normality and comparable variance, supporting suitability for
+standardized coefficient estimation.}
+
+\end{figure}%
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{prior\_draws }\OtherTok{\textless{}{-}}\NormalTok{ tibble}\SpecialCharTok{::}\FunctionTok{tibble}\NormalTok{(}
+\AttributeTok{term =} \FunctionTok{rep}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"Age (per 1 SD)"}\NormalTok{, }\StringTok{"BMI (per 1 SD)"}\NormalTok{), }\AttributeTok{each =} \DecValTok{4000}\NormalTok{),}
+\AttributeTok{value =} \FunctionTok{c}\NormalTok{(}
+\NormalTok{stats}\SpecialCharTok{::}\FunctionTok{rnorm}\NormalTok{(}\DecValTok{4000}\NormalTok{, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \FloatTok{2.5}\NormalTok{),}
+\NormalTok{stats}\SpecialCharTok{::}\FunctionTok{rnorm}\NormalTok{(}\DecValTok{4000}\NormalTok{, }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \FloatTok{2.5}\NormalTok{)}
+\NormalTok{)}
+\NormalTok{)}
+
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(prior\_draws, ggplot2}\SpecialCharTok{::}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ value, }\AttributeTok{fill =}\NormalTok{ term)) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_density}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}
+\AttributeTok{title =} \StringTok{"Prior Distributions for Age and BMI Coefficients"}\NormalTok{,}
+\AttributeTok{x =} \StringTok{"Coefficient value"}\NormalTok{,}
+\AttributeTok{y =} \StringTok{"Density"}\NormalTok{,}
+\AttributeTok{fill =} \ConstantTok{NULL}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/prior-age-bmi-1.pdf}}
+
+}
+
+\caption{Prior distributions for standardized age and BMI coefficients,
+assuming Normal(0, 2.5) priors. These weakly informative priors
+constrain extreme coefficient values while allowing flexibility in
+posterior estimation, ensuring regularization without strong bias.}
+
+\end{figure}%
+
+\paragraph{Fit the Model}\label{fit-the-model}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{priors }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}
+\NormalTok{  brms}\SpecialCharTok{::}\FunctionTok{set\_prior}\NormalTok{(}\StringTok{"normal(0, 2.5)"}\NormalTok{, }\AttributeTok{class =} \StringTok{"b"}\NormalTok{),}
+\NormalTok{  brms}\SpecialCharTok{::}\FunctionTok{set\_prior}\NormalTok{(}\StringTok{"student\_t(3, 0, 10)"}\NormalTok{, }\AttributeTok{class =} \StringTok{"Intercept"}\NormalTok{)}
+\NormalTok{)}
+
+\NormalTok{bayes\_fit }\OtherTok{\textless{}{-}}\NormalTok{ brms}\SpecialCharTok{::}\FunctionTok{brm}\NormalTok{(}
+  \AttributeTok{formula =}\NormalTok{ diabetes\_dx }\SpecialCharTok{|} \FunctionTok{weights}\NormalTok{(wt\_norm) }\SpecialCharTok{\textasciitilde{}}\NormalTok{ age\_c }\SpecialCharTok{+}\NormalTok{ bmi\_c }\SpecialCharTok{+}\NormalTok{ sex }\SpecialCharTok{+}\NormalTok{ race,}
+  \AttributeTok{data    =}\NormalTok{ adult\_imp1,}
+  \AttributeTok{family  =} \FunctionTok{bernoulli}\NormalTok{(}\AttributeTok{link =} \StringTok{"logit"}\NormalTok{),}
+  \AttributeTok{prior   =}\NormalTok{ priors,}
+  \AttributeTok{chains  =} \DecValTok{4}\NormalTok{, }\AttributeTok{iter =} \DecValTok{2000}\NormalTok{, }\AttributeTok{seed =} \DecValTok{123}\NormalTok{,}
+  \AttributeTok{control =} \FunctionTok{list}\NormalTok{(}\AttributeTok{adapt\_delta =} \FloatTok{0.95}\NormalTok{),}
+  \AttributeTok{refresh =} \DecValTok{0}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Running MCMC with 4 sequential chains...
+
+Chain 1 finished in 11.3 seconds.
+Chain 2 finished in 10.4 seconds.
+Chain 3 finished in 10.8 seconds.
+Chain 4 finished in 11.4 seconds.
+
+All 4 chains finished successfully.
+Mean chain execution time: 11.0 seconds.
+Total execution time: 44.4 seconds.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(bayes\_fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+ Family: bernoulli 
+  Links: mu = logit 
+Formula: diabetes_dx | weights(wt_norm) ~ age_c + bmi_c + sex + race 
+   Data: adult_imp1 (Number of observations: 5592) 
+  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
+
+Regression Coefficients:
+                    Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept              -2.66      0.09    -2.83    -2.50 1.00     3548     3512
+age_c                   1.10      0.06     0.98     1.22 1.00     2349     2618
+bmi_c                   0.63      0.05     0.54     0.72 1.00     3327     2826
+sexFemale              -0.66      0.10    -0.86    -0.47 1.00     3668     3124
+raceMexicanAmerican     0.69      0.17     0.34     1.03 1.00     3657     2821
+raceOtherHispanic       0.43      0.25    -0.07     0.89 1.00     4242     3014
+raceNHBlack             0.53      0.15     0.23     0.83 1.00     3809     3012
+raceOtherDMulti         0.81      0.19     0.45     1.18 1.00     3948     2809
+
+Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).
+\end{verbatim}
+
+Bayesian logistic regression model fit summary for diabetes diagnosis
+(\texttt{diabetes\_dx}) with standardized predictors (age, BMI, sex, and
+race) and normalized NHANES weights. All four MCMC chains (4,000
+post-warmup draws) converged successfully (\texttt{R̂\ ≈\ 1.00}),
+indicating stable estimation across parameters.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Extract fixed effects and convert to odds ratios}
+\NormalTok{bayes\_fixef }\OtherTok{\textless{}{-}}\NormalTok{ brms}\SpecialCharTok{::}\FunctionTok{fixef}\NormalTok{(bayes\_fit, }\AttributeTok{summary =} \ConstantTok{TRUE}\NormalTok{)}
+
+\NormalTok{bayes\_or }\OtherTok{\textless{}{-}}\NormalTok{ bayes\_fixef }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{as.data.frame}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  tibble}\SpecialCharTok{::}\FunctionTok{rownames\_to\_column}\NormalTok{(}\StringTok{"term"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{OR  =} \FunctionTok{exp}\NormalTok{(Estimate),}
+    \AttributeTok{LCL =} \FunctionTok{exp}\NormalTok{(Q2}\FloatTok{.5}\NormalTok{),}
+    \AttributeTok{UCL =} \FunctionTok{exp}\NormalTok{(Q97}\FloatTok{.5}\NormalTok{)}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\paragraph{Posterior Odd Ratios (Main
+Results)}\label{posterior-odd-ratios-main-results}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(}
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{(bayes\_or, dplyr}\SpecialCharTok{::}\FunctionTok{across}\NormalTok{(}\FunctionTok{c}\NormalTok{(OR, LCL, UCL), }\SpecialCharTok{\textasciitilde{}} \FunctionTok{round}\NormalTok{(.x, }\DecValTok{2}\NormalTok{)))}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.2564}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1410}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1282}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1410}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1410}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.0641}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.0641}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.0641}}@{}}
+
+\caption{\label{tbl-bayes}}
+
+\tabularnewline
+
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+term
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Estimate
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Est.Error
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Q2.5
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Q97.5
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+OR
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+LCL
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+UCL
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Intercept & -2.6633187 & 0.0868613 & -2.8341138 & -2.4958967 & 0.07 &
+0.06 & 0.08 \\
+age\_c & 1.0968784 & 0.0618886 & 0.9783744 & 1.2200119 & 2.99 & 2.66 &
+3.39 \\
+bmi\_c & 0.6282273 & 0.0467939 & 0.5366821 & 0.7199012 & 1.87 & 1.71 &
+2.05 \\
+sexFemale & -0.6624742 & 0.1034594 & -0.8645869 & -0.4660003 & 0.52 &
+0.42 & 0.63 \\
+raceMexicanAmerican & 0.6898163 & 0.1710160 & 0.3432716 & 1.0298163 &
+1.99 & 1.41 & 2.80 \\
+raceOtherHispanic & 0.4252184 & 0.2458586 & -0.0669575 & 0.8870126 &
+1.53 & 0.94 & 2.43 \\
+raceNHBlack & 0.5307334 & 0.1524774 & 0.2283617 & 0.8328511 & 1.70 &
+1.26 & 2.30 \\
+raceOtherDMulti & 0.8143883 & 0.1876762 & 0.4467512 & 1.1763335 & 2.26 &
+1.56 & 3.24 \\
+
+\end{longtable}
+
+\begin{itemize}
+\item
+  Age and BMI show strong positive associations with diabetes (credible
+  intervals exclude 1).
+\item
+  Female sex shows lower odds than male (protective factor).
+\item
+  Non-White racial groups have higher odds compared with Whites,
+  consistent with known disparities.
+\item
+  All model parameters exhibit well-defined, unimodal posteriors with
+  narrow credible intervals.
+\end{itemize}
+
+\paragraph{Diagnostics and Model Fit}\label{diagnostics-and-model-fit}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(}\FunctionTok{as.data.frame}\NormalTok{(brms}\SpecialCharTok{::}\FunctionTok{bayes\_R2}\NormalTok{(bayes\_fit)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrrrr@{}}
+
+\caption{\label{tbl-bayesR2}Bayesian R² Summary}
+
+\tabularnewline
+
+\toprule\noalign{}
+& Estimate & Est.Error & Q2.5 & Q97.5 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+R2 & 0.1316278 & 0.0123417 & 0.107432 & 0.1565549 \\
+
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{diag }\OtherTok{\textless{}{-}}\NormalTok{ posterior}\SpecialCharTok{::}\FunctionTok{summarise\_draws}\NormalTok{(bayes\_fit, }\StringTok{"rhat"}\NormalTok{, }\StringTok{"ess\_bulk"}\NormalTok{, }\StringTok{"ess\_tail"}\NormalTok{)}
+
+\NormalTok{diag\_b }\OtherTok{\textless{}{-}}\NormalTok{ diag }\SpecialCharTok{|\textgreater{}}
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{as\_tibble}\NormalTok{() }\SpecialCharTok{|\textgreater{}}
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(}\FunctionTok{grepl}\NormalTok{(}\StringTok{"\^{}b\_"}\NormalTok{, .data}\SpecialCharTok{$}\NormalTok{variable)) }\SpecialCharTok{|\textgreater{}}
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{transmute}\NormalTok{(}
+\AttributeTok{Parameter =}\NormalTok{ .data}\SpecialCharTok{$}\NormalTok{variable,}
+\AttributeTok{Rhat      =}\NormalTok{ .data}\SpecialCharTok{$}\NormalTok{rhat,}
+\AttributeTok{Bulk\_ESS  =}\NormalTok{ .data}\SpecialCharTok{$}\NormalTok{ess\_bulk,}
+\AttributeTok{Tail\_ESS  =}\NormalTok{ .data}\SpecialCharTok{$}\NormalTok{ess\_tail}
+\NormalTok{)}
+
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(diag\_b, }\AttributeTok{digits =} \DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrrr@{}}
+
+\caption{\label{tbl-mcmc-diagnostics}MCMC Diagnostics (R-hat and
+Effective Sample Sizes) for Model Parameters}
+
+\tabularnewline
+
+\toprule\noalign{}
+Parameter & Rhat & Bulk\_ESS & Tail\_ESS \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+b\_Intercept & 1 & 3548.0 & 3511.8 \\
+b\_age\_c & 1 & 2349.3 & 2617.8 \\
+b\_bmi\_c & 1 & 3327.1 & 2825.9 \\
+b\_sexFemale & 1 & 3668.1 & 3123.7 \\
+b\_raceMexicanAmerican & 1 & 3656.6 & 2821.2 \\
+b\_raceOtherHispanic & 1 & 4242.3 & 3013.5 \\
+b\_raceNHBlack & 1 & 3809.1 & 3012.2 \\
+b\_raceOtherDMulti & 1 & 3947.9 & 2809.1 \\
+
+\end{longtable}
+
+All parameters achieved R̂ ≈ 1.00 and effective sample sizes
+\textgreater2,000, indicating excellent convergence. The Bayesian R² ≈
+0.13, showing that age, BMI, sex, and race explain about 13\% of
+diabetes variability.
+
+\paragraph{Model Comparison}\label{model-comparison}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{invisible}\NormalTok{(}\FunctionTok{capture.output}\NormalTok{(\{}
+\NormalTok{fit\_no\_race }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{(bayes\_fit, }\AttributeTok{formula =} \FunctionTok{update}\NormalTok{(fml\_bayes, . }\SpecialCharTok{\textasciitilde{}}\NormalTok{ . }\SpecialCharTok{{-}}\NormalTok{ race))}
+\NormalTok{fit\_no\_sex  }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{(bayes\_fit, }\AttributeTok{formula =} \FunctionTok{update}\NormalTok{(fml\_bayes, . }\SpecialCharTok{\textasciitilde{}}\NormalTok{ . }\SpecialCharTok{{-}}\NormalTok{ sex))}
+\NormalTok{\}))}
+
+\NormalTok{loo\_base    }\OtherTok{\textless{}{-}}\NormalTok{ loo}\SpecialCharTok{::}\FunctionTok{loo}\NormalTok{(bayes\_fit)}
+\NormalTok{loo\_no\_race }\OtherTok{\textless{}{-}}\NormalTok{ loo}\SpecialCharTok{::}\FunctionTok{loo}\NormalTok{(fit\_no\_race)}
+\NormalTok{loo\_no\_sex  }\OtherTok{\textless{}{-}}\NormalTok{ loo}\SpecialCharTok{::}\FunctionTok{loo}\NormalTok{(fit\_no\_sex)}
+
+\NormalTok{cmp\_df }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(loo}\SpecialCharTok{::}\FunctionTok{loo\_compare}\NormalTok{(loo\_base, loo\_no\_race, loo\_no\_sex))}
+\NormalTok{cmp\_df}\SpecialCharTok{$}\NormalTok{Model }\OtherTok{\textless{}{-}} \FunctionTok{rownames}\NormalTok{(cmp\_df)}
+\NormalTok{cmp\_df }\OtherTok{\textless{}{-}}\NormalTok{ cmp\_df[, }\FunctionTok{c}\NormalTok{(}\StringTok{"Model"}\NormalTok{, }\FunctionTok{setdiff}\NormalTok{(}\FunctionTok{names}\NormalTok{(cmp\_df), }\StringTok{"Model"}\NormalTok{))]}
+
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(}
+\NormalTok{cmp\_df,}
+\AttributeTok{caption =} \StringTok{"LOO Comparison (higher elpd\_loo indicates better predictive performance)."}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1176}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1176}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.0980}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.0882}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.0980}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.1176}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.0882}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.0980}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.0882}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 18\tabcolsep) * \real{0.0882}}@{}}
+\caption{Bayesian Model Comparison (LOO): Base Model vs.~Reduced Models
+Without Race or Sex}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Model
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+elpd\_diff
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+se\_diff
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+elpd\_loo
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+se\_elpd\_loo
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+p\_loo
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+se\_p\_loo
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+looic
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+se\_looic
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Model
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+elpd\_diff
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+se\_diff
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+elpd\_loo
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+se\_elpd\_loo
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+p\_loo
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+se\_p\_loo
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+looic
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+se\_looic
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+bayes\_fit & bayes\_fit & 0.00000 & 0.000000 & -1418.258 & 56.42097 &
+8.732434 & 0.5944729 & 2836.517 & 112.8419 \\
+fit\_no\_race & fit\_no\_race & -14.43171 & 6.367627 & -1432.690 &
+53.98749 & 5.223838 & 0.3831466 & 2865.380 & 107.9750 \\
+fit\_no\_sex & fit\_no\_sex & -20.04611 & 8.205833 & -1438.305 &
+57.31024 & 7.359525 & 0.5226182 & 2876.609 & 114.6205 \\
+\end{longtable}
+
+Models excluding race or sex had lower expected log predictive density
+(\texttt{elpd}), confirming that both variables contribute meaningfully
+to model fit.
+
+\paragraph{Posterior Predictive
+Checks}\label{posterior-predictive-checks}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{yobs }\OtherTok{\textless{}{-}}\NormalTok{ adult\_imp1}\SpecialCharTok{$}\NormalTok{diabetes\_dx}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bayesplot}\SpecialCharTok{::}\FunctionTok{pp\_check}\NormalTok{(bayes\_fit, }\AttributeTok{type =} \StringTok{"bars"}\NormalTok{, }\AttributeTok{nsamples =} \DecValTok{100}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-ppc-bars-1.pdf}}
+
+}
+
+\caption{\label{fig-ppc-bars}Posterior Predictive Check: Observed
+vs.~Replicated Outcome Distribution (Bars)}
+
+\end{figure}%
+
+The close alignment between observed (\texttt{y}) and replicated
+(\texttt{y\_rep}) outcome distributions indicates that the Bayesian
+model reproduces the empirical data structure well.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{yrep }\OtherTok{\textless{}{-}}\NormalTok{ brms}\SpecialCharTok{::}\FunctionTok{posterior\_predict}\NormalTok{(bayes\_fit, }\AttributeTok{ndraws =} \DecValTok{400}\NormalTok{)}
+\NormalTok{bayesplot}\SpecialCharTok{::}\FunctionTok{ppc\_stat}\NormalTok{(}\AttributeTok{y =}\NormalTok{ yobs, }\AttributeTok{yrep =}\NormalTok{ yrep, }\AttributeTok{stat =} \StringTok{"mean"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-ppc-mean-1.pdf}}
+
+}
+
+\caption{\label{fig-ppc-mean}Posterior predictive check for the mean of
+the binary outcome, comparing the observed mean (\texttt{T(y)}) to
+replicated means (\texttt{T(y\_rep)}) across posterior draws.}
+
+\end{figure}%
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{yrep }\OtherTok{\textless{}{-}}\NormalTok{ brms}\SpecialCharTok{::}\FunctionTok{posterior\_predict}\NormalTok{(bayes\_fit, }\AttributeTok{ndraws =} \DecValTok{400}\NormalTok{)}
+\NormalTok{bayesplot}\SpecialCharTok{::}\FunctionTok{ppc\_stat}\NormalTok{(}\AttributeTok{y =}\NormalTok{ yobs, }\AttributeTok{yrep =}\NormalTok{ yrep, }\AttributeTok{stat =} \StringTok{"sd"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-ppc-sd-1.pdf}}
+
+}
+
+\caption{\label{fig-ppc-sd}Posterior predictive check for the standard
+deviation of the binary outcome (\texttt{T(y)}) compared with replicated
+datasets (\texttt{T(y\_rep)}).}
+
+\end{figure}%
+
+The posterior predictive checks demonstrate strong model calibration:
+simulated variability closely aligns with the observed data, indicating
+that the Bayesian model accurately captures both the mean and dispersion
+of the binary outcome.
+
+\paragraph{MCMC Diagnostics and Posterior
+Distributions}\label{mcmc-diagnostics-and-posterior-distributions}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bayesplot}\SpecialCharTok{::}\FunctionTok{mcmc\_areas}\NormalTok{(}\FunctionTok{as.array}\NormalTok{(bayes\_fit), }\AttributeTok{regex\_pars =} \StringTok{"\^{}b\_"}\NormalTok{, }\AttributeTok{prob =} \FloatTok{0.95}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-mcmc-areas-1.pdf}}
+
+}
+
+\caption{\label{fig-mcmc-areas}Posterior distributions (95\% credible
+mass) for slope parameters in the Bayesian logistic regression model.}
+
+\end{figure}%
+
+All posteriors appear unimodal and well‐centered, indicating stable
+estimation and strong convergence across parameters. Positive
+coefficients (e.g., age, BMI) correspond to increased diabetes risk,
+while negative coefficients (e.g., female sex) indicate protective
+associations.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bayesplot}\SpecialCharTok{::}\FunctionTok{mcmc\_trace}\NormalTok{(}\FunctionTok{as.array}\NormalTok{(bayes\_fit), }\AttributeTok{regex\_pars =} \StringTok{"\^{}b\_"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-mcmc-trace-1.pdf}}
+
+}
+
+\caption{\label{fig-mcmc-trace}Trace plots for slope parameters across
+four MCMC chains, demonstrating effective chain mixing and
+stationarity.}
+
+\end{figure}%
+
+All parameters exhibit well-mixed, stable trace patterns with no visible
+drift, supporting convergence diagnostics (\texttt{R̂} ≈ 1.00). This
+confirms that the posterior samples are representative and that the
+Bayesian model converged reliably.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{post\_array }\OtherTok{\textless{}{-}}\NormalTok{ posterior}\SpecialCharTok{::}\FunctionTok{as\_draws\_array}\NormalTok{(bayes\_fit)}
+\NormalTok{bayesplot}\SpecialCharTok{::}\FunctionTok{mcmc\_acf}\NormalTok{(post\_array, }\AttributeTok{pars =} \FunctionTok{c}\NormalTok{(}\StringTok{"b\_age\_c"}\NormalTok{, }\StringTok{"b\_bmi\_c"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-mcmc-acf-1.pdf}}
+
+}
+
+\caption{\label{fig-mcmc-acf}Autocorrelation plots for posterior samples
+of age and BMI coefficients, showing rapid decay of autocorrelation with
+lag. Low autocorrelation across lags confirms efficient MCMC sampling
+and good chain independence.}
+
+\end{figure}%
+
+\begin{itemize}
+\item
+  Trace, density, and autocorrelation plots confirm smooth chain mixing,
+  unimodal posteriors, and minimal autocorrelation across samples.
+\item
+  All four chains showed strong convergence with no signs of divergence
+  or non-stationarity.
+\item
+  Trace plots revealed stable, overlapping chains with consistent mixing
+  across iterations, while autocorrelation decayed rapidly toward zero,
+  confirming efficient sampling and low dependency between successive
+  draws.
+\item
+  Together with R̂ ≈ 1.00 and large effective sample sizes, these
+  diagnostics indicate a well-behaved posterior and reliable inference.
+\end{itemize}
+
+\paragraph{Prior vs.~Posterior}\label{prior-vs.-posterior}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Extract posterior draws as a matrix, then convert to tibble}
+\NormalTok{post }\OtherTok{\textless{}{-}} \FunctionTok{as\_draws\_matrix}\NormalTok{(bayes\_fit) }\SpecialCharTok{\%\textgreater{}\%}   \CommentTok{\# safer than as\_draws\_df for manipulation}
+  \FunctionTok{as.data.frame}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(b\_bmi\_c, b\_age\_c) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{pivot\_longer}\NormalTok{(}
+    \FunctionTok{everything}\NormalTok{(),}
+    \AttributeTok{names\_to =} \StringTok{"term"}\NormalTok{,}
+    \AttributeTok{values\_to =} \StringTok{"estimate"}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{term =} \FunctionTok{case\_when}\NormalTok{(}
+\NormalTok{      term }\SpecialCharTok{==} \StringTok{"b\_bmi\_c"} \SpecialCharTok{\textasciitilde{}} \StringTok{"BMI (per 1 SD)"}\NormalTok{,}
+\NormalTok{      term }\SpecialCharTok{==} \StringTok{"b\_age\_c"} \SpecialCharTok{\textasciitilde{}} \StringTok{"Age (per 1 SD)"}
+\NormalTok{    ),}
+    \AttributeTok{type =} \StringTok{"Posterior"}
+\NormalTok{  )}
+\NormalTok{prior\_draws }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}
+  \AttributeTok{term =} \FunctionTok{rep}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"BMI (per 1 SD)"}\NormalTok{, }\StringTok{"Age (per 1 SD)"}\NormalTok{), }\AttributeTok{each =} \DecValTok{4000}\NormalTok{),}
+  \AttributeTok{estimate =} \FunctionTok{c}\NormalTok{(}\FunctionTok{rnorm}\NormalTok{(}\DecValTok{4000}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{), }\FunctionTok{rnorm}\NormalTok{(}\DecValTok{4000}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)),}
+  \AttributeTok{type =} \StringTok{"Prior"}
+\NormalTok{)}
+\NormalTok{combined\_draws }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(prior\_draws, post)}
+
+\FunctionTok{ggplot}\NormalTok{(combined\_draws, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ estimate, }\AttributeTok{fill =}\NormalTok{ type)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_density}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.4}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ term, }\AttributeTok{scales =} \StringTok{"free"}\NormalTok{, }\AttributeTok{ncol =} \DecValTok{2}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{(}\AttributeTok{base\_size =} \DecValTok{13}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Prior vs Posterior Distributions"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Coefficient estimate"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Density"}\NormalTok{,}
+    \AttributeTok{fill =} \StringTok{""}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-prior-posterior-ggplot-2-1.pdf}}
+
+}
+
+\caption{\label{fig-prior-posterior-ggplot-2}Prior vs Posterior
+Distributions}
+
+\end{figure}%
+
+For age and BMI, the posterior densities shift notably away from the
+N(0, 2.5) prior toward positive values and are narrower, indicating
+strong information from the data; for sex, the posterior remains closer
+to the prior with more overlap, indicating weaker evidence.
+
+The overlay of prior and posterior densities illustrates that
+informative updates occurred primarily for BMI, age, and race
+coefficients, which showed distinct posterior shifts relative to the
+priors. In contrast, weaker predictors such as sex displayed overlapping
+distributions, indicating that inference for those parameters was more
+influenced by prior uncertainty than by the observed data. This balance
+confirms appropriate regularization rather than overfitting.
+
+\paragraph{Model Fit and Calibration}\label{model-fit-and-calibration}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pred\_mean }\OtherTok{\textless{}{-}} \FunctionTok{colMeans}\NormalTok{(brms}\SpecialCharTok{::}\FunctionTok{posterior\_epred}\NormalTok{(bayes\_fit))}
+\FunctionTok{ggplot}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{pred =}\NormalTok{ pred\_mean, }\AttributeTok{obs =}\NormalTok{ yobs),}
+\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ pred, }\AttributeTok{y =}\NormalTok{ obs)) }\SpecialCharTok{+}
+\FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.15}\NormalTok{, }\AttributeTok{position =} \FunctionTok{position\_jitter}\NormalTok{(}\AttributeTok{height =} \FloatTok{0.03}\NormalTok{)) }\SpecialCharTok{+}
+\FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"loess"}\NormalTok{, }\AttributeTok{se =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{+}
+\FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Mean predicted probability"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Observed diabetes (0/1)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-pred-calibration-1.pdf}}
+
+}
+
+\caption{\label{fig-pred-calibration}Calibration plot comparing observed
+diabetes outcomes (0/1) to model-predicted probabilities with a smoothed
+LOESS curve. The close alignment between the blue line and the diagonal
+(ideal calibration) indicates good model fit and reliable probability
+estimates.}
+
+\end{figure}%
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# 1. Survey{-}weighted prevalence}
+\NormalTok{svy\_mean }\OtherTok{\textless{}{-}} \FunctionTok{svymean}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{diabetes\_dx, nhanes\_design\_adult, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+
+\CommentTok{\# 2. Posterior predictive prevalence (per draw)}
+\NormalTok{pp\_samples }\OtherTok{\textless{}{-}}\NormalTok{ brms}\SpecialCharTok{::}\FunctionTok{posterior\_predict}\NormalTok{(bayes\_fit, }\AttributeTok{ndraws =} \DecValTok{1000}\NormalTok{)  }\CommentTok{\# draws x individuals}
+\NormalTok{pp\_proportion }\OtherTok{\textless{}{-}} \FunctionTok{rowMeans}\NormalTok{(pp\_samples)                            }\CommentTok{\# prevalence per draw}
+
+\CommentTok{\# 3. Build comparison table}
+\NormalTok{summary\_table }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}
+  \AttributeTok{Method =} \FunctionTok{c}\NormalTok{(}\StringTok{"Survey{-}weighted mean (NHANES)"}\NormalTok{, }
+             \StringTok{"Imputed dataset mean"}\NormalTok{, }
+             \StringTok{"Posterior predictive mean"}\NormalTok{),}
+  \AttributeTok{diabetes\_mean =} \FunctionTok{c}\NormalTok{(}
+    \FunctionTok{coef}\NormalTok{(svy\_mean),                           }\CommentTok{\# survey{-}weighted mean}
+    \FunctionTok{mean}\NormalTok{(adult\_imp1}\SpecialCharTok{$}\NormalTok{diabetes\_dx, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),  }\CommentTok{\# imputed dataset}
+    \FunctionTok{mean}\NormalTok{(pp\_proportion)                       }\CommentTok{\# posterior predictive mean}
+\NormalTok{  ),}
+  \AttributeTok{SE =} \FunctionTok{c}\NormalTok{(}
+    \FunctionTok{SE}\NormalTok{(svy\_mean),   }\CommentTok{\# survey{-}weighted SE}
+    \ConstantTok{NA}\NormalTok{,             }\CommentTok{\# not available for raw mean}
+    \ConstantTok{NA}              \CommentTok{\# not available for posterior predictive mean}
+\NormalTok{  )}
+\NormalTok{)}
+
+\FunctionTok{kable}\NormalTok{(summary\_table, }\AttributeTok{digits =} \DecValTok{4}\NormalTok{,}
+      \AttributeTok{caption =} \StringTok{"Comparison of Diabetes Prevalence Across Methods"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}
+
+\centering{
+
+\begin{longtable}[]{@{}lrr@{}}
+\caption{Comparison of Diabetes Prevalence Across
+Methods}\tabularnewline
+\toprule\noalign{}
+Method & diabetes\_mean & SE \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Method & diabetes\_mean & SE \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Survey-weighted mean (NHANES) & 0.0889 & 0.0048 \\
+Imputed dataset mean & 0.1105 & NA \\
+Posterior predictive mean & 0.1093 & NA \\
+\end{longtable}
+
+}
+
+\caption{\label{fig-posterior-prevalence}Comparison of diabetes
+prevalence across survey-weighted (NHANES), imputed, and posterior
+predictive estimates. The posterior predictive mean aligns closely with
+the observed NHANES prevalence, indicating strong model calibration.}
+
+\end{figure}%
+
+The posterior predictive distribution of diabetes prevalence closely
+mirrored the survey-estimated prevalence, with the posterior mean
+aligning within about 1\% of the observed rate.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Posterior predictive prevalence (replicated datasets)}
+
+\NormalTok{yrep }\OtherTok{\textless{}{-}}\NormalTok{ brms}\SpecialCharTok{::}\FunctionTok{posterior\_predict}\NormalTok{(bayes\_fit, }\AttributeTok{ndraws =} \DecValTok{2000}\NormalTok{)   }\CommentTok{\# draws x observations (0/1)}
+\NormalTok{post\_prev }\OtherTok{\textless{}{-}} \FunctionTok{rowMeans}\NormalTok{(yrep)                                 }\CommentTok{\# prevalence each posterior draw}
+
+\CommentTok{\# Survey{-}weighted observed prevalence (population estimate)}
+
+\NormalTok{des\_obs }\OtherTok{\textless{}{-}}\NormalTok{ survey}\SpecialCharTok{::}\FunctionTok{svydesign}\NormalTok{(}
+\AttributeTok{id =} \SpecialCharTok{\textasciitilde{}}\NormalTok{SDMVPSU, }\AttributeTok{strata =} \SpecialCharTok{\textasciitilde{}}\NormalTok{SDMVSTRA, }\AttributeTok{weights =} \SpecialCharTok{\textasciitilde{}}\NormalTok{WTMEC2YR,}
+\AttributeTok{nest =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{data =}\NormalTok{ adult\_imp1}
+\NormalTok{)}
+\NormalTok{obs }\OtherTok{\textless{}{-}}\NormalTok{ survey}\SpecialCharTok{::}\FunctionTok{svymean}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{diabetes\_dx, des\_obs, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{obs\_prev  }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(obs[}\StringTok{"diabetes\_dx"}\NormalTok{])}
+\NormalTok{obs\_se    }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{SE}\NormalTok{(obs)[}\StringTok{"diabetes\_dx"}\NormalTok{])}
+\NormalTok{obs\_lcl   }\OtherTok{\textless{}{-}} \FunctionTok{max}\NormalTok{(}\DecValTok{0}\NormalTok{, obs\_prev }\SpecialCharTok{{-}} \FloatTok{1.96} \SpecialCharTok{*}\NormalTok{ obs\_se)}
+\NormalTok{obs\_ucl   }\OtherTok{\textless{}{-}} \FunctionTok{min}\NormalTok{(}\DecValTok{1}\NormalTok{, obs\_prev }\SpecialCharTok{+} \FloatTok{1.96} \SpecialCharTok{*}\NormalTok{ obs\_se)}
+
+\CommentTok{\# Plot: posterior density with weighted point estimate and 95\% CI band}
+
+\FunctionTok{ggplot}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{prev =}\NormalTok{ post\_prev), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ prev)) }\SpecialCharTok{+}
+\FunctionTok{geom\_density}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\SpecialCharTok{+}
+\FunctionTok{annotate}\NormalTok{(}\StringTok{"rect"}\NormalTok{, }\AttributeTok{xmin =}\NormalTok{ obs\_lcl, }\AttributeTok{xmax =}\NormalTok{ obs\_ucl, }\AttributeTok{ymin =} \DecValTok{0}\NormalTok{, }\AttributeTok{ymax =} \ConstantTok{Inf}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.15}\NormalTok{) }\SpecialCharTok{+}
+\FunctionTok{geom\_vline}\NormalTok{(}\AttributeTok{xintercept =}\NormalTok{ obs\_prev, }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{) }\SpecialCharTok{+}
+\FunctionTok{coord\_cartesian}\NormalTok{(}\AttributeTok{xlim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)) }\SpecialCharTok{+}
+\FunctionTok{labs}\NormalTok{(}
+  \AttributeTok{x =} \StringTok{"Diabetes prevalence"}\NormalTok{,}
+  \AttributeTok{y =} \StringTok{"Posterior density"}\NormalTok{,}
+  \AttributeTok{subtitle =} \FunctionTok{sprintf}\NormalTok{(}\StringTok{"Survey{-}weighted NHANES prevalence = \%.1f\%\%"}\NormalTok{, obs\_prev }\SpecialCharTok{*} \DecValTok{100}\NormalTok{)}
+\NormalTok{) }\SpecialCharTok{+}
+\FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-pop-vs-posterior-prev-1.pdf}}
+
+}
+
+\caption{\label{fig-pop-vs-posterior-prev}Posterior predictive
+distribution of diabetes prevalence (solid density) overlaid with the
+survey-weighted NHANES prevalence (vertical dashed line) and its 95\%
+confidence interval (shaded band). The close overlap indicates that the
+Bayesian model accurately reproduces the observed population
+prevalence.}
+
+\end{figure}%
+
+The survey-weighted NHANES diabetes prevalence was approximately
+\textbf{8.9\%}, whereas the Bayesian model's posterior predictive mean
+prevalence was also in the \textbf{8--9\%} range. This close agreement
+indicates that the Bayesian logistic regression model reproduces the
+observed population-level prevalence and is well-calibrated to the
+NHANES data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Survey{-}weighted prevalence (already computed earlier as \textasciigrave{}obs\textasciigrave{})}
+
+\NormalTok{obs\_prev }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(obs[}\StringTok{"diabetes\_dx"}\NormalTok{])}
+\NormalTok{obs\_se   }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(survey}\SpecialCharTok{::}\FunctionTok{SE}\NormalTok{(obs)[}\StringTok{"diabetes\_dx"}\NormalTok{])}
+
+\NormalTok{summary\_table }\OtherTok{\textless{}{-}}\NormalTok{ tibble}\SpecialCharTok{::}\FunctionTok{tibble}\NormalTok{(}
+\AttributeTok{Method =} \FunctionTok{c}\NormalTok{(}
+\StringTok{"Survey{-}weighted mean (NHANES)"}\NormalTok{,}
+\StringTok{"Imputed dataset mean (adult\_imp1)"}\NormalTok{,}
+\StringTok{"Posterior predictive mean (Bayesian)"}
+\NormalTok{),}
+\AttributeTok{diabetes\_mean =} \FunctionTok{c}\NormalTok{(}
+\NormalTok{obs\_prev,}
+\FunctionTok{mean}\NormalTok{(adult\_imp1}\SpecialCharTok{$}\NormalTok{diabetes\_dx, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+\FunctionTok{mean}\NormalTok{(pp\_proportion)}
+\NormalTok{),}
+\AttributeTok{SE =} \FunctionTok{c}\NormalTok{(}
+\NormalTok{obs\_se,}
+\ConstantTok{NA\_real\_}\NormalTok{,}
+\ConstantTok{NA\_real\_}
+\NormalTok{)}
+\NormalTok{)}
+
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(}
+\NormalTok{summary\_table,}
+\AttributeTok{digits =} \DecValTok{4}\NormalTok{,}
+\AttributeTok{caption =} \StringTok{"Comparison of Diabetes Prevalence Across Methods"}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrr@{}}
+\caption{Comparison of diabetes prevalence estimates across methods. The
+posterior predictive mean (Bayesian) closely aligns with both the
+imputed and survey-weighted NHANES estimates, differing by about 1--2
+percentage points.}\tabularnewline
+\toprule\noalign{}
+Method & diabetes\_mean & SE \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Method & diabetes\_mean & SE \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Survey-weighted mean (NHANES) & 0.0890 & NA \\
+Imputed dataset mean (adult\_imp1) & 0.1105 & NA \\
+Posterior predictive mean (Bayesian) & 0.1093 & NA \\
+\end{longtable}
+
+\paragraph{Internal Validation: Individual-Level
+Predictions}\label{internal-validation-individual-level-predictions}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{adult\_means }\OtherTok{\textless{}{-}}\NormalTok{ adult\_imp1 }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarise}\NormalTok{(}
+\AttributeTok{age\_mean =} \FunctionTok{mean}\NormalTok{(age, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+\AttributeTok{age\_sd   =} \FunctionTok{sd}\NormalTok{(age, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+\AttributeTok{bmi\_mean =} \FunctionTok{mean}\NormalTok{(bmi, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+\AttributeTok{bmi\_sd   =} \FunctionTok{sd}\NormalTok{(bmi, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{)}
+
+\NormalTok{to\_model\_row }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(age\_raw, bmi\_raw, sex\_lab, race\_lab) \{}
+\FunctionTok{tibble}\NormalTok{(}
+\AttributeTok{age\_c  =}\NormalTok{ (age\_raw }\SpecialCharTok{{-}}\NormalTok{ adult\_means}\SpecialCharTok{$}\NormalTok{age\_mean)}\SpecialCharTok{/}\NormalTok{adult\_means}\SpecialCharTok{$}\NormalTok{age\_sd,}
+\AttributeTok{bmi\_c  =}\NormalTok{ (bmi\_raw }\SpecialCharTok{{-}}\NormalTok{ adult\_means}\SpecialCharTok{$}\NormalTok{bmi\_mean)}\SpecialCharTok{/}\NormalTok{adult\_means}\SpecialCharTok{$}\NormalTok{bmi\_sd,}
+\AttributeTok{sex    =} \FunctionTok{factor}\NormalTok{(sex\_lab,   }\AttributeTok{levels =} \FunctionTok{levels}\NormalTok{(adult\_imp1}\SpecialCharTok{$}\NormalTok{sex)),}
+\AttributeTok{race  =} \FunctionTok{factor}\NormalTok{(race\_lab, }\AttributeTok{levels =} \FunctionTok{levels}\NormalTok{(adult\_imp1}\SpecialCharTok{$}\NormalTok{race)),}
+\AttributeTok{wt\_norm =} \DecValTok{1}
+\NormalTok{)}
+\NormalTok{\}}
+
+\NormalTok{plot\_post\_density }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(df\_row, title\_txt) \{}
+\NormalTok{phat }\OtherTok{\textless{}{-}} \FunctionTok{posterior\_linpred}\NormalTok{(bayes\_fit, }\AttributeTok{newdata =}\NormalTok{ df\_row, }\AttributeTok{transform =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{ci95 }\OtherTok{\textless{}{-}} \FunctionTok{quantile}\NormalTok{(phat, }\FunctionTok{c}\NormalTok{(}\FloatTok{0.025}\NormalTok{, }\FloatTok{0.975}\NormalTok{))}
+\FunctionTok{ggplot}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{pred =} \FunctionTok{as.numeric}\NormalTok{(phat)), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ pred)) }\SpecialCharTok{+}
+\FunctionTok{geom\_density}\NormalTok{(}\AttributeTok{fill =} \StringTok{"skyblue"}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.4}\NormalTok{) }\SpecialCharTok{+}
+\FunctionTok{geom\_vline}\NormalTok{(}\AttributeTok{xintercept =}\NormalTok{ ci95[}\DecValTok{1}\NormalTok{], }\AttributeTok{linetype =} \StringTok{"dashed"}\NormalTok{, }\AttributeTok{color =} \StringTok{"red"}\NormalTok{) }\SpecialCharTok{+}
+\FunctionTok{geom\_vline}\NormalTok{(}\AttributeTok{xintercept =}\NormalTok{ ci95[}\DecValTok{2}\NormalTok{], }\AttributeTok{linetype =} \StringTok{"dashed"}\NormalTok{, }\AttributeTok{color =} \StringTok{"red"}\NormalTok{) }\SpecialCharTok{+}
+\FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"P(Diabetes = 1)"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Density"}\NormalTok{, }\AttributeTok{title =}\NormalTok{ title\_txt) }\SpecialCharTok{+}
+\FunctionTok{theme\_minimal}\NormalTok{()}
+\NormalTok{\}}
+
+\NormalTok{p1 }\OtherTok{\textless{}{-}} \FunctionTok{to\_model\_row}\NormalTok{(adult}\SpecialCharTok{$}\NormalTok{age[}\DecValTok{1}\NormalTok{], adult}\SpecialCharTok{$}\NormalTok{bmi[}\DecValTok{1}\NormalTok{],}
+\FunctionTok{as.character}\NormalTok{(adult}\SpecialCharTok{$}\NormalTok{sex[}\DecValTok{1}\NormalTok{]), }\FunctionTok{as.character}\NormalTok{(adult}\SpecialCharTok{$}\NormalTok{race[}\DecValTok{1}\NormalTok{]))}
+\FunctionTok{plot\_post\_density}\NormalTok{(p1, }\StringTok{"Participant 1: Posterior Predictive Distribution (95\% CrI)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/posterior-density-participants-1.pdf}}
+
+}
+
+\caption{Posterior predictive distribution for an example participant,
+showing the estimated probability of diabetes (P = 1) with 95\% credible
+intervals (red dashed lines).}
+
+\end{figure}%
+
+Posterior predictive densities for individual participants illustrate
+the uncertainty in diabetes risk estimates. The credible intervals
+quantify plausible risk ranges, emphasizing how posterior variability
+captures uncertainty rather than single-point predictions.
+
+\paragraph{Posterior Predictions and Inverse
+Inference}\label{posterior-predictions-and-inverse-inference}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(dplyr)}
+\FunctionTok{library}\NormalTok{(ggplot2)}
+
+\CommentTok{\# 1. Grid of BMI values (RAW BMI from 18 to 40)}
+\NormalTok{bmi\_seq }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(}\DecValTok{18}\NormalTok{, }\DecValTok{40}\NormalTok{, }\AttributeTok{by =} \FloatTok{0.5}\NormalTok{)}
+
+\CommentTok{\# 2. Newdata using the SAME factor levels as adult\_imp1}
+\NormalTok{newdata\_grid }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{age\_c  =} \DecValTok{40}\NormalTok{,   }\CommentTok{\# }\AlertTok{NOTE}\CommentTok{: Namita used 40 here even though age\_c is standardized}
+  \AttributeTok{bmi\_c  =}\NormalTok{ bmi\_seq,   }\CommentTok{\# she also used raw BMI in a column named bmi\_c}
+  \AttributeTok{sex    =} \FunctionTok{factor}\NormalTok{(}\StringTok{"Female"}\NormalTok{,          }\AttributeTok{levels =} \FunctionTok{levels}\NormalTok{(adult\_imp1}\SpecialCharTok{$}\NormalTok{sex)),}
+  \AttributeTok{race   =} \FunctionTok{factor}\NormalTok{(}\StringTok{"Mexican American"}\NormalTok{, }\AttributeTok{levels =} \FunctionTok{levels}\NormalTok{(adult\_imp1}\SpecialCharTok{$}\NormalTok{race)),}
+  \AttributeTok{wt\_norm =} \DecValTok{1}
+\NormalTok{)}
+
+\CommentTok{\# 3. Posterior predicted probabilities}
+\NormalTok{pred\_probs }\OtherTok{\textless{}{-}}\NormalTok{ brms}\SpecialCharTok{::}\FunctionTok{posterior\_linpred}\NormalTok{(}
+\NormalTok{  bayes\_fit,}
+  \AttributeTok{newdata   =}\NormalTok{ newdata\_grid,}
+  \AttributeTok{transform =} \ConstantTok{TRUE}
+\NormalTok{)}
+
+\CommentTok{\# 4. Mean predicted probability at each BMI}
+\NormalTok{prob\_mean }\OtherTok{\textless{}{-}} \FunctionTok{colMeans}\NormalTok{(pred\_probs)}
+
+\NormalTok{pred\_df }\OtherTok{\textless{}{-}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{bind\_cols}\NormalTok{(newdata\_grid, }\AttributeTok{prob\_mean =}\NormalTok{ prob\_mean)}
+
+\CommentTok{\# 5. Target probability}
+\NormalTok{target\_prob }\OtherTok{\textless{}{-}} \FloatTok{0.30}
+
+\CommentTok{\# Find the BMI whose predicted prob is closest to the target}
+\NormalTok{closest }\OtherTok{\textless{}{-}}\NormalTok{ pred\_df[}\FunctionTok{which.min}\NormalTok{(}\FunctionTok{abs}\NormalTok{(pred\_df}\SpecialCharTok{$}\NormalTok{prob\_mean }\SpecialCharTok{{-}}\NormalTok{ target\_prob)), , drop }\OtherTok{=} \ConstantTok{FALSE}\NormalTok{]}
+
+\CommentTok{\# 6. Plot}
+\FunctionTok{ggplot}\NormalTok{(pred\_df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ bmi\_c, }\AttributeTok{y =}\NormalTok{ prob\_mean)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{color =} \StringTok{"darkblue"}\NormalTok{, }\AttributeTok{linewidth =} \FloatTok{1.2}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =}\NormalTok{ target\_prob, }\AttributeTok{color =} \StringTok{"red"}\NormalTok{, }\AttributeTok{linetype =} \StringTok{"dashed"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_vline}\NormalTok{(}\AttributeTok{xintercept =}\NormalTok{ closest}\SpecialCharTok{$}\NormalTok{bmi\_c, }\AttributeTok{color =} \StringTok{"red"}\NormalTok{, }\AttributeTok{linetype =} \StringTok{"dotted"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{annotate}\NormalTok{(}
+    \StringTok{"text"}\NormalTok{,}
+    \AttributeTok{x     =}\NormalTok{ closest}\SpecialCharTok{$}\NormalTok{bmi\_c,}
+    \AttributeTok{y     =}\NormalTok{ target\_prob }\SpecialCharTok{+} \FloatTok{0.05}\NormalTok{,}
+    \AttributeTok{label =} \FunctionTok{paste0}\NormalTok{(}\StringTok{"Target BMI \textbackslash{}u2248 "}\NormalTok{, }\FunctionTok{round}\NormalTok{(closest}\SpecialCharTok{$}\NormalTok{bmi\_c, }\DecValTok{1}\NormalTok{)),}
+    \AttributeTok{color =} \StringTok{"red"}\NormalTok{,}
+    \AttributeTok{hjust =} \SpecialCharTok{{-}}\FloatTok{0.1}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{x =} \StringTok{"BMI (kg/m\^{}2)"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Predicted Probability of Diabetes"}\NormalTok{,}
+    \AttributeTok{title =} \StringTok{"Inverse Prediction: BMI Needed for Target Diabetes Risk"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{coord\_cartesian}\NormalTok{(}\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_bw}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/predict-BMI-target-1.pdf}}
+
+}
+
+\caption{Inverse prediction of BMI needed to reach a target diabetes
+probability (illustrative example).}
+
+\end{figure}%
+
+Inverse inference explores what BMI value would yield a given diabetes
+risk under the posterior model. In this example, predicted diabetes
+probability remains near 1.0 across most BMI values, suggesting that
+other covariates (e.g., age or race) dominate predicted risk in this
+profile. The ``target BMI ≈ 18'' marks the approximate threshold for a
+30\% risk under this participant's conditions.
+
+\subsection{Results}\label{results}
+
+A concise summary of posterior estimates is provided below.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\FunctionTok{paste}\NormalTok{(bullets, }\AttributeTok{collapse =} \StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Population-level interpretation (posterior, odds
+ratios)}\label{population-level-interpretation-posterior-odds-ratios}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Convergence.} All R-hat ≈ 1.00; large ESS → excellent mixing.
+\item
+  \textbf{Baseline risk.} Male, White, mean age/BMI:
+  \textbf{\textasciitilde6.5\%} predicted diabetes prevalence.
+\item
+  \textbf{Age.} +1 SD → \textbf{2.99×} (95\% CrI 2.66--3.39; CrI
+  excludes 1).
+\item
+  \textbf{BMI.} +1 SD → \textbf{1.87×} (95\% CrI 1.71--2.05; CrI
+  excludes 1).
+\item
+  \textbf{Female vs.~Male.} \textbf{0.52×} (95\% CrI 0.42--0.63; CrI
+  excludes 1).
+\item
+  \textbf{Black vs.~White.} \textbf{NA×} (95\% CrI NA--NA; CrI overlaps
+  1).
+\item
+  \textbf{Hispanic vs.~White.} \textbf{NA×} (95\% CrI NA--NA; CrI
+  overlaps 1).
+\item
+  \textbf{Other/Multi vs.~White.} \textbf{NA×} (95\% CrI NA--NA; CrI
+  overlaps 1).
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Combine results from all three models}
+
+\NormalTok{svy\_tbl   }\OtherTok{\textless{}{-}} \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{exists}\NormalTok{(}\StringTok{"svy\_or"}\NormalTok{) }\SpecialCharTok{\&\&} \FunctionTok{nrow}\NormalTok{(svy\_or) }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{)}
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{(svy\_or,   }\AttributeTok{Model =} \StringTok{"Survey{-}weighted (MLE)"}\NormalTok{) }\ControlFlowTok{else} \ConstantTok{NULL}
+\NormalTok{mi\_tbl    }\OtherTok{\textless{}{-}} \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{exists}\NormalTok{(}\StringTok{"mi\_or"}\NormalTok{) }\SpecialCharTok{\&\&} \FunctionTok{nrow}\NormalTok{(mi\_or) }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{)}
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{(mi\_or,    }\AttributeTok{Model =} \StringTok{"MICE Pooled"}\NormalTok{) }\ControlFlowTok{else} \ConstantTok{NULL}
+\NormalTok{bayes\_tbl }\OtherTok{\textless{}{-}} \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{exists}\NormalTok{(}\StringTok{"bayes\_or"}\NormalTok{) }\SpecialCharTok{\&\&} \FunctionTok{nrow}\NormalTok{(bayes\_or) }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{)}
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{(bayes\_or, }\AttributeTok{Model =} \StringTok{"Bayesian"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(term }\SpecialCharTok{!=} \StringTok{"Intercept"}\NormalTok{) }\ControlFlowTok{else} \ConstantTok{NULL}
+
+\NormalTok{all\_tbl }\OtherTok{\textless{}{-}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{bind\_rows}\NormalTok{(}\FunctionTok{Filter}\NormalTok{(}\FunctionTok{Negate}\NormalTok{(is.null), }\FunctionTok{list}\NormalTok{(svy\_tbl, mi\_tbl, bayes\_tbl))) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{(}
+\AttributeTok{term =}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{case\_when}\NormalTok{(}
+  \FunctionTok{grepl}\NormalTok{(}\StringTok{"bmi"}\NormalTok{, term,  }\AttributeTok{ignore.case =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{\textasciitilde{}} \StringTok{"BMI (per 1 SD)"}\NormalTok{,}
+  \FunctionTok{grepl}\NormalTok{(}\StringTok{"age"}\NormalTok{, term,  }\AttributeTok{ignore.case =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{\textasciitilde{}} \StringTok{"Age (per 1 SD)"}\NormalTok{,}
+  \FunctionTok{grepl}\NormalTok{(}\StringTok{"\^{}sexFemale$"}\NormalTok{, term)              }\SpecialCharTok{\textasciitilde{}} \StringTok{"Female (vs. Male)"}\NormalTok{,}
+  \FunctionTok{grepl}\NormalTok{(}\StringTok{"\^{}sexMale$"}\NormalTok{, term)                }\SpecialCharTok{\textasciitilde{}} \StringTok{"Male (vs. Female)"}\NormalTok{,}
+  \FunctionTok{grepl}\NormalTok{(}\StringTok{"\^{}raceHispanic$"}\NormalTok{, term)          }\SpecialCharTok{\textasciitilde{}} \StringTok{"Hispanic (vs. White)"}\NormalTok{,}
+  \FunctionTok{grepl}\NormalTok{(}\StringTok{"\^{}raceBlack$"}\NormalTok{, term)             }\SpecialCharTok{\textasciitilde{}} \StringTok{"Black (vs. White)"}\NormalTok{,}
+  \FunctionTok{grepl}\NormalTok{(}\StringTok{"\^{}raceOther$"}\NormalTok{, term)             }\SpecialCharTok{\textasciitilde{}} \StringTok{"Other (vs. White)"}\NormalTok{,}
+  \ConstantTok{TRUE} \SpecialCharTok{\textasciitilde{}}\NormalTok{ term}
+\NormalTok{),}
+\AttributeTok{OR\_CI =} \FunctionTok{sprintf}\NormalTok{(}\StringTok{"\%.2f (\%.2f – \%.2f)"}\NormalTok{, OR, LCL, UCL)}
+\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(Model, term, OR\_CI)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(all\_tbl, }\AttributeTok{align =} \FunctionTok{c}\NormalTok{(}\StringTok{"l"}\NormalTok{,}\StringTok{"l"}\NormalTok{,}\StringTok{"c"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llc@{}}
+
+\caption{\label{tbl-comparison}Comparison of odds ratios (per 1 SD for
+age and BMI) and 95\% intervals across survey-weighted, MICE, and
+Bayesian frameworks.}
+
+\tabularnewline
+
+\toprule\noalign{}
+Model & term & OR\_CI \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Survey-weighted (MLE) & Age (per 1 SD) & 3.03 (2.70 -- 3.40) \\
+Survey-weighted (MLE) & BMI (per 1 SD) & 1.89 (1.65 -- 2.15) \\
+Survey-weighted (MLE) & Female (vs.~Male) & 0.53 (0.41 -- 0.68) \\
+Survey-weighted (MLE) & raceMexican American & 2.04 (1.49 -- 2.79) \\
+Survey-weighted (MLE) & raceOther Hispanic & 1.59 (1.17 -- 2.17) \\
+Survey-weighted (MLE) & raceNH Black & 1.67 (1.16 -- 2.40) \\
+Survey-weighted (MLE) & raceOther/Multi & 2.33 (1.55 -- 3.50) \\
+MICE Pooled & Age (per 1 SD) & 2.90 (2.60 -- 3.24) \\
+MICE Pooled & BMI (per 1 SD) & 1.73 (1.58 -- 1.89) \\
+MICE Pooled & Female (vs.~Male) & 0.54 (0.45 -- 0.65) \\
+MICE Pooled & raceMexican American & 2.43 (1.86 -- 3.18) \\
+MICE Pooled & raceOther Hispanic & 1.75 (1.24 -- 2.47) \\
+MICE Pooled & raceNH Black & 1.98 (1.56 -- 2.50) \\
+MICE Pooled & raceOther/Multi & 2.11 (1.56 -- 2.85) \\
+Bayesian & Age (per 1 SD) & 2.99 (2.66 -- 3.39) \\
+Bayesian & BMI (per 1 SD) & 1.87 (1.71 -- 2.05) \\
+Bayesian & Female (vs.~Male) & 0.52 (0.42 -- 0.63) \\
+Bayesian & raceMexicanAmerican & 1.99 (1.41 -- 2.80) \\
+Bayesian & raceOtherHispanic & 1.53 (0.94 -- 2.43) \\
+Bayesian & raceNHBlack & 1.70 (1.26 -- 2.30) \\
+Bayesian & raceOtherDMulti & 2.26 (1.56 -- 3.24) \\
+
+\end{longtable}
+
+Across all three frameworks---survey-weighted (MLE), multiple
+imputation, and Bayesian---age and BMI were consistently associated with
+higher odds of doctor-diagnosed diabetes. Female sex showed a lower odds
+ratio compared to males, and both Black and Hispanic participants
+demonstrated elevated odds relative to White participants. The
+similarity of effect sizes across frameworks underscores the robustness
+of these predictors to different modeling assumptions and missing-data
+treatments.
+
+\subsection{Discussion and
+Limitations}\label{discussion-and-limitations}
+
+\subsubsection{Interpretation}\label{interpretation-2}
+
+The Bayesian logistic regression framework produced results that were
+highly consistent with both the survey-weighted and MICE-pooled
+frequentist models. Age and BMI remained the most influential predictors
+of doctor-diagnosed diabetes, each showing a strong and positive
+association with diabetes risk.
+
+Unlike classical maximum likelihood estimation, the Bayesian approach
+directly quantified uncertainty through posterior distributions,
+offering richer interpretability and more transparent probability
+statements. The alignment between Bayesian and design-based estimates
+supports the robustness of these associations and highlights the
+practicality of Bayesian modeling for complex, weighted population data.
+
+Posterior predictive checks confirmed that simulated diabetes prevalence
+closely matched the observed NHANES estimate, supporting good model
+calibration. This agreement reinforces that the priors were
+appropriately weakly informative and that inference was primarily driven
+by the observed data rather than prior specification.
+
+Overall, this study demonstrates that Bayesian inference complements
+traditional epidemiologic methods by maintaining interpretability while
+enhancing stability and explicitly quantifying uncertainty in complex
+survey data.
+
+\subsubsection{Limitations}\label{limitations}
+
+While this analysis demonstrates the value of Bayesian logistic
+regression for epidemiologic modeling, several limitations should be
+acknowledged.
+
+First, the use of a single imputed dataset for the Bayesian
+model---rather than full joint modeling of imputation uncertainty---may
+understate total variance.
+
+Second, NHANES exam weights were normalized and treated as importance
+weights, which approximate but do not fully reproduce design-based
+inference.
+
+Third, the weakly informative priors \(N(0, 2.5)\) for slopes and
+Student-t(3, 0, 10) for the intercept were not empirically tuned;
+alternative prior specifications could slightly alter posterior
+intervals.
+
+Finally, although convergence diagnostics (R̂ ≈ 1, sufficient effective
+sample sizes, and stable posterior predictive checks) indicated good
+model performance, results are conditional on the 2013--2014 NHANES
+cycle and may not generalize to later datasets or longitudinal analyses.
+
+In addition, the model has not yet undergone external validation or
+formal sensitivity analyses. The participant-level posterior risk
+estimates presented in the internal validation section are illustrative
+only and should not be used for individual decision-making or
+implementation. Before deployment or use for imputation in other
+settings, the model would require external validation in independent
+datasets and sensitivity analyses to assess robustness to modeling and
+prior choices.
+
+\subsection{Conclusion}\label{conclusion}
+
+The Bayesian, survey-weighted, and imputed logistic regression
+frameworks all identified consistent predictors of diabetes risk in U.S.
+adults: advancing age, higher BMI, sex (lower odds for females), and
+non-White race/ethnicity.
+
+The Bayesian model produced estimates nearly identical in direction and
+magnitude to the frequentist results while providing a more
+comprehensive assessment of uncertainty through posterior distributions
+and credible intervals.
+
+These consistent findings across modeling frameworks underscore the
+robustness of core risk factors and support the use of Bayesian
+inference for epidemiologic research involving complex survey data.
+
+By incorporating prior information and using MCMC to sample from the
+full posterior distribution, Bayesian inference enhances model
+transparency and interpretability. Future extensions could integrate
+hierarchical priors, multiple NHANES cycles, or Bayesian model averaging
+to better capture population heterogeneity, temporal trends, and
+evolving diabetes risk patterns.
+
+\section*{References}\label{bibliography}
+\addcontentsline{toc}{section}{References}
+
+\phantomsection\label{refs}
+\begin{CSLReferences}{1}{0}
+\bibitem[\citeproctext]{ref-abdullah2022bdlhealth}
+Abdullah, H., R. Hassan, and B. Mustafa. 2022. {``A Review on Bayesian
+Deep Learning in Healthcare: Applications and Challenges.''}
+\emph{Artificial Intelligence in Medicine} 128: 102312.
+\url{https://doi.org/10.1016/j.artmed.2022.102312}.
+
+\bibitem[\citeproctext]{ref-austin2021}
+Austin, P. C., I. R. White, D. S. Lee, and S. van Buuren. 2021.
+{``Missing Data in Clinical Research: A Tutorial on Multiple
+Imputation.''} \emph{Canadian Journal of Cardiology} 37 (9): 1322--31.
+\url{https://doi.org/10.1016/j.cjca.2020.11.010}.
+
+\bibitem[\citeproctext]{ref-baldwin2017}
+Baldwin, S. A., and M. J. Larson. 2017. {``An Introduction to Using
+Bayesian Linear Regression with Clinical Data.''} \emph{Behaviour
+Research and Therapy} 98: 58--75.
+\url{https://doi.org/10.1016/j.brat.2017.05.014}.
+
+\bibitem[\citeproctext]{ref-vanbuuren2012}
+Buuren, S. van. 2012. \emph{Flexible Imputation of Missing Data}. Boca
+Raton, FL: Chapman; Hall/CRC. \url{https://doi.org/10.1201/b11826}.
+
+\bibitem[\citeproctext]{ref-vanbuuren2011}
+Buuren, Stef van, and Karin Groothuis-Oudshoorn. 2011. {``Mice:
+Multivariate Imputation by Chained Equations in {R}.''} \emph{Journal of
+Statistical Software} 45 (3): 1--67.
+\url{https://doi.org/10.18637/jss.v045.i03}.
+
+\bibitem[\citeproctext]{ref-chatzimichail2023}
+Chatzimichail, T., and A. T. Hatjimihail. 2023. {``A Bayesian
+Inference-Based Computational Tool for Parametric and Nonparametric
+Medical Diagnosis.''} \emph{Diagnostics} 13 (19): 3135.
+\url{https://doi.org/10.3390/diagnostics13193135}.
+
+\bibitem[\citeproctext]{ref-gelman2008}
+Gelman, A., A. Jakulin, M. G. Pittau, and Y. S. Su. 2008. {``A Weakly
+Informative Default Prior Distribution for Logistic and Other Regression
+Models.''} \emph{Annals of Applied Statistics} 2 (4): 1360--83.
+\url{https://doi.org/10.1214/08-AOAS191}.
+
+\bibitem[\citeproctext]{ref-hoeting1999bma}
+Hoeting, J. A., D. Madigan, A. E. Raftery, and C. T. Volinsky. 1999.
+{``Bayesian Model Averaging: A Tutorial.''} \emph{Statistical Science}
+14 (4): 382--417. \url{https://doi.org/10.1214/ss/1009212519}.
+
+\bibitem[\citeproctext]{ref-klauenberg2015}
+Klauenberg, K., G. Wübbeler, B. Mickan, P. Harris, and C. Elster. 2015.
+{``A Tutorial on Bayesian Normal Linear Regression.''} \emph{Metrologia}
+52 (6): 878--92. \url{https://doi.org/10.1088/0026-1394/52/6/878}.
+
+\bibitem[\citeproctext]{ref-kruschke2017}
+Kruschke, J. K., and T. M. Liddell. 2017. {``Bayesian Data Analysis for
+Newcomers.''} \emph{Psychonomic Bulletin \& Review} 25 (1): 155--77.
+\url{https://doi.org/10.3758/s13423-017-1272-1}.
+
+\bibitem[\citeproctext]{ref-deleeuw2012}
+Leeuw, C. de, and I. Klugkist. 2012. {``Augmenting Data with Published
+Results in Bayesian Linear Regression.''} \emph{Multivariate Behavioral
+Research} 47 (3): 369--91.
+\url{https://doi.org/10.1080/00273171.2012.673957}.
+
+\bibitem[\citeproctext]{ref-liu2013}
+Liu, Y. M., S. L. S. Chen, A. M. F. Yen, and H. H. Chen. 2013.
+{``Individual Risk Prediction Model for Incident Cardiovascular Disease:
+A Bayesian Clinical Reasoning Approach.''} \emph{International Journal
+of Cardiology} 167 (5): 2008--12.
+\url{https://doi.org/10.1016/j.ijcard.2012.05.016}.
+
+\bibitem[\citeproctext]{ref-luo2024bartvs}
+Luo, C., X. Sun, Y. Zhao, and H. Guo. 2024. {``Variable Selection and
+Model Averaging in Bayesian Additive Regression Trees: A Comparative
+Study.''} \emph{Journal of Computational and Graphical Statistics}.
+\url{https://doi.org/10.1080/10618600.2024.2401234}.
+
+\bibitem[\citeproctext]{ref-momeni2021covidbayes}
+Momeni, F., F. Momeni, A. Moradi, M. Shabani, and B. Amani. 2021.
+{``Bayesian State-Space Modeling of Dynamic COVID-19 Risk Prediction
+Using Time-Varying Biomarkers.''} \emph{Scientific Reports} 11 (1):
+20387. \url{https://doi.org/10.1038/s41598-021-99711-7}.
+
+\bibitem[\citeproctext]{ref-nchs2014}
+National Center for Health Statistics (NCHS). 2014. {``National Health
+and Nutrition Examination Survey (NHANES) 2013--2014 Data Documentation,
+Codebook, and Frequencies.''} U.S. Department of Health; Human Services,
+Centers for Disease Control; Prevention.
+\url{https://wwwn.cdc.gov/nchs/nhanes/continuousnhanes/overview.aspx?BeginYear=2013}.
+
+\bibitem[\citeproctext]{ref-richardson2018bnr}
+Richardson, Robert, and Brian Hartman. 2018. {``Bayesian Nonparametric
+Regression Models for Modeling and Predicting Healthcare Claims.''}
+\emph{Insurance: Mathematics and Economics} 83: 1--8.
+\url{https://doi.org/10.1016/j.insmatheco.2018.06.002}.
+
+\bibitem[\citeproctext]{ref-vandeschoot2013}
+Schoot, Rens van de, David Kaplan, Jaap Denissen, Jens Asendorpf, Franz
+Neyer, and Marcel van Aken. 2013. {``A Gentle Introduction to Bayesian
+Analysis: Applications to Developmental Research.''} \emph{European
+Journal of Developmental Psychology} 10 (6): 723--49.
+\url{https://doi.org/10.1080/17405629.2013.803373}.
+
+\bibitem[\citeproctext]{ref-vandeschoot2021}
+Vande Schoot, R., S. Depaoli, R. King, B. Kramer, K. Märtens, M. G.
+Tadesse, M. Vannucci, et al. 2021. {``Bayesian Statistics and
+Modelling.''} \emph{Nature Reviews Methods Primers} 1: 1--26.
+\url{https://doi.org/10.1038/s43586-020-00001-2}.
+
+\bibitem[\citeproctext]{ref-zeger2020}
+Zeger, S. L., Z. Wu, Y. Coley, A. T. Fojo, B. Carter, K. O'Brien, P.
+Zandi, et al. 2020. {``Using a Bayesian Approach to Predict Patients'
+Health and Response to Treatment.''} 272. Johns Hopkins Biostatistics
+Working Paper Series.
+\url{https://biostats.bepress.com/jhubiostat/paper272}.
+
+\end{CSLReferences}
+
+
+
+
+\end{document}

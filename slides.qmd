@@ -13,7 +13,7 @@ format:
     css: docs/slides.css
     incremental: true
     code-fold: true
-    code-summary: "Show the code"
+    code-summary: "Reveal Code"
     highlight-style: github
     code-overflow: wrap
     auto-stretch: true
@@ -62,12 +62,17 @@ execute:
 
 #### Bayesian Logistic Regression
 
-\[
-\text{logit}(P(Y=1)) = \beta_0 + \beta_1(\text{age}_c) + \beta_2(\text{bmi}_c) + \beta_3(\text{sex}) + \beta_4(\text{race})
-\]
+$$
+\text{logit}\big(P(Y = 1)\big) = 
+\beta_0 + 
+\beta_1(\text{age}_c) + 
+\beta_2(\text{bmi}_c) + 
+\beta_3(\text{sex}) + 
+\beta_4(\text{race})
+$$
 
-- **Intercept prior:** Student’s *t*(3, 0, 10) — heavy tails allow occasional large effects *(Van de Schoot et al., 2013).*  
-- **Regression coefficients prior:** Normal(0, 2.5) — weakly informative, constraining extreme values *(Van de Schoot et al., 2021).*  
+- **Intercept prior:** Student’s *t*(3, 0, 10) — heavy tails allow occasional large effects [@vandeschoot2013].  
+- **Regression coefficients prior:** Normal(0, 2.5) — weakly informative, constraining extreme values [@vandeschoot2021].  
 
 :::
 

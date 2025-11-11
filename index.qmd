@@ -17,6 +17,10 @@ execute:
 format:
   html:
     code-fold: true 
+  pdf: 
+    toc: true
+    number-sections: true
+    geometry: margin=1in
 
 bibliography: references.bib
 reference-section-title: "References"
@@ -334,32 +338,30 @@ knitr::kable(
 #| message: false
 #| warning: false
 
-# -----------------------------
-# Variable descriptions (with `code` formatting for names)
-# -----------------------------
 var_tbl <- tribble(
-  ~Variable,      ~Description,                                                                                                   ~Type,         ~Origin,
-  "`diabetes_dx`","Type 2 diabetes diagnosis (1 = Yes, 0 = No) derived from `DIQ010`; gestational diabetes excluded.",           "Categorical", "Derived from `DIQ010`",
-  "`age`",        "Age in years.",                                                                                                "Continuous",  "NHANES `RIDAGEYR`",
-  "`bmi`",        "Body Mass Index (kg/m^2) computed from measured height and weight.",                                           "Continuous",  "NHANES `BMXBMI`",
-  "`bmi_cat`",    "BMI categories: Underweight, Normal, Overweight, Obesity I–III (`Normal` is reference in models).",            "Categorical", "Derived from `bmi`",
-  "`sex`",        "Sex of participant (`Male`, `Female`).",                                                                       "Categorical", "NHANES `RIAGENDR`",
-  "`race`", "race/Ethnicity collapsed to four levels: White, Black, Hispanic, Other.", "Categorical", "Derived from `RIDRETH1`",
-  "`WTMEC2YR`",   "Examination sample weight for Mobile Examination Center participants.",                                        "Weight",      "NHANES design",
-  "`SDMVPSU`",    "Primary Sampling Unit used for variance estimation in the complex survey design.",                             "Design",      "NHANES design",
-  "`SDMVSTRA`",   "Stratum identifier used to define strata for the complex survey design.",                                      "Design",      "NHANES design",
-  "`age_c`",      "Centered and standardized age (z-score).",                                                                     "Continuous",  "Derived from `age`",
-  "`bmi_c`",      "Centered and standardized BMI (z-score).",                                                                     "Continuous",  "Derived from `bmi`"
+  ~Variable,   ~Description,                                                                                         ~Type,         ~Origin,
+  "diabetes_dx","Type 2 diabetes diagnosis (1 = Yes, 0 = No) derived from DIQ010; gestational diabetes excluded.",  "Categorical", "Derived from DIQ010",
+  "age",        "Age in years.",                                                                                    "Continuous",  "NHANES RIDAGEYR",
+  "bmi",        "Body Mass Index (kg/m^2) computed from measured height and weight.",                               "Continuous",  "NHANES BMXBMI",
+  "bmi_cat",    "BMI categories: Underweight, Normal, Overweight, Obesity I–III (Normal is reference in models).",  "Categorical", "Derived from bmi",
+  "sex",        "Sex of participant (Male, Female).",                                                               "Categorical", "NHANES RIAGENDR",
+  "race",       "Race/ethnicity collapsed to four levels: White, Black, Hispanic, Other.",                          "Categorical", "Derived from RIDRETH1",
+  "WTMEC2YR",   "Examination sample weight for Mobile Examination Center participants.",                            "Weight",      "NHANES design",
+  "SDMVPSU",    "Primary Sampling Unit used for variance estimation in the complex survey design.",                 "Design",      "NHANES design",
+  "SDMVSTRA",   "Stratum identifier used to define strata for the complex survey design.",                          "Design",      "NHANES design",
+  "age_c",      "Centered and standardized age (z-score).",                                                         "Continuous",  "Derived from age",
+  "bmi_c",      "Centered and standardized BMI (z-score).",                                                         "Continuous",  "Derived from bmi"
 )
 
 kbl(
   var_tbl,
   caption = "Variable Descriptions: Adult Analytic Dataset",
   align = c("l","l","l","l"),
-  escape = FALSE
+  escape = TRUE   # or just remove this line, TRUE is the default
 ) %>%
-  kable_styling(full_width = FALSE, position = "center", bootstrap_options = c("striped","hover")) %>%
-  group_rows("Analysis variables", 1, 6) %>%              # <-- updated range (now 6 analysis rows)
+  kable_styling(full_width = FALSE, position = "center",
+                bootstrap_options = c("striped","hover")) %>%
+  group_rows("Analysis variables", 1, 6) %>%
   group_rows("Survey design variables", 7, 9) %>%
   group_rows("Derived variables", 10, 11)
 ```
