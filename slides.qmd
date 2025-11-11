@@ -54,7 +54,7 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-## Methods — Study Design
+## Study Design
 
 -   **Dataset:** NHANES 2013–2014
     -   n = 5,769 adults aged ≥20 years
@@ -65,7 +65,7 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-## Methods — Dataset Overview
+## Dataset Overview
 
 ::: {style="font-size: 0.75em"}
 -   **Source:** National Health and Nutrition Examination Survey (NHANES) 2013–2014\
@@ -85,7 +85,7 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-## Methods — Data Preparation
+## Data Preparation
 
 -   **Missing Data:**
 
@@ -105,7 +105,7 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-## Methods — Modeling Workflow
+## Modeling Workflow
 ::: {style="font-size: 0.7em"}
 
 ::: panel-tabset
@@ -164,7 +164,7 @@ Step 6 — Interpretation
 
 ------------------------------------------------------------------------
 
-## Methods — Exploratory Data Analysis (EDA)
+## Exploratory Data Analysis (EDA)
 
 ::: {style="font-size: 0.8em"}
 -   **Missingness**
@@ -182,7 +182,7 @@ Step 6 — Interpretation
 
 ------------------------------------------------------------------------
 
-## Methods — Modeling Framework
+## Modeling Framework
 
 **Approaches Compared**
 
@@ -243,7 +243,7 @@ pp_check(bayes_fit, nsamples = 50)  # posterior predictive check
 
 ------------------------------------------------------------------------
 
-## Results — Model Comparison
+## Model Comparison
 
 -   All three modeling frameworks identified **the same key predictors** of diabetes risk: higher age, higher BMI, sex, and race/ethnicity.\
 -   **Effect sizes** were nearly identical across survey-weighted, MICE-imputed, and Bayesian models.\
@@ -251,7 +251,7 @@ pp_check(bayes_fit, nsamples = 50)  # posterior predictive check
 
 ------------------------------------------------------------------------
 
-## Results — Model Comparison Summary
+## Model Comparison Summary
 
 ::: {style="font-size: 0.8em"}
 -   All frameworks identified the same significant predictors: **age, BMI, sex, and race/ethnicity.**
@@ -270,7 +270,7 @@ pp_check(bayes_fit, nsamples = 50)  # posterior predictive check
 
 ------------------------------------------------------------------------
 
-## Results — Bayesian Performance
+## Bayesian Performance
 
 -   The Bayesian model showed **excellent convergence and calibration**, with results closely matching the survey-weighted and imputed logistic regressions.
 -   Parameter estimates were stable, and credible intervals provided clear uncertainty quantification.

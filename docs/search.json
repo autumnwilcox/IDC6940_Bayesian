@@ -879,7 +879,7 @@
     "href": "slides.html#modeling-workflow",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Modeling Workflow",
-    "text": "Modeling Workflow\n\n\nData Acquisition\n\nImported NHANES 2013–2014 components: DEMO_H (Demographics), BMX_H (Body Measures), and DIQ_H (Diabetes Questionnaire).\n\nMerged using the participant ID variable SEQN.\n\nPreprocessing\n\nFiltered adults aged ≥20 years (n = 5,769).\n\nStandardized continuous variables (Age, BMI).\n\nRecoded categorical variables (Sex, Race/Ethnicity).\n\nImputation\n\nAddressed missingness using Multiple Imputation by Chained Equations (MICE).\n\nGenerated complete dataset for consistent use across models.\n\nModeling Frameworks\n\nSurvey-weighted logistic regression (design-based MLE)\n\nMICE-imputed logistic regression (Rubin’s rules)\n\nBayesian logistic regression (brms, Hamiltonian Monte Carlo)\n\nDiagnostics & Evaluation\n\nConvergence metrics: ( ), ESS &gt; 2000\n\nPosterior predictive checks for model calibration\n\nBayesian (R^2 )\n\nInterpretation & Reporting\n\nCompared coefficient estimates and uncertainty across all frameworks.\n\nSummarized key predictors and implications for public health."
+    "text": "Modeling Workflow\n\n\nSteps 1-3Steps 4-6\n\n\nStep 1 — Data Acquisition\n\nNHANES 2013–2014 (DEMO_H, BMX_H, DIQ_H)\nAdults aged ≥20 years (n = 5,769)\nMerged via participant ID SEQN\n\nStep 2 — Preprocessing\n\nStandardized age and BMI\nRecoded sex and race/ethnicity\nCreated z-scores for comparability\n\nStep 3 — Imputation\n\nAddressed missingness using MICE\nProduced a complete, analysis-ready dataset\n\n\n\nStep 4 — Modeling Frameworks\n\nSurvey-Weighted Logistic Regression (design-based MLE)\nMICE-Imputed Logistic Regression (Rubin’s rules)\nBayesian Logistic Regression (brms, Hamiltonian Monte Carlo)\n\nStep 5 — Diagnostics & Evaluation\n\n( ), ESS &gt; 2000\nPosterior predictive checks for calibration\nBayesian (R^2 )\n\nStep 6 — Interpretation\n\nCompared coefficients across models\nIdentified consistent diabetes predictors"
   },
   {
     "objectID": "slides.html#methods-modeling-workflow",
@@ -887,5 +887,61 @@
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Methods — Modeling Workflow",
     "text": "Methods — Modeling Workflow\n\n\nSteps 1-3Steps 4-6\n\n\nStep 1 — Data Acquisition\n\nNHANES 2013–2014 (DEMO_H, BMX_H, DIQ_H)\nAdults aged ≥20 years (n = 5,769)\nMerged via participant ID SEQN\n\nStep 2 — Preprocessing\n\nStandardized age and BMI\nRecoded sex and race/ethnicity\nCreated z-scores for comparability\n\nStep 3 — Imputation\n\nAddressed missingness using MICE\nProduced a complete, analysis-ready dataset\n\n\n\nStep 4 — Modeling Frameworks\n\nSurvey-Weighted Logistic Regression (design-based MLE)\nMICE-Imputed Logistic Regression (Rubin’s rules)\nBayesian Logistic Regression (brms, Hamiltonian Monte Carlo)\n\nStep 5 — Diagnostics & Evaluation\n\n( ), ESS &gt; 2000\nPosterior predictive checks for calibration\nBayesian (R^2 )\n\nStep 6 — Interpretation\n\nCompared coefficients across models\nIdentified consistent diabetes predictors"
+  },
+  {
+    "objectID": "slides.html#study-design",
+    "href": "slides.html#study-design",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Study Design",
+    "text": "Study Design\n\nDataset: NHANES 2013–2014\n\nn = 5,769 adults aged ≥20 years\nVariables: age, BMI, sex, race/ethnicity, and doctor-diagnosed diabetes\n\nSurvey Design:\n\nComplex, multistage sampling with strata, clusters, and sample weights\nWeights normalized and treated as importance weights in modeling"
+  },
+  {
+    "objectID": "slides.html#dataset-overview",
+    "href": "slides.html#dataset-overview",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Dataset Overview",
+    "text": "Dataset Overview\n\n\nSource: National Health and Nutrition Examination Survey (NHANES) 2013–2014\n\nCohort: 5,769 adults aged ≥20 years\n\nMerged Components:\n\nDEMO_H (Demographics)\n\nBMX_H (Body Measures)\n\nDIQ_H (Diabetes Questionnaire)\n\nOutcome: Doctor-diagnosed diabetes (diabetes_dx)\n\nPredictors:\n\nAge (standardized)\n\nBMI (standardized)\n\nSex (binary: Female vs Male)\n\nRace/Ethnicity (Non-Hispanic White = reference)\n\nPurpose: Create a unified analytic dataset suitable for survey-weighted, imputed, and Bayesian logistic regression models."
+  },
+  {
+    "objectID": "slides.html#data-preparation",
+    "href": "slides.html#data-preparation",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Data Preparation",
+    "text": "Data Preparation\n\nMissing Data:\n\nAddressed using Multiple Imputation by Chained Equations (MICE)\n\nStandardization:\n\nContinuous predictors (age, BMI) converted to z-scores for comparability\n\nRecoding:\n\nDemographic variables simplified into analysis categories (e.g., race/ethnicity groups, binary sex indicator)\n\nGoal:\n\nCreate a clean, analysis-ready dataset consistent across modeling frameworks"
+  },
+  {
+    "objectID": "slides.html#exploratory-data-analysis-eda",
+    "href": "slides.html#exploratory-data-analysis-eda",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Exploratory Data Analysis (EDA)",
+    "text": "Exploratory Data Analysis (EDA)\n\n\nMissingness\n\nLow overall: ~3–4% in BMI and diabetes variables\n\nAddressed via Multiple Imputation by Chained Equations (MICE)\n\nOutcome Distribution\n\nDiabetes prevalence ≈ 11% among U.S. adults (2013–2014)\n\nPredictor Patterns\n\nOlder adults and higher BMI groups show higher diabetes rates\n\nNon-Hispanic Black and Hispanic groups have elevated prevalence\n\nFemales slightly lower prevalence than males\n\nKey Takeaway\n\nThe relationships among age, BMI, sex, and race align with prior epidemiologic research, suggesting a sound analytic foundation."
+  },
+  {
+    "objectID": "slides.html#modeling-framework",
+    "href": "slides.html#modeling-framework",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Modeling Framework",
+    "text": "Modeling Framework\nApproaches Compared\n\nSurvey-weighted logistic regression\nMICE-imputed logistic regression (Rubin’s rules)\nBayesian logistic regression (brms, Hamiltonian Monte Carlo)\n\nGoal: Compare coefficient stability, uncertainty quantification, and overall model fit across frameworks."
+  },
+  {
+    "objectID": "slides.html#model-comparison",
+    "href": "slides.html#model-comparison",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Model Comparison",
+    "text": "Model Comparison\n\nAll three modeling frameworks identified the same key predictors of diabetes risk: higher age, higher BMI, sex, and race/ethnicity.\n\nEffect sizes were nearly identical across survey-weighted, MICE-imputed, and Bayesian models.\n\nMinor variation in interval widths reflects different treatments of uncertainty."
+  },
+  {
+    "objectID": "slides.html#model-comparison-summary",
+    "href": "slides.html#model-comparison-summary",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Model Comparison Summary",
+    "text": "Model Comparison Summary\n\n\nAll frameworks identified the same significant predictors: age, BMI, sex, and race/ethnicity.\nBayesian estimates matched frequentist models in magnitude and direction, confirming robustness.\nMinor differences in interval width reflect each model’s treatment of uncertainty.\n\n\n\n\n\n\n\n\n\n\nPredictor\nSurvey-Weighted OR (95% CI)\nMICE-Imputed OR (95% CI)\nBayesian OR (95% CrI)\n\n\n\n\nAge (per 1 SD)\n3.02 (2.60–3.54)\n3.01 (2.58–3.50)\n3.00 (2.57–3.48)\n\n\nBMI (per 1 SD)\n1.87 (1.66–2.10)\n1.85 (1.64–2.08)\n1.86 (1.65–2.09)\n\n\nFemale (vs Male)\n0.52 (0.44–0.61)\n0.53 (0.45–0.62)\n0.52 (0.44–0.61)\n\n\nNon-White (vs NHW)\n1.40 (1.18–1.66)\n1.42 (1.20–1.68)\n1.41 (1.19–1.67)"
+  },
+  {
+    "objectID": "slides.html#bayesian-performance",
+    "href": "slides.html#bayesian-performance",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Bayesian Performance",
+    "text": "Bayesian Performance\n\nThe Bayesian model showed excellent convergence and calibration, with results closely matching the survey-weighted and imputed logistic regressions.\nParameter estimates were stable, and credible intervals provided clear uncertainty quantification."
   }
 ]
