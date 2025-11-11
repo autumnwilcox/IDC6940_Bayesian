@@ -1,18 +1,22 @@
 ---
 title: "Bayesian Logistic Regression for Diabetes Risk (NHANES 2013–2014)"
-subtitle: "Capstone Presentation"
+subtitle: "Capstone Presentation — Bayesian Modeling of NHANES 2013–2014 Data"
 author:
-  - "Namita Mishra"
-  - "Autumn Wilcox"
-advisor: "Dr. Ashraf Cohen"
-date: '`r Sys.Date()`'
+  - "Namita Mishra  \nUniversity of West Florida"
+  - "Autumn Wilcox  \nUniversity of West Florida"
+advisor: "Advisor: Dr. Ashraf Cohen"
 format:
   revealjs:
     theme: simple
     slide-number: true
     transition: slide
-    css: slides.css
-    fontSize: 20px 
+    css: docs/slides.css
+    incremental: true
+    code-fold: true
+    code-summary: "Show the code"
+    highlight-style: github
+    code-overflow: wrap
+    auto-stretch: true
 bibliography: references.bib
 execute:
   warning: false
@@ -20,99 +24,68 @@ execute:
   echo: false
 ---
 
-------------------------------------------------------------------------
+### Aim
 
-## Slide 1: Introduction
+- Early identification of risk factors is key for diabetes prevention.  
+- Apply **Bayesian logistic regression** to predict diabetes risk using NHANES data.  
 
--   Diabetes is a chronic disease with rising global prevalence.
+---
 
--   Early identification of risk factors is key to prevention and control.
+### Frequentist Methods
 
--   Bayesian methods allow flexible modeling with uncertainty quantification.
+- Relies on **maximum likelihood estimation (MLE)**.  
+- Can be unstable with **missing data, small samples, or quasi-separation**.  
+- Interprets probability as **long-run relative frequency**.  
 
--   **Aim:** Predict diabetes diagnosis using Bayesian logistic regression with imputed data .
+---
 
-    ![](Population%20Prevalence%20vs%20Proportion%20of%20Diabetes%20=%201.png){width="437"}
+### Bayesian Approach
 
-------------------------------------------------------------------------
+- Provides **flexibility** and **regularization** for stable estimation.  
+- Quantifies **uncertainty** under missingness and imputation  
+  *(Baldwin & Larson, 2017; Kruschke & Liddell, 2017)*.  
+- Incorporates **priors** and yields **credible intervals** via MCMC.  
+- Facilitates **model checking, variable selection, and uncertainty quantification**.  
+- Interprets probability as a **degree of belief**.  
 
-## Slide 2: Data Source
+---
 
--   Data: *National Health and Nutrition Examination Survey (NHANES)*
+### Bayesian Model
 
--   Adult dataset (\>20 years).
+::: panel-tabset
 
--   Variables included:
+#### Bayes’ Theorem
 
-    -   **Demographics:** age, sex, race
+- **Bayes’ theorem** updates prior beliefs with observed data to obtain posterior probabilities.  
+- Coefficients are estimated using **posterior means** and **95% credible intervals**.  
+- A **logistic link function** is applied for the binary diabetes outcome.  
 
-    -   **Clinical:** BMI
+#### Bayesian Logistic Regression
 
-    -   **Outcome:** `diabetes_dx` (diagnosis: 0 = No, 1 = Yes)
+\[
+\text{logit}(P(Y=1)) = \beta_0 + \beta_1(\text{age}_c) + \beta_2(\text{bmi}_c) + \beta_3(\text{sex}) + \beta_4(\text{race})
+\]
 
-        ``` r
-        head(adult)
-        ```
+- **Intercept prior:** Student’s *t*(3, 0, 10) — heavy tails allow occasional large effects *(Van de Schoot et al., 2013).*  
+- **Regression coefficients prior:** Normal(0, 2.5) — weakly informative, constraining extreme values *(Van de Schoot et al., 2021).*  
 
-        ![](images/clipboard-126412730.png)
+:::
 
-------------------------------------------------------------------------
+---
 
-## Slide 3: Missing Data Assessment
+### Bayesian Logistic Regression (in R)
 
--   Overall missingness: \~4%, No variable completely missing, Missingness is not uniform![](images/clipboard-1235247978.png){width="537"}
--   Missingness pattern: likely *MAR* (Missing At Random).
--   Clustered mainly in bmi and diabetes_dx.
--   Decision: Apply **Multiple Imputation by Chained Equations (MICE)**.
+Implemented using **`brms`** (Stan backend).  
+Four MCMC chains × 1000 post-warmup draws = 4000 posterior samples.
 
-------------------------------------------------------------------------
+```r
+library(brms)
 
-## Slide 4: MICE Imputation
-
--   **Method:** Predictive mean matching (PMM) for continuous vars; logistic regression for binary.
-
--   **Iterations:** 5 imputations, 10 iterations each, combined imputed datasets using Rubin’s rules.
-
--   Distribution plots confirmed consistency with the original data.
-
-------------------------------------------------------------------------
-
-## Slide 5: Multivariate Imputation by Chained Equations (Pooled Logistic Regression)
-
-``` r
-  glm(diabetes_dx ~ age_c + bmi_c + sex + race, family = binomial()) }) pool_mi <- pool(fit_mi) 
-```
-
--   n=5,769 participants
-
--   Model significance: All predictors are statistically significant (p \< 0.01), suggesting a robust association across demographic and health variables.
-
-------------------------------------------------------------------------
-
-## Slide 5: Bayesian Logistic Regression
-
-Outcome: `diabetes_dx` (0 = non-diabetic, 1 = diabetic)
-
-Predictors: `age_c`, `bmi_c`, `sex`, `race`.
-
--   Intercept prior: student_t(3, 0, 10) — allows heavy tails for flexibility in the intercept estimate. @VanDeSchoot2013
-
--   Regression coefficients prior: normal(0, 2.5) — providing weakly informative regularization, constraining extreme values without overpowering the data. @VandeSchoot2021
-
--   Implemented in `brms` (Stan backend), Posterior draws = 4000 (4 chains × 1000 iterations). Logistic link function
-
-    ![](images/clipboard-87871382.png){width="332" height="60"}
-
-------------------------------------------------------------------------
-
-## Slide 6: Bayesian Model Equation
-
-``` r
-library(gt)
 priors <- c(
   set_prior("normal(0, 2.5)", class = "b"),
-  set_prior("student_t(3, 0, 10)", class = "Intercept") 
+  set_prior("student_t(3, 0, 10)", class = "Intercept")
 )
+
 bayes_fit <- brm(
   formula = diabetes_dx | weights(wt_norm) ~ age_c + bmi_c + sex + race,
   data    = adult_imp1,
@@ -120,47 +93,99 @@ bayes_fit <- brm(
   prior   = priors,
   chains  = 4, iter = 2000, seed = 123,
   control = list(adapt_delta = 0.95),
-  refresh = 0   # quiet Stan output
+  refresh = 0
 )
 ```
+---
 
-$$
-\text{logit}(P(Y=1)) = \beta_0 + \beta_1 \text{age}_c + \beta_2 \text{bmi}_c + \beta_3 \text{sex} + \beta_4 \text{race}
-$$
+### Data Source
 
--   ( P(Y=1) ): Probability of being diabetic
--   Coefficients estimated with posterior means and 95% credible intervals.
+### **NHANES 2013–2014 (Survey Weighted)**
+
+::::::: panel-tabset
+
+#### Exploratory Data Analysis
+
+- **Response variable:** `diabetes_dx` (binary) — Type 2 diagnosis (`DIQ010` “Doctor told you have diabetes`).  
+  *Excluded* `DIQ050` (insulin use) to avoid confounding.  
+
+- **Predictors:**  
+  - `BMXBMI` — Body Mass Index (kg/m²), continuous and categorized (`bmi_cat`)  
+  - `RIDAGEYR` — Age (continuous, 20–80 yrs)  
+  - `RIAGENDR` — Sex (Male / Female)  
+  - `RIDRETH1` — Ethnicity (5 levels → 4 analytic groups)
+
+#### Missing Data Analysis
+
+:::::: columns
+::: column
+**Missingness Plot**  
+![](images/clipboard-2873800077.png){width="427"}
+:::
+
+::: column
+- Overall missingness ≈ **4%**  
+- Missingness concentrated in **BMI (4.3%)** and **diabetes_dx (3.1%)**  
+- No variable completely missing  
+- Likely **MAR** (Missing At Random) pattern  
+:::
+::::::
+
+:::::::
+
+---
+
+### Multiple Imputation by Chained Equations (MICE)
+
+*(van Buuren & Groothuis-Oudshoorn, 2011; van Buuren, 2012)*  
+
+- Iteratively imputes incomplete variables using regression models.  
+- **PMM** for continuous, **logistic/polytomous** for categorical variables.  
+- 5 imputations × 10 iterations → stable, converged estimates.  
+- Pooled results combined using **Rubin’s rules**.  
+
+```r
+fit_mi <- with(data = imp,
+               exp = glm(diabetes_dx ~ age_c + bmi_c + sex + race,
+                         family = binomial()))
+pool_mi <- pool(fit_mi)
+```
+
+---
 
 ------------------------------------------------------------------------
 
-## Slide 7: Bayesian Model Diagnostics
+### Bayesian Model Diagnostics
 
--   Rhat ≈ 1.00 → convergence achieved.
+:::: panel-tabset
 
--   Bulk ESS \> 3000 for all parameters → good mixing.
+### MCMC Convergence
 
--   Trace plots showed stable sampling across chains.
+- Trace plots show **stable mixing** across chains.  
+- **R̂ ≈ 1.00** → convergence achieved.  
+- Effective sample sizes are **adequate across parameters**.  
 
--   Posterior distributions were unimodal and well-centered.
+---
 
-    ![](images/clipboard-353929734.png){width="366"}
+### Posterior Estimates
 
-------------------------------------------------------------------------
+- **Intercept:** −2.66 [−2.84, −2.50] → baseline log-odds  
+- **Age_c:** 1.09 [0.97, 1.22] → higher age ↑ risk  
+- **BMI_c:** 0.88 [0.76, 1.01] → higher BMI ↑ risk  
+- All predictors positive and precise (**narrow CIs**, CIs exclude 0).  
 
-## Slide 8: Posterior Estimates
+:::
+:::: 
 
-| Predictor | Estimate | 95% CI           | Interpretation                     |
-|-----------|----------|------------------|------------------------------------|
-| Intercept | -2.66    | \[-2.84, -2.50\] | Baseline log-odds                  |
-| Age_c     | 1.09     | \[0.97, 1.22\]   | ↑ age increases diabetes risk      |
-| BMI_c     | 0.88     | \[0.76, 1.01\]   | Higher BMI linked with higher risk |
-| HTN       | 0.65     | \[0.50, 0.81\]   | Hypertension predicts diabetes     |
+---
 
-------------------------------------------------------------------------
+### Posterior Predictive Distribution
 
-## Slide 9: Posterior Predictive Distribution
+::::: panel-tabset
 
-``` r
+### Code
+
+```r
 library(ggplot2)
 
 ggplot(combined_draws, aes(x = estimate, fill = type)) +
@@ -169,65 +194,83 @@ ggplot(combined_draws, aes(x = estimate, fill = type)) +
   theme_minimal(base_size = 13) +
   labs(
     title = "Prior vs Posterior Distributions",
-    x = "Coefficient estimate",
+    x = "Coefficient Estimate",
     y = "Density",
     fill = ""
   )
 ```
 
-![](Prior vs Posterior Distributions_bmi_age.png){width="426"}
+---
 
-------------------------------------------------------------------------
+### Interpretation
 
-**Interpretation:** The **blue curve**: estimated distribution of predicted diabetes probabilities. - **Red dashed lines**: lower and upper bounds of the **95% credible interval**, showing model uncertainty.
+- Strong positive relationship between **age**, **BMI**, and diabetes probability.  
+- **Posterior predictive checks** confirm good model fit.  
+- Imputation reduced bias and improved robustness.  
+- **Bayesian R² ≈ 0.13** → model explains ~13% of outcome variance.  
 
-------------------------------------------------------------------------
+        Estimate    Est.Error     Q2.5     Q97.5 
+        R2 0.1313   0.0127       0.1065   0.1561
 
-## Slide 10: Model Interpretation
+---
 
--   Strong positive relationship between **age**, **BMI**, and diabetes probability.
--   Posterior predictive checks confirm the model captures data patterns well.
--   Imputation reduced bias and improved model robustness.
+### Assumptions for Bayesian Logistic Regression
 
-------------------------------------------------------------------------
+::: nonincremental
+- **Data:** Binary outcome variable.  
+- **Observations:** Independent across participants.  
+- **Relationship:** Linear in the logit.  
+- **Collinearity:** No perfect multicollinearity among predictors.  
+- **Priors:** Properly chosen and informative enough for stabilization.  
+- **Posterior:** Proper, convergent fit.  
+- **Separation:** No complete separation in the data.  
+- **Model Checks:** Satisfactory posterior predictive performance.  
+:::
 
-## Slide 11: Limitations
+---
 
--   NHANES data are cross-sectional → no causal inference.
--   Potential unmeasured confounding (diet, physical activity).
--   Limited predictors → simplified model structure.
--   Imputation assumes MAR; violations may introduce bias.
+### Limitations
 
-------------------------------------------------------------------------
+::: nonincremental
+- NHANES is **cross-sectional**, so causal inference is limited.  
+- Potential **unmeasured confounders** (e.g., diet, activity) not included.  
+- Simplified model with a **limited set of predictors**.  
+- Imputation assumes **MAR**; violation could bias estimates.  
+:::
 
-## Slide 12: Conclusion
+---
 
--   Bayesian logistic regression effectively models uncertainty.
--   MICE improved data completeness and reliability.
--   Posterior predictions provide interpretable probabilities for diabetes risk.
--   Framework adaptable to other health outcomes (e.g., hypertension, obesity).
+### Conclusion
 
-------------------------------------------------------------------------
+- **Bayesian logistic regression** effectively models parameter uncertainty.  
+- **MICE** improved data completeness and reliability.  
+- Posterior predictions yield **interpretable diabetes risk probabilities**.  
+- Framework adaptable to other health outcomes (e.g., hypertension, obesity).  
 
-## Slide 13: References
+---
 
--   van Buuren S., Groothuis-Oudshoorn K. (2011). *MICE: Multivariate Imputation by Chained Equations in R.*
--   Gelman A., Hill J. (2007). *Data Analysis Using Regression and Multilevel/Hierarchical Models.*
--   NHANES Data Documentation (CDC).
--   McElreath R. (2020). *Statistical Rethinking: A Bayesian Course with Examples in R and Stan.*
+### References
 
-------------------------------------------------------------------------
+::: nonincremental
+- van Buuren, S. & Groothuis-Oudshoorn, K. (2011). *MICE: Multivariate Imputation by Chained Equations in R.*  
+- Gelman, A. & Hill, J. (2007). *Data Analysis Using Regression and Multilevel/Hierarchical Models.*  
+- McElreath, R. (2020). *Statistical Rethinking: A Bayesian Course with Examples in R and Stan.*  
+- NHANES Data Documentation (CDC).  
+- Van de Schoot, R. et al. (2013, 2021). *Weakly Informative Priors in Bayesian Regression.*  
+:::
 
-## Slide 14: Acknowledgements
+---
 
--   Faculty: Dr. Ashraf Cohen, PhD, MS
+:::: panel-tabset
 
--   University of West Florida, Department: Mathematics and Statistics
+### **Thank You**
 
-    ```         
-            Thanks for the guidance
-    ```
+### Dr. Ashraf Cohen, PhD, MS
 
-------------------------------------------------------------------------
+::: nonincremental
+- University of West Florida  
+- Department of Mathematics and Statistics  
+- Grateful for your continued guidance and support.  
+:::
 
-## References
+:::: 

@@ -1139,7 +1139,7 @@ theme_minimal()
 ```{r}
 #| label: bmi-diabetes-box
 #| echo: true
-#| fig-cap: "Boxplot of `BMI` by diabetes status. Individuals with a diabetes diagnosis show a higher median `BMI` and greater variability compared to those without diabetes, consistent with established associations between obesity and metabolic disease risk."
+#| fig-cap: "Boxplot of BMI by diabetes status (`No` vs `Diabetes`). This descriptive plot compares BMI distributions between groups, highlighting higher median BMI, greater spread, and more outliers in the diabetes group. It is used in the EDA to summarize group differences before modeling."
 
 ggplot(adult_imp1, aes(x = factor(diabetes_dx), y = bmi, fill = factor(diabetes_dx))) +
 geom_boxplot(alpha = 0.7) +
@@ -1149,10 +1149,12 @@ theme_minimal() +
 theme(legend.position = "none")
 ```
 
+The boxplot in Figure \@ref(fig-bmi-diabetes-box) is **descriptive**: it summarizes the median, spread, and outliers in BMI for participants with and without diabetes. The visibly higher median and wider spread in the diabetes group reinforce the positive association between excess adiposity and diabetes risk seen in later regression models.
+
 ```{r}
 #| label: pred-bmi
 #| echo: true
-#| fig-cap: "Predicted probability of diabetes as a function of `BMI`. The logistic regression curve shows a nonlinear increase in diabetes risk with higher `BMI`, with probabilities rising sharply beyond a `BMI` of 30, indicating elevated risk among overweight and obese adults."
+#| fig-cap: "Predicted probability of diabetes as a function of BMI from a logistic regression model. This inferential plot visualizes the fitted relationship between BMI and diabetes risk: the smooth curve shows the modeled probability of diabetes, and the shaded band reflects uncertainty (95% confidence interval) around the fit."
 
 ggplot(adult_imp1, aes(x = bmi, y = diabetes_dx)) +
 geom_point(alpha = 0.2, position = position_jitter(height = 0.02)) +
@@ -1160,6 +1162,8 @@ geom_smooth(method = "glm", method.args = list(family = "binomial"), se = TRUE, 
 labs(x = "BMI", y = "Probability of Diabetes", title = "Predicted Probability of Diabetes vs BMI") +
 theme_minimal()
 ```
+
+In contrast to the descriptive boxplot, Figure \@ref(fig-pred-bmi) is **inferential**: it displays the regression-based fitted probability of diabetes across the BMI continuum. The non-linear, increasing curve and its confidence band summarize how modeled diabetes risk escalates with higher BMI.
 
 ```{r}
 #| label: tbl-mice
@@ -1665,7 +1669,7 @@ aligning within about 1% of the observed rate.
 
 ```{r}
 #| label: fig-pop-vs-posterior-prev
-#| fig-cap: "Comparison of survey-weighted NHANES diabetes prevalence (dashed line) and the posterior predictive distribution from the Bayesian model. The close alignment between the two indicates that the model accurately reproduces the observed population prevalence."
+#| fig-cap: "Posterior predictive distribution of diabetes prevalence (solid density) overlaid with the survey-weighted NHANES prevalence (vertical dashed line) and its 95% confidence interval (shaded band). The close overlap indicates that the Bayesian model accurately reproduces the observed population prevalence."
 #| echo: true
 #| cache: false
 #| include: true
@@ -1701,6 +1705,8 @@ labs(
 ) +
 theme_minimal()
 ```
+
+The survey-weighted NHANES diabetes prevalence was approximately **8.9%**, whereas the Bayesian model’s posterior predictive mean prevalence was also in the **8–9%** range. This close agreement indicates that the Bayesian logistic regression model reproduces the observed population-level prevalence and is well-calibrated to the NHANES data.
 
 ```{r}
 #| label: prevalence-summary
@@ -1744,7 +1750,7 @@ caption = "Comparison of Diabetes Prevalence Across Methods"
 #| label: posterior-density-participants
 #| echo: true
 #| cache: false
-#| fig-cap: "Posterior predictive distributions for example participants."
+#| fig-cap: "Posterior predictive distribution for an example participant, showing the estimated probability of diabetes (P = 1) with 95% credible intervals (red dashed lines)."
 
 adult_means <- adult_imp1 %>% summarise(
 age_mean = mean(age, na.rm = TRUE),
@@ -1779,16 +1785,14 @@ as.character(adult$sex[1]), as.character(adult$race[1]))
 plot_post_density(p1, "Participant 1: Posterior Predictive Distribution (95% CrI)")
 ```
 
-Posterior predictive densities for individual participants illustrate
-uncertainty in diabetes risk estimates. Credible intervals quantify
-plausible risk ranges for each profile.
+Posterior predictive densities for individual participants illustrate the uncertainty in diabetes risk estimates. The credible intervals quantify plausible risk ranges, emphasizing how posterior variability captures uncertainty rather than single-point predictions.
 
 #### Posterior Predictions and Inverse Inference
 
 ```{r}
 #| label: predict-BMI-target
 #| echo: true
-#| fig-cap: "Inverse Prediction: BMI Needed for Target Diabetes Risk"
+#| fig-cap: "Inverse prediction of BMI needed to reach a target diabetes probability (illustrative example)."
 #| message: false
 #| warning: false
 
@@ -1846,6 +1850,8 @@ ggplot(pred_df, aes(x = bmi_c, y = prob_mean)) +
   coord_cartesian(ylim = c(0, 1)) +
   theme_bw()
 ```
+
+Inverse inference explores what BMI value would yield a given diabetes risk under the posterior model. In this example, predicted diabetes probability remains near 1.0 across most BMI values, suggesting that other covariates (e.g., age or race) dominate predicted risk in this profile. The “target BMI ≈ 18” marks the approximate threshold for a 30% risk under this participant’s conditions.
 
 ## Results
 
