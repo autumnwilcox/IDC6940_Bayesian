@@ -395,7 +395,7 @@ This approach accounts for NHANES’ complex sampling design, producing
 unbiased parameter estimates and valid inference for U.S. adults.
 
 | Step | Description |
-|-------------------------|-----------------------------------------------|
+|-------------------------|----------------------------------------------|
 | **Weighting** | Used the **`survey`** package to calculate weighted means for key variables (e.g., age and diabetes status) and to estimate design effects and effective sample size for the complex survey design. |
 | **Standardization** | Centered and standardized BMI and age (`bmi_c`, `age_c`) for use in regression models. |
 | **Age Categorization** | Not implemented in the analytic dataset (continuous `age` retained). Reference retained for potential descriptive grouping (20–\<30, 30–\<40, 40–\<50, 50–\<60, 60–\<70, 70–80). |
@@ -2037,6 +2037,46 @@ for individual prediction or clinical decision-making. Before external
 deployment or use in other settings, the model would require validation
 in independent datasets and sensitivity analyses to evaluate robustness
 to both modeling assumptions and prior specifications.
+
+#### Targeted Therapy
+
+The Bayesian diabetes prediction project highlights the translational
+potential of Bayesian modeling in clinical decision-making and public
+health strategy.
+
+By incorporating patient-level predictors such as age, BMI, sex, and
+race to estimate diabetes probability, the model shifts from descriptive
+statistics toward individualized risk prediction.
+
+The translational value lies in converting these probabilistic outputs
+into actionable thresholds—for example, identifying the BMI or age at
+which predicted diabetes risk exceeds a clinically meaningful level
+(e.g., 30%).
+
+These insights can support early screening, personalized lifestyle
+recommendations, and targeted prevention programs for higher-risk
+populations.
+
+This approach reflects precision public health by bridging data science
+and clinical judgment to create tailored, evidence-based strategies that
+may improve diabetes prevention and management outcomes.
+
+**What changes in modifiable predictors would lower diabetes risk?**
+
+#### Translational Research Implications
+
+-   The model can be used to inform prevention and intervention
+    strategies.
+
+-   BMI is the only modifiable predictor in the current model.
+
+-   Changes in BMI (via behavior or lifestyle interventions) can be
+    explored to achieve a lower predicted risk.
+
+-   Non-modifiable predictors (e.g., sex and race) are held constant.
+
+-   The modifiable predictor (BMI) is varied until the model reaches the
+    desired probability threshold.
 
 ## Conclusion
 
