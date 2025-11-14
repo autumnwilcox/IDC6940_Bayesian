@@ -1033,7 +1033,7 @@ meth["race"] <- "polyreg"   # race: polytomous logistic
 meth[c("WTMEC2YR","SDMVPSU","SDMVSTRA")] <- ""
 pred[, c("WTMEC2YR","SDMVPSU","SDMVSTRA")] <- 1
 
-# 3. Run imputation (m=5 like Namita)
+# 3. Run imputation (m=5)
 imp <- mice::mice(
   mi_dat,
   m               = 5,
@@ -1180,11 +1180,11 @@ miss_age  <- sum(is.na(mi_dat$age))
 miss_bmiN <- sum(is.na(mi_dat$bmi))
 
 mi_caption <- if (miss_age > 0 && miss_bmiN > 0) {
-"Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals after imputing missing age (normal) and BMI (PMM) (m = 20); diabetes status was not imputed."
+"Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals after imputing missing age (normal) and BMI (PMM) (m = 5); diabetes status was not imputed."
 } else if (miss_bmiN > 0) {
-"Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals after imputing missing BMI (PMM) (m = 20); diabetes status was not imputed."
+"Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals after imputing missing BMI (PMM) (m = 5); diabetes status was not imputed."
 } else if (miss_age > 0) {
-"Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals after imputing missing age (normal) (m = 20); diabetes status was not imputed."
+"Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals after imputing missing age (normal) (m = 5); diabetes status was not imputed."
 } else {
 "Multiple Imputation (MICE): pooled odds ratios (OR) and 95% confidence intervals (no variables required imputation); diabetes status was not imputed."
 }
