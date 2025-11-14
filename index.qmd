@@ -641,6 +641,13 @@ categories. These variables were standardized and used as predictors in
 all modeling frameworks (analytic cohort N = 5,769 adults ≥ 20 years).
 
 ```{r}
+#| label: adult-n
+#| echo: true
+#| include: false
+adult_n <- nrow(adult)
+```
+
+```{r}
 #| label: tbl-adult
 #| tbl-cap: "Excerpt of the cleaned NHANES 2013–2014 adult cohort (age ≥ 20; N = 5,769) with derived and standardized variables."
 
