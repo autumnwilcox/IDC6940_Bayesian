@@ -262,7 +262,7 @@ using the unique participant identifier `SEQN` to create a single adult
 analytic dataset (age ≥ 20 years).
 
 All variables were coerced to consistent numeric or factor types prior
-to merging to ensure atomic columns suitable for survey-weighted
+to merging to ensure atomic columns suitable for design-based
 analysis and modeling. The use of `SEQN` preserved respondent integrity
 across datasets and ensured accurate record linkage. This preprocessing
 step standardized variable formats and minimized inconsistencies between
@@ -362,7 +362,7 @@ kbl(
   group_rows("Derived variables", 10, 11)
 ```
 
-### Study Design and Survey-Weighted Analysis
+### Study Design and Design-Based Analysis
 
 The National Health and Nutrition Examination Survey (NHANES) employs a
 complex, multistage probability sampling design with stratification,
@@ -377,12 +377,7 @@ applied to adjust for unequal probabilities of selection, nonresponse,
 and oversampling, ensuring valid standard errors, unbiased prevalence
 estimates, and generalizable population-level inference.
 
-A survey-weighted logistic regression model was used to evaluate the
-association between diabetes status (`diabetes_dx`, binary outcome) and
-key predictors: body mass index (`bmi`), age (`age`), sex (`sex`), and
-race/ethnicity (`race`). Diabetes was defined using `DIQ010` (“Doctor
-told you have diabetes”) and coded as 0/1, with `DIQ050` (insulin use)
-excluded to avoid treatment-related confounding.
+A design-based logistic regression (survey-weighted) model was used to evaluate the association between diabetes status (`diabetes_dx`, binary outcome) and key predictors: body mass index (`bmi`), age (`age`), sex (`sex`), and race/ethnicity (`race`). Diabetes was defined using `DIQ010` (“Doctor told you have diabetes”) and coded as 0/1, with `DIQ050` (insulin use) excluded to avoid treatment-related confounding.
 
 Covariates included:\
 - `age` (continuous; centered as `age_c`, categorized 20–80 years)\
@@ -814,13 +809,13 @@ Two modeling frameworks were compared using identical
 predictors—standardized age, BMI, sex, and race—and the binary outcome
 `diabetes_dx`:
 
-(1) survey-weighted logistic regression to account for the NHANES
+(1) design-based logistic regression to account for the NHANES
     complex sampling design,
 
 (2) Bayesian logistic regression with weakly informative priors to
     quantify parameter uncertainty.
 
-### Survey-Weighted Logistic Regression (Design-Based MLE)
+### Design-Based Logistic Regression (Survey-Weighted)
 
 The NHANES 2013–2014 data use a complex, multistage probability design
 involving strata (`SDMVSTRA`), primary sampling units (PSUs; `SDMVPSU`),
@@ -931,7 +926,7 @@ svy_or <- broom::tidy(svy_fit, conf.int = TRUE) %>%
 ```{r}
 #| label: tbl-svylogit
 #| echo: true
-#| tbl-cap: "Survey-weighted logistic regression: odds ratios (OR) and 95% confidence intervals for diabetes diagnosis among adults (NHANES 2013–2014)."
+#| tbl-cap: "Design-based logistic regression (survey-weighted): odds ratios (OR) and 95% confidence intervals for diabetes diagnosis among adults (NHANES 2013–2014)."
 
 knitr::kable(svy_or)
 ```
@@ -1184,14 +1179,13 @@ knitr::kable(mi_or, caption = mi_caption)
 -   **Model Significance:** All predictors are statistically significant
     (*p* \< 0.05).\
 -   **Model Robustness:** Results are consistent with those from the
-    survey-weighted model, confirming stability across imputation and
-    weighting approaches.
+    design-based logistic regression (survey-weighted) model, confirming stability across imputation and weighting approaches.
 -->
 
 ### Bayesian Logistic Regression
 
 Bayesian logistic regression was used to quantify parameter uncertainty 
-and compare posterior estimates with the survey-weighted model. Weakly 
+and compare posterior estimates with the design-based model. Weakly 
 informative priors were applied to regularize estimates while preserving 
 flexibility in inference.
 
@@ -1339,11 +1333,11 @@ dplyr::mutate(bayes_or, dplyr::across(c(OR, LCL, UCL), ~ round(.x, 2)))
 #| echo: true
 #| message: false
 #| warning: false
-#| tbl-cap: "Odds Ratios (95% CI) for Key Predictors Across Survey-weighted and Bayesian Models."
+#| tbl-cap: "Odds Ratios (95% CI) for Key Predictors Across Design-based and Bayesian Models."
 
-# Combine survey-weighted and Bayesian OR results
+# Combine design-based and Bayesian OR results
 svy_tbl <- svy_or %>%
-  mutate(Model = "Survey-weighted (MLE)")
+  mutate(Model = "Design-based (survey-weighted)")
 
 bayes_tbl <- bayes_or %>%
   mutate(Model = "Bayesian") %>%
@@ -1378,7 +1372,7 @@ vertical_tbl <- all_tbl %>%
 # Output
 knitr::kable(vertical_tbl,
              align = "lcc",
-             caption = "Odds Ratios (95% CI) Across Survey-weighted and Bayesian Models")
+             caption = "Odds Ratios (95% CI) Across Design-based and Bayesian Models")
 ```
 
 -   Age and BMI show strong positive associations with diabetes
@@ -1681,12 +1675,12 @@ labs(x = "Mean predicted probability", y = "Observed diabetes (0/1)")
 
 ```{r}
 #| label: fig-posterior-prevalence
-#| fig-cap: "Comparison of diabetes prevalence across survey-weighted (NHANES), imputed, and posterior predictive estimates. The posterior predictive mean aligns closely with the observed NHANES prevalence, indicating strong model calibration."
+#| fig-cap: "Comparison of diabetes prevalence across design-based (NHANES), imputed, and posterior predictive estimates. The posterior predictive mean aligns closely with the observed NHANES prevalence, indicating strong model calibration."
 #| echo: true
 #| cache: false
 #| include: true
 
-# 1. Survey-weighted prevalence
+# 1. Design-based prevalence
 svy_mean <- svymean(~diabetes_dx, nhanes_design_adult, na.rm = TRUE)
 
 # 2. Posterior predictive prevalence (per draw)
@@ -1695,16 +1689,16 @@ pp_proportion <- rowMeans(pp_samples)                            # prevalence pe
 
 # 3. Build comparison table
 summary_table <- tibble(
-  Method = c("Survey-weighted mean (NHANES)", 
+  Method = c("Design-based mean (NHANES)", 
              "Imputed dataset mean", 
              "Posterior predictive mean"),
   diabetes_mean = c(
-    coef(svy_mean),                           # survey-weighted mean
+    coef(svy_mean),                           # design-based mean
     mean(adult_imp1$diabetes_dx, na.rm = TRUE),  # imputed dataset
     mean(pp_proportion)                       # posterior predictive mean
   ),
   SE = c(
-    SE(svy_mean),   # survey-weighted SE
+    SE(svy_mean),   # design-based SE
     NA,             # not available for raw mean
     NA              # not available for posterior predictive mean
   )
@@ -1720,7 +1714,7 @@ aligning within about 1% of the observed rate.
 
 ```{r}
 #| label: fig-pop-vs-posterior-prev
-#| fig-cap: "Posterior predictive distribution of diabetes prevalence (solid density) overlaid with the survey-weighted NHANES prevalence (vertical dashed line) and its 95% confidence interval (shaded band). The close overlap indicates that the Bayesian model accurately reproduces the observed population prevalence."
+#| fig-cap: "Posterior predictive distribution of diabetes prevalence (solid density) overlaid with the design-based NHANES prevalence (vertical dashed line) and its 95% confidence interval (shaded band). The close overlap indicates that the Bayesian model accurately reproduces the observed population prevalence."
 #| echo: true
 #| cache: false
 #| include: true
@@ -1730,7 +1724,7 @@ aligning within about 1% of the observed rate.
 yrep <- brms::posterior_predict(bayes_fit, ndraws = 2000)   # draws x observations (0/1)
 post_prev <- rowMeans(yrep)                                 # prevalence each posterior draw
 
-# Survey-weighted observed prevalence (population estimate)
+# Design-based observed prevalence (population estimate)
 
 des_obs <- survey::svydesign(
 id = ~SDMVPSU, strata = ~SDMVSTRA, weights = ~WTMEC2YR,
@@ -1752,12 +1746,12 @@ coord_cartesian(xlim = c(0, 1)) +
 labs(
   x = "Diabetes prevalence",
   y = "Posterior density",
-  subtitle = sprintf("Survey-weighted NHANES prevalence = %.1f%%", obs_prev * 100)
+  subtitle = sprintf("Design-based NHANES prevalence = %.1f%%", obs_prev * 100)
 ) +
 theme_minimal()
 ```
 
-The survey-weighted NHANES diabetes prevalence was approximately
+The design-based NHANES diabetes prevalence was approximately
 **8.9%**, whereas the Bayesian model’s posterior predictive mean
 prevalence was also in the **8–9%** range. This close agreement
 indicates that the Bayesian logistic regression model reproduces the
@@ -1942,7 +1936,7 @@ cat(paste(bullets, collapse = "\n"))
 # Combine results from all models
 
 svy_tbl   <- if (exists("svy_or") && nrow(svy_or) > 0)
-dplyr::mutate(svy_or,   Model = "Survey-weighted (MLE)") else NULL
+dplyr::mutate(svy_or,   Model = "Design-based (survey-weighted)") else NULL
 bayes_tbl <- if (exists("bayes_or") && nrow(bayes_or) > 0)
 dplyr::mutate(bayes_or, Model = "Bayesian") %>%
 dplyr::filter(term != "Intercept") else NULL
@@ -1967,12 +1961,12 @@ dplyr::select(Model, term, OR_CI)
 ```{r}
 #| label: tbl-comparison
 #| echo: true
-#| tbl-cap: "Comparison of odds ratios (per 1 SD for age and BMI) and 95% intervals across survey-weighted and Bayesian frameworks."
+#| tbl-cap: "Comparison of odds ratios (per 1 SD for age and BMI) and 95% intervals across design-based and Bayesian frameworks."
 
 knitr::kable(all_tbl, align = c("l","l","c"))
 ```
 
-Across both frameworks—survey-weighted (MLE) and Bayesian—age and BMI were 
+Across both frameworks—design-based (survey-weighted) and Bayesian—age and BMI were 
 consistently associated with higher odds of doctor-diagnosed diabetes. Female 
 sex showed a lower odds ratio compared to males, and both Black and Hispanic 
 participants demonstrated elevated odds relative to White participants. The 
@@ -1984,7 +1978,7 @@ these predictors to different modeling assumptions.
 ### Interpretation
 
 The Bayesian logistic regression framework produced results that were
-highly consistent with the survey-weighted design-based model.
+highly consistent with the design-based model.
 Age and BMI remained the most influential predictors
 of doctor-diagnosed diabetes, each showing a strong and positive
 association with diabetes risk.
@@ -2083,12 +2077,7 @@ may improve diabetes prevention and management outcomes.
 
 ## Conclusion
 
-The Bayesian and survey-weighted logistic regression frameworks both 
-identified consistent predictors of diabetes risk among U.S. adults: 
-advancing age, higher BMI, sex (lower odds for females), and non-White 
-race/ethnicity. These convergent findings reinforce the robustness of 
-core risk factors and the validity of the analytic approach across modeling 
-paradigms.
+The Bayesian and design-based logistic regression (survey-weighted) frameworks both identified consistent predictors of diabetes risk among U.S. adults: advancing age, higher BMI, sex (lower odds for females), and non-White race/ethnicity. These convergent findings reinforce the robustness of core risk factors and the validity of the analytic approach across modeling paradigms.
 
 The Bayesian model produced estimates nearly identical in direction and
 magnitude to the frequentist results while offering richer uncertainty

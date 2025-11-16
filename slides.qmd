@@ -33,7 +33,7 @@ editor: visual
 -   Traditional logistic regression can produce **unstable estimates** with missing data or small subgroups.\
 -   **Bayesian logistic regression** addresses these issues by incorporating **prior information** and providing **richer uncertainty estimates**.\
 -   This analysis compares two modeling frameworks using **NHANES 2013–2014** data:
-    1.  Survey-weighted logistic regression
+    1.  Design-based logistic regression
     2.  Bayesian logistic regression (*brms* in R)
 
 ------------------------------------------------------------------------
@@ -87,7 +87,7 @@ editor: visual
     -   Race/Ethnicity (Non-Hispanic White reference group)
 
 -   **Purpose:**\
-    Prepare a unified dataset for the survey-weighted and Bayesian models.
+    Prepare a unified dataset for the design-based and Bayesian models.
 :::
 
 ------------------------------------------------------------------------
@@ -126,7 +126,7 @@ editor: visual
 ### Steps 4–6: Modeling & Evaluation
 
 -   **Step 4 – Modeling Frameworks:**
-    -   Survey-weighted logistic regression (design-based MLE)
+    -   Design-based logistic regression (survey-weighted)
     -   Bayesian logistic regression (*brms*, Hamiltonian Monte Carlo)
 -   **Step 5 – Diagnostics:**
     -   R-hat values ≈ 1.00 indicate strong convergence
@@ -174,7 +174,7 @@ editor: visual
 
 ## Modeling Frameworks
 
--   **Survey-Weighted Logistic Regression**
+-   **Design-Based Logistic Regression (Survey-Weighted)**
     -   Accounts for NHANES’ complex sampling design (strata, clusters, weights)
 -   **Bayesian Logistic Regression** (*brms*, Hamiltonian Monte Carlo)
     -   Incorporates prior information and provides full uncertainty quantification
@@ -237,7 +237,7 @@ pp_check(bayes_fit, nsamples = 50)  # posterior predictive check
     -   **Female sex** → lower odds
     -   **Race/ethnicity** differences persisted
 -   **Effect Sizes:**
-    -   Nearly identical across survey-weighted and Bayesian frameworks
+    -   Nearly identical across design-based and Bayesian frameworks
 -   **Uncertainty:**
     -   Minor variation in interval widths reflects each model’s uncertainty treatment
 
@@ -251,10 +251,10 @@ pp_check(bayes_fit, nsamples = 50)  # posterior predictive check
 
 ------------------------------------------------------------------------
 
-### Odds Ratios (95% CI) Across Survey-Weighted and Bayesian Models
+### Odds Ratios (95% CI) Across Design-Based and Bayesian Models
 ::: {style="font-size: 0.8em"}
 
-| Predictor                 | Survey-Weighted OR (95% CI) | Bayesian OR (95% CrI) |
+| Predictor                 | Design-Based OR (95% CI) | Bayesian OR (95% CrI) |
 |---------------------------|------------------------------|------------------------|
 | **Age (per 1 SD)**        | 3.03 (2.70 – 3.40)           | 2.99 (2.66 – 3.39)     |
 | **BMI (per 1 SD)**        | 1.89 (1.65 – 2.15)           | 1.87 (1.71 – 2.05)     |
@@ -283,7 +283,7 @@ pp_check(bayes_fit, nsamples = 50)  # posterior predictive check
 -   **Excellent convergence and calibration**
     -   R-hat values around 1.00 and effective sample sizes above 2000 indicate strong chain mixing and reliable sampling
 -   **Stable parameter estimates**
-    -   Nearly identical to survey-weighted model
+    -   Nearly identical to design-based logistic regression model
 -   **Credible intervals**
     -   Clearly represent uncertainty and confirm overall model robustness
 
@@ -356,7 +356,7 @@ pp_check(bayes_fit, nsamples = 100) +
 
 ::: {style="font-size: 0.8em"}
 -   **Key Findings:** Age and BMI were the strongest predictors; sex was protective; racial disparities persisted.
--   **Consistency:** Both models — Bayesian and survey-weighted — yielded nearly identical results.
+-   **Consistency:** Both models — Bayesian and design-based — yielded nearly identical results.
 -   **Advantages:** The Bayesian approach enhanced interpretability, providing richer uncertainty estimates via credible intervals and PPCs.
 -   **Limitations:** Approximate weighting and non-tuned priors; results limited to the 2013–2014 cycle.
 -   **Conclusion:** Bayesian inference complements frequentist methods by improving transparency, interpretability, and uncertainty quantification.
