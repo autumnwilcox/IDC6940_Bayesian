@@ -161,9 +161,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">Data Preparation</a></li>
   <li><a href="#modeling-workflow" id="toc-modeling-workflow" class="nav-link" data-scroll-target="#modeling-workflow">Modeling Workflow</a></li>
   <li><a href="#exploratory-data-analysis-eda" id="toc-exploratory-data-analysis-eda" class="nav-link" data-scroll-target="#exploratory-data-analysis-eda">Exploratory Data Analysis (EDA)</a></li>
-  <li><a href="#modeling-framework" id="toc-modeling-framework" class="nav-link" data-scroll-target="#modeling-framework">Modeling Framework</a></li>
+  <li><a href="#modeling-frameworks" id="toc-modeling-frameworks" class="nav-link" data-scroll-target="#modeling-frameworks">Modeling Frameworks</a></li>
   <li><a href="#model-comparison" id="toc-model-comparison" class="nav-link" data-scroll-target="#model-comparison">Model Comparison</a></li>
   <li><a href="#model-comparison-summary" id="toc-model-comparison-summary" class="nav-link" data-scroll-target="#model-comparison-summary">Model Comparison Summary</a></li>
+  <li><a href="#mcmc-diagnostics" id="toc-mcmc-diagnostics" class="nav-link" data-scroll-target="#mcmc-diagnostics">MCMC Diagnostics</a></li>
   <li><a href="#bayesian-performance" id="toc-bayesian-performance" class="nav-link" data-scroll-target="#bayesian-performance">Bayesian Performance</a></li>
   <li><a href="#discussion-limitations-conclusion" id="toc-discussion-limitations-conclusion" class="nav-link" data-scroll-target="#discussion-limitations-conclusion">Discussion, Limitations &amp; Conclusion</a></li>
   <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways">Key Takeaways</a></li>
@@ -211,12 +212,9 @@ December 13, 2025</p><p></p>
 </li>
 <li><strong>Bayesian logistic regression</strong> addresses these issues by incorporating <strong>prior information</strong> and providing <strong>richer uncertainty estimates</strong>.<br>
 </li>
-<li>This analysis compares three modeling frameworks using <strong>NHANES 2013–2014</strong> data:
+<li>This analysis compares two modeling frameworks using <strong>NHANES 2013–2014</strong> data:
 <ol type="1">
-<li>Survey-weighted logistic regression<br>
-</li>
-<li>Multiple Imputation by Chained Equations (MICE)<br>
-</li>
+<li>Survey-weighted logistic regression</li>
 <li>Bayesian logistic regression (<em>brms</em> in R)</li>
 </ol></li>
 </ul>
@@ -228,14 +226,12 @@ December 13, 2025</p><p></p>
 <ul>
 <li><strong>Why Bayesian?</strong>
 <ul>
-<li>Traditional logistic regression can produce unstable estimates with missing data or small subgroups.<br>
-</li>
+<li>Traditional logistic regression can produce unstable estimates with missing data or small subgroups.</li>
 <li>Bayesian inference incorporates prior knowledge and fully quantifies uncertainty through posterior distributions.</li>
 </ul></li>
 <li><strong>Prior Research</strong>
 <ul>
-<li>Bayesian models have improved parameter stability in epidemiologic studies.<br>
-</li>
+<li>Bayesian models have improved parameter stability in epidemiologic studies.</li>
 <li>However, few analyses directly compare Bayesian and frequentist logistic regression for diabetes prediction.</li>
 </ul></li>
 <li><strong>Goal</strong>
@@ -251,14 +247,12 @@ December 13, 2025</p><p></p>
 <ul>
 <li><strong>Dataset:</strong> NHANES 2013–2014
 <ul>
-<li>n = 5,769 adults aged ≥20 years<br>
-</li>
+<li>n = 5,769 adults aged ≥20 years</li>
 <li>Variables: age, BMI, sex, race/ethnicity, and doctor-diagnosed diabetes</li>
 </ul></li>
 <li><strong>Survey Design:</strong>
 <ul>
-<li>Multistage, complex sampling with strata, clusters, and sample weights<br>
-</li>
+<li>Multistage, complex sampling with strata, clusters, and sample weights</li>
 <li>Weights were normalized and used as importance weights during modeling</li>
 </ul></li>
 </ul>
@@ -268,30 +262,24 @@ December 13, 2025</p><p></p>
 <h2 class="anchored" data-anchor-id="dataset-overview">Dataset Overview</h2>
 <div style="font-size: 0.75em">
 <ul>
-<li><p><strong>Source:</strong> NHANES 2013–2014<br>
-</p></li>
+<li><p><strong>Source:</strong> NHANES 2013–2014</p></li>
 <li><p><strong>Cohort:</strong> 5,769 adults aged ≥20 years</p></li>
 <li><p><strong>Merged Components:</strong></p>
 <ul>
-<li>DEMO_H (Demographics)<br>
-</li>
-<li>BMX_H (Body Measures)<br>
-</li>
+<li>DEMO_H (Demographics)</li>
+<li>BMX_H (Body Measures)</li>
 <li>DIQ_H (Diabetes Questionnaire)</li>
 </ul></li>
 <li><p><strong>Outcome:</strong> Doctor-diagnosed diabetes (<code>diabetes_dx</code>)</p></li>
 <li><p><strong>Predictors:</strong></p>
 <ul>
-<li>Age (standardized z-score)<br>
-</li>
-<li>BMI (standardized z-score)<br>
-</li>
-<li>Sex (Female vs Male)<br>
-</li>
+<li>Age (standardized z-score)</li>
+<li>BMI (standardized z-score)</li>
+<li>Sex (Female vs Male)</li>
 <li>Race/Ethnicity (Non-Hispanic White reference group)</li>
 </ul></li>
 <li><p><strong>Purpose:</strong><br>
-Prepare a unified dataset for survey-weighted, imputed, and Bayesian logistic regression models.</p></li>
+Prepare a unified dataset for the survey-weighted and Bayesian models.</p></li>
 </ul>
 </div>
 <hr>
@@ -301,7 +289,8 @@ Prepare a unified dataset for survey-weighted, imputed, and Bayesian logistic re
 <ul>
 <li><strong>Missing Data:</strong>
 <ul>
-<li>Handled using <em>Multiple Imputation by Chained Equations (MICE)</em></li>
+<li>Small proportion of missingness (~3–4%)</li>
+<li>Final Bayesian model used complete-case data, as exclusions removed the limited missingness.</li>
 </ul></li>
 <li><strong>Standardization:</strong>
 <ul>
@@ -313,7 +302,7 @@ Prepare a unified dataset for survey-weighted, imputed, and Bayesian logistic re
 </ul></li>
 <li><strong>Goal:</strong>
 <ul>
-<li>Produce a clean, standardized dataset for all three modeling frameworks</li>
+<li>Produce a clean, standardized dataset for both modeling frameworks</li>
 </ul></li>
 </ul>
 <hr>
@@ -335,9 +324,10 @@ Prepare a unified dataset for survey-weighted, imputed, and Bayesian logistic re
 <ul>
 <li>Standardized age &amp; BMI, recoded sex and race/ethnicity</li>
 </ul></li>
-<li><strong>Step 3 – Imputation:</strong>
+<li><strong>Step 3 – Final Analytic Dataset:</strong>
 <ul>
-<li>Addressed missingness using <em>MICE</em> to create a complete dataset</li>
+<li>Applied exclusions and standardization to produce a clean dataset</li>
+<li>Both models used the same complete-case adult dataset (n = 5,769)</li>
 </ul></li>
 </ul>
 </div>
@@ -346,7 +336,6 @@ Prepare a unified dataset for survey-weighted, imputed, and Bayesian logistic re
 <li><strong>Step 4 – Modeling Frameworks:</strong>
 <ul>
 <li>Survey-weighted logistic regression (design-based MLE)</li>
-<li>MICE-imputed logistic regression (Rubin’s rules)</li>
 <li>Bayesian logistic regression (<em>brms</em>, Hamiltonian Monte Carlo)</li>
 </ul></li>
 <li><strong>Step 5 – Diagnostics:</strong>
@@ -380,7 +369,7 @@ Prepare a unified dataset for survey-weighted, imputed, and Bayesian logistic re
 <li><strong>Missing Data:</strong>
 <ul>
 <li>Low overall (≈3–4%) in BMI and diabetes variables</li>
-<li>Addressed using <em>MICE</em></li>
+<li>Minimal missingness (≈3–4%) and final dataset contained complete cases after merging.</li>
 </ul></li>
 <li><strong>Outcome Distribution:</strong>
 <ul>
@@ -417,16 +406,12 @@ Prepare a unified dataset for survey-weighted, imputed, and Bayesian logistic re
 </div>
 <hr>
 </section>
-<section id="modeling-framework" class="level2">
-<h2 class="anchored" data-anchor-id="modeling-framework">Modeling Framework</h2>
+<section id="modeling-frameworks" class="level2">
+<h2 class="anchored" data-anchor-id="modeling-frameworks">Modeling Frameworks</h2>
 <ul>
 <li><strong>Survey-Weighted Logistic Regression</strong>
 <ul>
 <li>Accounts for NHANES’ complex sampling design (strata, clusters, weights)</li>
-</ul></li>
-<li><strong>MICE-Imputed Logistic Regression</strong>
-<ul>
-<li>Combines results across multiple imputations using Rubin’s rules</li>
 </ul></li>
 <li><strong>Bayesian Logistic Regression</strong> (<em>brms</em>, Hamiltonian Monte Carlo)
 <ul>
@@ -434,7 +419,7 @@ Prepare a unified dataset for survey-weighted, imputed, and Bayesian logistic re
 </ul></li>
 </ul>
 <p><strong>Goal:</strong><br>
-Compare coefficient stability, uncertainty estimation, and overall model fit across all three frameworks.</p>
+Compare coefficient stability, uncertainty estimation, and overall model fit across both frameworks.</p>
 <hr>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Bayesian Model Code</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Priors &amp; Settings</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false" href="">Diagnostics Code</a></li></ul>
@@ -448,7 +433,7 @@ Compare coefficient stability, uncertainty estimation, and overall model fit acr
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>bayes_fit <span class="ot">&lt;-</span> <span class="fu">brm</span>(</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  diabetes_dx <span class="sc">~</span> age_c <span class="sc">+</span> bmi_c <span class="sc">+</span> sex <span class="sc">+</span> race,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> nhanes_imputed,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> adult,</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">bernoulli</span>(),</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">prior =</span> <span class="fu">c</span>(</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">2.5</span>), <span class="at">class =</span> <span class="st">"b"</span>),             <span class="co"># slopes</span></span>
@@ -502,7 +487,7 @@ Compare coefficient stability, uncertainty estimation, and overall model fit acr
 </ul></li>
 <li><strong>Effect Sizes:</strong>
 <ul>
-<li>Nearly identical across survey-weighted, imputed, and Bayesian frameworks</li>
+<li>Nearly identical across survey-weighted and Bayesian frameworks</li>
 </ul></li>
 <li><strong>Uncertainty:</strong>
 <ul>
@@ -515,53 +500,79 @@ Compare coefficient stability, uncertainty estimation, and overall model fit acr
 <h2 class="anchored" data-anchor-id="model-comparison-summary">Model Comparison Summary</h2>
 <div style="font-size: 0.8em">
 <ul>
-<li><strong>All frameworks</strong> identified the same significant predictors: <strong>age, BMI, sex, and race/ethnicity.</strong></li>
+<li><strong>Both frameworks</strong> identified the same significant predictors: <strong>age, BMI, sex, and race/ethnicity.</strong></li>
 <li><strong>Bayesian estimates</strong> matched frequentist models in magnitude and direction, confirming robustness.</li>
 <li><strong>Interval widths</strong> varied slightly due to differences in how each framework handles uncertainty.</li>
 </ul>
+<section id="odds-ratios-95-ci-across-survey-weighted-and-bayesian-models" class="level3">
+<h3 class="anchored" data-anchor-id="odds-ratios-95-ci-across-survey-weighted-and-bayesian-models">Odds Ratios (95% CI) Across Survey-Weighted and Bayesian Models</h3>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 24%">
-<col style="width: 26%">
-<col style="width: 24%">
-<col style="width: 24%">
+<col style="width: 33%">
+<col style="width: 37%">
+<col style="width: 29%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>Predictor</th>
 <th>Survey-Weighted OR (95% CI)</th>
-<th>MICE-Imputed OR (95% CI)</th>
 <th>Bayesian OR (95% CrI)</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><strong>Age (per 1 SD)</strong></td>
-<td>3.02 (2.60–3.54)</td>
-<td>3.01 (2.58–3.50)</td>
-<td>3.00 (2.57–3.48)</td>
+<td>3.03 (2.70 – 3.40)</td>
+<td>2.99 (2.66 – 3.39)</td>
 </tr>
 <tr class="even">
 <td><strong>BMI (per 1 SD)</strong></td>
-<td>1.87 (1.66–2.10)</td>
-<td>1.85 (1.64–2.08)</td>
-<td>1.86 (1.65–2.09)</td>
+<td>1.89 (1.65 – 2.15)</td>
+<td>1.87 (1.71 – 2.05)</td>
 </tr>
 <tr class="odd">
-<td><strong>Female (vs Male)</strong></td>
-<td>0.52 (0.44–0.61)</td>
-<td>0.53 (0.45–0.62)</td>
-<td>0.52 (0.44–0.61)</td>
+<td>Black (vs.&nbsp;White)</td>
+<td>1.67 (1.16 – 2.40)</td>
+<td>1.70 (1.26 – 2.30)</td>
 </tr>
 <tr class="even">
-<td><strong>Non-White (vs NHW)</strong></td>
-<td>1.40 (1.18–1.66)</td>
-<td>1.42 (1.20–1.68)</td>
-<td>1.41 (1.19–1.67)</td>
+<td><strong>Female (vs.&nbsp;Male)</strong></td>
+<td>0.53 (0.41 – 0.68)</td>
+<td>0.52 (0.42 – 0.63)</td>
+</tr>
+<tr class="odd">
+<td>Hispanic (vs.&nbsp;White)</td>
+<td>1.59 (1.17 – 2.17)</td>
+<td>1.53 (0.94 – 2.43)</td>
+</tr>
+<tr class="even">
+<td>Other (vs.&nbsp;White)</td>
+<td>2.33 (1.55 – 3.50)</td>
+<td>2.26 (1.56 – 3.24)</td>
+</tr>
+<tr class="odd">
+<td>Mexican American (vs.&nbsp;White)</td>
+<td>2.04 (1.49 – 2.79)</td>
+<td>1.99 (1.41 – 2.80)</td>
 </tr>
 </tbody>
 </table>
+</section>
 </div>
+<hr>
+</section>
+<section id="mcmc-diagnostics" class="level2">
+<h2 class="anchored" data-anchor-id="mcmc-diagnostics">MCMC Diagnostics</h2>
+<ul>
+<li><strong>R-hat ≈ 1.00</strong> for all parameters → strong convergence<br>
+</li>
+<li><strong>Effective Sample Size (ESS &gt; 2000)</strong> → efficient sampling<br>
+</li>
+<li><strong>Trace plots</strong> show stable mixing across chains<br>
+</li>
+<li><strong>Autocorrelation</strong> low across lags → good efficiency</li>
+</ul>
+<p><img src="figs/trace_age_bmi.png" class="img-fluid" style="width:85.0%"></p>
 <hr>
 </section>
 <section id="bayesian-performance" class="level2">
@@ -573,7 +584,7 @@ Compare coefficient stability, uncertainty estimation, and overall model fit acr
 </ul></li>
 <li><strong>Stable parameter estimates</strong>
 <ul>
-<li>Nearly identical to survey-weighted and imputed models</li>
+<li>Nearly identical to survey-weighted model</li>
 </ul></li>
 <li><strong>Credible intervals</strong>
 <ul>
@@ -660,9 +671,9 @@ Compare coefficient stability, uncertainty estimation, and overall model fit acr
 <div style="font-size: 0.8em">
 <ul>
 <li><strong>Key Findings:</strong> Age and BMI were the strongest predictors; sex was protective; racial disparities persisted.</li>
-<li><strong>Consistency:</strong> All three models — Bayesian, survey-weighted, and MICE-imputed — yielded nearly identical results.</li>
+<li><strong>Consistency:</strong> Both models — Bayesian and survey-weighted — yielded nearly identical results.</li>
 <li><strong>Advantages:</strong> The Bayesian approach enhanced interpretability, providing richer uncertainty estimates via credible intervals and PPCs.</li>
-<li><strong>Limitations:</strong> Used a single imputed dataset, approximate weighting, and non-tuned priors limited to the 2013–2014 cycle.</li>
+<li><strong>Limitations:</strong> Approximate weighting and non-tuned priors; results limited to the 2013–2014 cycle.</li>
 <li><strong>Conclusion:</strong> Bayesian inference complements frequentist methods by improving transparency, interpretability, and uncertainty quantification.</li>
 </ul>
 </div>
@@ -671,7 +682,7 @@ Compare coefficient stability, uncertainty estimation, and overall model fit acr
 <section id="key-takeaways" class="level2">
 <h2 class="anchored" data-anchor-id="key-takeaways">Key Takeaways</h2>
 <ul>
-<li>Consistent results across all three modeling frameworks</li>
+<li>Consistent results across both modeling frameworks</li>
 <li>Bayesian approach adds clarity through credible intervals and PPCs</li>
 <li>Strong convergence and calibration confirm reliability</li>
 <li>Future work: extend to later NHANES cycles and hierarchical priors</li>
@@ -711,44 +722,6 @@ Compare coefficient stability, uncertainty estimation, and overall model fit acr
 </section>
 
 </main> <!-- /main -->
-
-<script>
-  // htmlwidgets need to know to resize themselves when slides are shown/hidden.
-  // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
-  // slide changes (different for each slide format).
-  (function () {
-    // dispatch for htmlwidgets
-    function fireSlideEnter() {
-      const event = window.document.createEvent("Event");
-      event.initEvent("slideenter", true, true);
-      window.document.dispatchEvent(event);
-    }
-
-    function fireSlideChanged(previousSlide, currentSlide) {
-      fireSlideEnter();
-
-      // dispatch for shiny
-      if (window.jQuery) {
-        if (previousSlide) {
-          window.jQuery(previousSlide).trigger("hidden");
-        }
-        if (currentSlide) {
-          window.jQuery(currentSlide).trigger("shown");
-        }
-      }
-    }
-
-    // hookup for slidy
-    if (window.w3c_slidy) {
-      window.w3c_slidy.add_observer(function (slide_num) {
-        // slide_num starts at position 1
-        fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
-      });
-    }
-
-  })();
-</script>
-
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

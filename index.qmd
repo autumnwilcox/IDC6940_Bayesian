@@ -5,7 +5,7 @@ author:
   - "Namita Mishra"
   - "Autumn Wilcox"
 advisor: "Dr. Ashraf Cohen"
-date: '`r Sys.Date()`'
+date: "December 13, 2025"
 course: Capstone Projects in Data Science
 
 execute:
@@ -1355,11 +1355,12 @@ all_tbl <- bind_rows(svy_tbl, bayes_tbl) %>%
     term = case_when(
       grepl("bmi", term, ignore.case = TRUE) ~ "BMI (per 1 SD)",
       grepl("age", term, ignore.case = TRUE) ~ "Age (per 1 SD)",
-      grepl("^sexFemale$", term)             ~ "Female (vs. Male)",
-      grepl("^sexMale$", term)               ~ "Male (vs. Female)",
+      grepl("^sexFemale$", term) ~ "Female (vs. Male)",
+# ---- Race recoding (handles ALL messy variants) ----
+      grepl("Mexican", term, ignore.case = TRUE) ~ "Mexican American (vs. White)",
       grepl("Black", term, ignore.case = TRUE) ~ "Black (vs. White)",
       grepl("Hispanic", term, ignore.case = TRUE) ~ "Hispanic (vs. White)",
-      grepl("Other", term, ignore.case = TRUE)  ~ "Other (vs. White)",
+      grepl("Other", term, ignore.case = TRUE) ~ "Other/Multi (vs. White)",
       TRUE ~ term
     ),
     OR_CI = sprintf("%.2f (%.2f – %.2f)", OR, LCL, UCL)
