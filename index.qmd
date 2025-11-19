@@ -940,16 +940,21 @@ knitr::kable(svy_or)
 
 #### Interpretation
 
-`age_c` and `bmi_c` are the strongest predictors of diabetes in the
-NHANES 2013–2014 adult cohort, with each 1 SD increase in age nearly
-tripling the odds of diabetes and higher BMI substantially elevating
-risk. Males show significantly lower odds of diabetes than females,
-consistent with established sex differences in metabolic outcomes.
-Racial and ethnic disparities are evident, with Mexican American, Other
-Hispanic, Non-Hispanic Black, and Other/Multi-racial adults all showing
-significantly higher odds of diabetes compared to Non-Hispanic Whites.
-All predictors were statistically significant (p \< 0.05), indicating
-robust associations across demographic and health characteristics.
+**age_c** and **bmi_c** emerge as the strongest predictors of diabetes in the NHANES 2013–2014 adult cohort.  
+- For **age_c**, each 1-SD increase is associated with an odds ratio of **3.03** (95% CI: 2.70–3.40), indicating that older adults have **nearly three times higher odds** of diagnosed diabetes compared to younger adults.  
+- For **bmi_c**, each 1-SD increase corresponds to an odds ratio of **1.89** (95% CI: 1.65–2.15), meaning higher BMI substantially elevates diabetes risk.
+
+**Sex differences** were also observed.  
+- Compared to males, females had significantly lower odds of diabetes (OR = **0.53**, 95% CI: 0.41–0.68), consistent with known sex-related differences in metabolic and cardiometabolic profiles.
+
+**Racial and ethnic disparities** in diabetes risk were pronounced.  
+Using Non-Hispanic Whites as the reference group:  
+- **Mexican American** adults had about **2.04×** higher odds of diabetes (95% CI: 1.49–2.79).  
+- **Other Hispanic** adults showed **1.59×** higher odds (95% CI: 1.17–2.17).  
+- **Non-Hispanic Black** adults had **1.67×** higher odds (95% CI: 1.16–2.40).  
+- **Other/Multi-racial** adults exhibited **2.33×** higher odds (95% CI: 1.55–3.50).
+
+All predictors were statistically significant (p < 0.05), and the direction and magnitude of effects reflect well-established demographic and clinical patterns in diabetes risk.
 
 ### Bayesian Logistic Regression
 
@@ -1374,6 +1379,74 @@ knitr::kable(vertical_tbl,
 -   All model parameters exhibit well-defined, unimodal posteriors with
     narrow credible intervals.
     
+#### Posterior Coefficients (log-odds scale)
+
+**Intercept**  
+- **b_Intercept = –2.66** (SD = 0.09, 95% CrI: –2.83 to –2.50)  
+- Represents baseline log-odds of diabetes for:  
+  **Male, Non-Hispanic White, average age, average BMI**  
+- Corresponds to a baseline probability of **~6.5%**.
+
+---
+
+**Age (per 1 SD)**  
+- **b_age_c = 1.10** (SD = 0.06, 95% CrI: 0.98 to 1.22)  
+- Strong positive effect on diabetes risk.  
+- Odds ratio: **exp(1.10) ≈ 2.99**  
+- A 1-SD increase in age **nearly triples the odds** of diabetes.  
+- Credible interval excludes 0 → strong evidence of association.
+
+---
+
+**BMI (per 1 SD)**  
+- **b_bmi_c = 0.63** (SD = 0.05, 95% CrI: 0.54 to 0.72)  
+- Positive association with diabetes.  
+- Odds ratio: **exp(0.63) ≈ 1.87**  
+- A 1-SD increase in BMI increases odds of diabetes by **~87%**.  
+- Tight CrI → high certainty in the estimate.
+
+---
+
+**Sex (Female vs. Male)**  
+- **b_sexFemale = –0.66** (SD = 0.10, 95% CrI: –0.86 to –0.47)  
+- Indicates lower log-odds for females.  
+- Odds ratio: **exp(–0.66) ≈ 0.52**  
+- Females have **~48% lower odds** of diabetes compared to males, adjusting for age, BMI, and race.
+
+---
+
+##### Race/Ethnicity  
+(Reference: **Non-Hispanic White**)
+
+**Mexican American**  
+- **b = 0.69** (SD = 0.17, 95% CrI: 0.34 to 1.03)  
+- OR ≈ **1.99**  
+- Nearly twice the odds of diabetes.
+
+**Other Hispanic**  
+- **b = 0.43** (SD = 0.25, 95% CrI: –0.07 to 0.89)  
+- OR ≈ **1.54**  
+- Mean effect positive, but CrI crosses 0 → weaker evidence.
+
+**Non-Hispanic Black**  
+- **b = 0.53** (SD = 0.15, 95% CrI: 0.23 to 0.83)  
+- OR ≈ **1.71**  
+- ~70% higher odds vs NH Whites, strong evidence.
+
+**Other / Multiracial**  
+- **b = 0.81** (SD = 0.19, 95% CrI: 0.45 to 1.18)  
+- OR ≈ **2.27**  
+- More than double the odds compared to NH Whites.
+
+---
+
+##### Interpretation
+
+- **Age and BMI** show strong positive associations with diabetes risk in the posterior distribution.  
+- **Female sex** shows a clear protective association.  
+- **Racial/ethnic groups**, particularly Mexican American, NH Black, and Other/Multi, have elevated odds relative to NH Whites.  
+- Posterior estimates demonstrate consistent directionality with survey-weighted models, with Bayesian credible intervals providing more intuitive uncertainty quantification.
+
 #### Diagnostics and Model Fit
 
 ```{r}
