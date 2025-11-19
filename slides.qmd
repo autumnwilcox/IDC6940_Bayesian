@@ -126,7 +126,7 @@ editor: visual
 ### Steps 4–6: Modeling & Evaluation
 
 -   **Step 4 – Modeling Frameworks:**
-    -   Design-based logistic regression (survey-weighted)
+    -   Design-based logistic regression (design-based)
     -   Bayesian logistic regression (*brms*, Hamiltonian Monte Carlo)
 -   **Step 5 – Diagnostics:**
     -   R-hat values ≈ 1.00 indicate strong convergence
@@ -174,7 +174,7 @@ editor: visual
 
 ## Modeling Frameworks
 
--   **Design-Based Logistic Regression (Survey-Weighted)**
+-   **Design-Based Logistic Regression (Design-Based)**
     -   Accounts for NHANES’ complex sampling design (strata, clusters, weights)
 -   **Bayesian Logistic Regression** (*brms*, Hamiltonian Monte Carlo)
     -   Incorporates prior information and provides full uncertainty quantification
@@ -192,7 +192,7 @@ library(brms)
 
 bayes_fit <- brm(
   diabetes_dx ~ age_c + bmi_c + sex + race,
-  data = adult,
+  data = adult_imp1,
   family = bernoulli(),
   prior = c(
     prior(normal(0, 2.5), class = "b"),             # slopes
