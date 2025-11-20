@@ -1819,6 +1819,55 @@ indicates that the Bayesian logistic regression model reproduces the
 observed population-level prevalence and is well-calibrated to the
 NHANES data.
 
+```{r}
+#| label: pop-vs-posterior-bar
+#| fig-cap: "Population vs Posterior Diabetes Prevalence"
+#| echo: true
+#| include: true
+#| eval: true
+
+# --- 1. Survey-weighted (Population) prevalence ---
+pop_est <- svymean(~diabetes_dx, nhanes_design_adult, na.rm = TRUE)
+pop_prev <- as.numeric(pop_est)
+pop_se <- as.numeric(SE(pop_est))
+pop_ci <- c(pop_prev - 1.96 * pop_se, pop_prev + 1.96 * pop_se)
+
+# --- 2. Bayesian posterior prevalence ---
+# Uses your existing pp_samples matrix
+pp_proportion <- rowMeans(pp_samples)                   # prevalence per posterior draw
+post_prev <- mean(pp_proportion)                        # posterior mean prevalence
+post_ci <- quantile(pp_proportion, c(0.025, 0.975))     # 95% credible interval
+
+# --- 3. Combine into one data frame ---
+bar_df <- tibble(
+  Source     = c("Survey-Weighted (Population)", "Bayesian Posterior"),
+  Prevalence = c(pop_prev, post_prev),
+  CI_low     = c(pop_ci[1], post_ci[1]),
+  CI_high    = c(pop_ci[2], post_ci[2])
+)
+
+# --- 4. Plot ---
+ggplot(bar_df, aes(x = Source, y = Prevalence, fill = Source)) +
+  geom_col(alpha = 0.85, width = 0.6) +
+  geom_errorbar(
+    aes(ymin = CI_low, ymax = CI_high),
+    width = 0.15,
+    color = "black",
+    linewidth = 0.8
+  ) +
+  guides(fill = "none") +
+  labs(
+    title = "Population vs Posterior Diabetes Prevalence",
+    y = "Prevalence (Proportion with Diabetes)",
+    x = NULL
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+The Bayesian posterior predicts a slightly higher diabetes prevalence than the survey-weighted NHANES estimate, but the credible and confidence intervals overlap, indicating strong agreement.
+
+This suggests the Bayesian model is well-calibrated and reproduces population-level prevalence without systematic over- or under-prediction.
+
 #### Internal Validation: Individual-Level Predictions
 
 ```{r}

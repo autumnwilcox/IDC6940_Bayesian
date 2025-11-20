@@ -28,117 +28,93 @@ editor: visual
 
 ## Introduction
 
--   **Diabetes mellitus (DM)** affects over **37 million U.S. adults**.\
--   Major risk factors include **age**, **BMI**, **sex**, and **race/ethnicity**.\
--   Traditional logistic regression can produce **unstable estimates** with missing data or small subgroups.\
--   **Bayesian logistic regression** addresses these issues by incorporating **prior information** and providing **richer uncertainty estimates**.\
--   This analysis compares two modeling frameworks using **NHANES 2013–2014** data:
-    1.  Design-based logistic regression
-    2.  Bayesian logistic regression (*brms* in R)
+-   **Diabetes mellitus (DM)** affects over **37 million U.S. adults**.
+-   Major risk factors include **age**, **BMI**, **sex**, and **race/ethnicity**.
+-   Traditional logistic regression can struggle with **missing data** and **small subgroup instability**.
+-   **Bayesian logistic regression** incorporates prior information and provides full **posterior uncertainty**.
+-   This analysis compares:
+    1.  **Design-based logistic regression** (survey-weighted)
+    2.  **Bayesian logistic regression** (*brms* with HMC/NUTS)
 
 ------------------------------------------------------------------------
 
-## Background & Motivation
+## Why Bayesian?
 
 ::: {style="font-size: 0.85em"}
--   **Why Bayesian?**
-    -   Traditional logistic regression can produce unstable estimates with missing data or small subgroups.
-    -   Bayesian inference incorporates prior knowledge and fully quantifies uncertainty through posterior distributions.
--   **Prior Research**
-    -   Bayesian models have improved parameter stability in epidemiologic studies.
-    -   However, few analyses directly compare Bayesian and frequentist logistic regression for diabetes prediction.
--   **Goal**
-    -   Assess whether Bayesian logistic regression improves interpretability and stability compared to frequentist approaches using NHANES 2013–2014 data.
+-   **Why consider Bayesian methods?**
+    -   Traditional logistic regression can produce **unstable estimates** with missing data or sparse categories.
+    -   Bayesian inference incorporates **prior information** and provides richer **uncertainty quantification** through posterior distributions.
+-   **Prior research**
+    -   Bayesian models improve parameter stability in epidemiologic studies.
+    -   Limited work directly compares **Bayesian vs. design-based logistic regression** for diabetes prediction using NHANES.
+-   **Motivation for this analysis**
+    -   Evaluate whether Bayesian logistic regression improves **stability**, **interpretability**, and **predictive calibration**.
+    -   Use the NHANES complex survey design with normalized weights to approximate population inference.
 :::
 
 ------------------------------------------------------------------------
 
-## Study Design
+## Data Source & Design
 
 -   **Dataset:** NHANES 2013–2014
-    -   n = 5,769 adults aged ≥20 years
-    -   Variables: age, BMI, sex, race/ethnicity, and doctor-diagnosed diabetes
--   **Survey Design:**
-    -   Multistage, complex sampling with strata, clusters, and sample weights
-    -   Weights were normalized and used as importance weights during modeling
+    -   Adults aged **≥20 years**
+    -   Final analytic cohort size after merging: **5,769**
+-   **Variables collected**
+    -   **Outcome:** Doctor-diagnosed diabetes (`diabetes_dx`)
+    -   **Predictors:** Age, BMI, sex, race/ethnicity
+-   **NHANES survey design**
+    -   Multistage, complex sample with **strata**, **clusters**, and **weights**
+    -   Weights were **normalized** and used as importance weights in the Bayesian model
 
 ------------------------------------------------------------------------
 
-## Dataset Overview
+## Variables
 
-::: {style="font-size: 0.75em"}
+::: {style="font-size: 0.69em"}
 -   **Source:** NHANES 2013–2014
 
--   **Cohort:** 5,769 adults aged ≥20 years
-
--   **Merged Components:**
+-   **Merged components:**
 
     -   DEMO_H (Demographics)
     -   BMX_H (Body Measures)
     -   DIQ_H (Diabetes Questionnaire)
 
--   **Outcome:** Doctor-diagnosed diabetes (`diabetes_dx`)
+-   **Outcome variable**
 
--   **Predictors:**
+    -   `diabetes_dx` — self-reported doctor diagnosis of diabetes
 
-    -   Age (standardized z-score)
-    -   BMI (standardized z-score)
-    -   Sex (Female vs Male)
-    -   Race/Ethnicity (Non-Hispanic White reference group)
+-   **Predictors**
 
--   **Purpose:**\
-    Prepare a unified dataset for the design-based and Bayesian models.
+    -   **Age** (standardized)
+    -   **BMI** (standardized)
+    -   **Sex** (Female vs Male)
+    -   **Race/Ethnicity** (5-level categorical variable)
+
+-   **Purpose of this step**
+
+    -   Prepare a unified dataset for both:
+        -   Design-based logistic regression
+        -   Bayesian logistic regression
 :::
 
 ------------------------------------------------------------------------
 
-## Data Preparation
-::: {style="font-size: 0.9em"}
+## Data Cleaning & Setup
 
--   **Missing Data:**
-    -   Small proportion of missingness (~3–4%)
-    -   Final Bayesian model used complete-case data, as exclusions removed the limited missingness.
--   **Standardization:**
-    -   Continuous predictors (Age, BMI) converted to z-scores for comparability
--   **Recoding:**
-    -   Simplified categorical variables (e.g., binary Sex, grouped Race/Ethnicity)
--   **Goal:**
-    -   Produce a clean, standardized dataset for both modeling frameworks
+::: {style="font-size: 0.85em"}
+-   **Missing data**
+    -   Small proportion of missingness (\~3–4%) in BMI and diabetes variables
+    -   Complete-case data were insufficient → motivated the need for MICE
+-   **Standardization**
+    -   Age and BMI were converted to **z-scores**
+        -   Improves convergence of Bayesian HMC
+        -   Makes effect sizes comparable (per 1 SD increase)
+-   **Recoding**
+    -   Sex simplified to Female vs Male
+    -   Race/Ethnicity grouped into 5 categories with **Non-Hispanic White** as the reference
+-   **Goal**
+    -   Produce a clean, consistent dataset before imputation and modeling
 :::
-
-------------------------------------------------------------------------
-
-## Modeling Workflow
-
-:::: {style="font-size: 0.75em"}
-::: panel-tabset
-### Steps 1–3: Data Preparation
-
--   **Step 1 – Acquisition:**
-    -   NHANES 2013–2014 (DEMO_H, BMX_H, DIQ_H);
-    -   n = 5,769 adults aged ≥20 years
--   **Step 2 – Preprocessing:**
-    -   Standardized age & BMI, recoded sex and race/ethnicity
--   **Step 3 – Final Analytic Dataset:**
-    -   Applied exclusions and standardization to produce a clean dataset
-    -   Both models used the same complete-case adult dataset (n = 5,769)
-
-### Steps 4–6: Modeling & Evaluation
-
--   **Step 4 – Modeling Frameworks:**
-    -   Design-based logistic regression (design-based)
-    -   Bayesian logistic regression (*brms*, Hamiltonian Monte Carlo)
--   **Step 5 – Diagnostics:**
-    -   R-hat values ≈ 1.00 indicate strong convergence
-    -   Effective sample sizes (ESS) \> 2000 confirm sufficient sampling
-    -   Posterior predictive checks and Bayesian R² ≈ 0.13 show good model fit
--   **Step 6 – Interpretation:**
-    -   Compared parameter estimates across all frameworks
-    -   Identified consistent predictors: higher age and BMI increase diabetes risk
-    -   Female sex showed a protective effect; race/ethnicity differences remained significant
-    -   Bayesian credible intervals provided clear uncertainty quantification
-:::
-::::
 
 ------------------------------------------------------------------------
 
@@ -148,241 +124,479 @@ editor: visual
 ### Summary
 
 ::: {style="font-size: 0.8em"}
--   **Missing Data:**
-    -   Low overall (≈3–4%) in BMI and diabetes variables
-    -   Minimal missingness (≈3–4%) and final dataset contained complete cases after merging.
--   **Outcome Distribution:**
-    -   Diabetes prevalence ≈ 11% among U.S. adults
--   **Predictor Patterns:**
-    -   Higher age and BMI strongly associated with diabetes
-    -   Non-Hispanic Black and Hispanic adults show higher prevalence
-    -   Females slightly lower prevalence than males
--   **Key Takeaway:**
-    -   Observed relationships align with prior epidemiologic research, confirming a solid analytical foundation.
+-   **Missing Data**
+    -   Low overall (\~3–4%) in BMI and diabetes variables
+    -   MICE needed for restoring full sample size
+-   **Outcome distribution**
+    -   Survey-weighted diabetes prevalence ≈ **9%**\
+        (Observed weighted mean = **0.0889**)
+-   **Predictor relationships**
+    -   Higher **age** and **BMI** strongly associated with diabetes
+    -   **Non-Hispanic Black** and **Hispanic** adults show higher prevalence
+    -   **Females** show slightly lower prevalence than males
+-   **Takeaway**
+    -   EDA confirms expected epidemiologic patterns and supports subsequent modeling.
 :::
 
 ### BMI Distribution
 
-![](figs/bmi_by_diabetes.png){width="80%" fig-align="center" fig-cap="BMI Distribution by Diabetes Status (NHANES 2013–2014)"}
+![](figs/bmi_by_diabetes.png){width="80%" fig-align="center"}
 
 ### Race/Ethnicity Distribution
 
-![](figs/diabetes_by_race.png){width="80%" fig-align="center" fig-cap="Diabetes Prevalence by Race/Ethnicity (NHANES 2013–2014)"}
+![](figs/diabetes_by_race.png){width="80%" fig-align="center"}
 ::::
 
 ------------------------------------------------------------------------
 
-## Modeling Frameworks
-
--   **Design-Based Logistic Regression (Design-Based)**
-    -   Accounts for NHANES’ complex sampling design (strata, clusters, weights)
--   **Bayesian Logistic Regression** (*brms*, Hamiltonian Monte Carlo)
-    -   Incorporates prior information and provides full uncertainty quantification
--   **Goal:**
-    -   Compare coefficient stability, uncertainty estimation, and overall model fit across both frameworks.
-
-------------------------------------------------------------------------
+## Missing Data & MICE
 
 ::: panel-tabset
-### Bayesian Model Code
+### Why Imputation?
 
-```{r}
-# Bayesian logistic regression using brms
-library(brms)
+- NHANES has **non-trivial missingness** in BMI and diabetes variables.
+- Complete-case analysis can bias estimates if data are **Missing at Random (MAR)**.
+- Bayesian models require **complete data**, so imputation is essential.
 
-bayes_fit <- brm(
-  diabetes_dx ~ age_c + bmi_c + sex + race,
-  data = adult_imp1,
-  family = bernoulli(),
-  prior = c(
-    prior(normal(0, 2.5), class = "b"),             # slopes
-    prior(student_t(3, 0, 10), class = "Intercept") # intercept
-  ),
-  chains = 4, iter = 2000, warmup = 1000,
-  seed = 123
-)
-```
+**MAR definition:** Missingness depends on *observed* variables (e.g., age, sex) but not on the missing value itself.
 
-### Priors & Settings
+### MICE Overview
+- **Multivariate Imputation by Chained Equations (MICE)**
+- Iteratively imputes missing variables using prediction models.
+- Produces multiple plausible datasets.
+- Captures uncertainty in parameters and imputations.
+- We use the completed dataset: **adult_imp1**.
 
--   **Priors**:
-
-    -   Slopes: Normal(0, 2.5)
-
-    -   Intercept: Student-t(3, 0, 10)
-
--   **Sampling**:
-
-    -   4 chains × 2000 iterations (1000 warm-up)
-
--   **Diagnostics Expected**:
-
-    -   Rhat ≈ 1.00, ESS \> 2000, Bayesian R² ≈ 0.13
-
-### Diagnostics Code
-
-```{r}
-summary(bayes_fit)                  # coefficient summaries and Rhat
-bayes_R2(bayes_fit)                 # Bayesian R²
-pp_check(bayes_fit, nsamples = 50)  # posterior predictive check
-```
+### Methods Used
+- **Continuous variables:** Predictive Mean Matching (PMM)
+- **Binary variables:** Logistic regression
+- **Iterations:** 5 imputations × 5 iterations
+- Bayesian model uses: **adult_imp1**
 :::
 
 ------------------------------------------------------------------------
 
-## Model Comparison
+## Missingness Pattern
 
--   **Consistent Predictors Across All Models:**
-    -   Higher **age** and **BMI** → increased diabetes risk
-    -   **Female sex** → lower odds
-    -   **Race/ethnicity** differences persisted
--   **Effect Sizes:**
-    -   Nearly identical across design-based and Bayesian frameworks
--   **Uncertainty:**
-    -   Minor variation in interval widths reflects each model’s uncertainty treatment
+::: panel-tabset
+### Missingness Plot
+![](figs/missingness.png){width="60%" fig-align="center"}
 
-------------------------------------------------------------------------
-
-## Model Comparison Summary
-
--   **Both frameworks** identified the same significant predictors: **age, BMI, sex, and race/ethnicity.**
--   **Bayesian estimates** matched frequentist models in magnitude and direction, confirming robustness.
--   **Interval widths** varied slightly due to differences in how each framework handles uncertainty.
+### Interpretation
+- Missingness mainly affects **BMI** and **diabetes variables**.
+- Pattern is consistent with **MAR**, supporting use of MICE.
+:::
 
 ------------------------------------------------------------------------
 
-### Odds Ratios (95% CI) Across Design-Based and Bayesian Models
+### Resulting Imputed Dataset
+
+-   Raw adults: 10,175\
+
+-   Merged adults ≥20: 5,769\
+
+-   Complete-case subset: 5,348\
+
+-   **Imputed dataset (adult_imp1): 5,592**
+
+-   Imputation restores sample size\
+
+-   Improves posterior stability
+
+------------------------------------------------------------------------
+
+## Final Bayesian Modeling Dataset
+
+::: panel-tabset
+### Adult Analytic Dataset
 ::: {style="font-size: 0.8em"}
 
-| Predictor                 | Design-Based OR (95% CI) | Bayesian OR (95% CrI) |
-|---------------------------|------------------------------|------------------------|
-| **Age (per 1 SD)**        | 3.03 (2.70 – 3.40)           | 2.99 (2.66 – 3.39)     |
-| **BMI (per 1 SD)**        | 1.89 (1.65 – 2.15)           | 1.87 (1.71 – 2.05)     |
-| **Female (vs. Male)**     | 0.53 (0.41 – 0.68)           | 0.52 (0.42 – 0.63)     |
-| Black (vs. White)         | 1.67 (1.16 – 2.40)           | 1.70 (1.26 – 2.30)     |
-| Hispanic (vs. White)      | 1.59 (1.17 – 2.17)           | 1.53 (0.94 – 2.43)     |
-| Other (vs. White)         | 2.33 (1.55 – 3.50)           | 2.26 (1.56 – 3.24)     |
-| Mexican American (vs. White)| 2.04 (1.49 – 2.79)           | 1.99 (1.41 – 2.80)     |
+-   Bayesian model uses the **final imputed dataset:**\
+    **adult_imp1 (n = 5,592)**
+
+-   Variables included:
+
+    -   `diabetes_dx` — binary outcome\
+    -   `age_c` — standardized age\
+    -   `bmi_c` — standardized BMI\
+    -   `sex` — Female vs Male\
+    -   `race` — 5-level categorical variable
+
+-   NHANES weights (`wt_norm`) were **normalized** and passed as importance weights.
 :::
 
 ------------------------------------------------------------------------
 
-## MCMC Diagnostics
-
-- **R-hat ≈ 1.00** for all parameters → strong convergence  
-- **Effective Sample Size (ESS > 2000)** → efficient sampling  
-- **Trace plots** show stable mixing across chains  
-- **Autocorrelation** low across lags → good efficiency
-
-![](figs/trace_age_bmi.png){width="85%"}
-
-------------------------------------------------------------------------
-
-## Bayesian Performance
-
--   **Excellent convergence and calibration**
-    -   R-hat values around 1.00 and effective sample sizes above 2000 indicate strong chain mixing and reliable sampling
--   **Stable parameter estimates**
-    -   Nearly identical to design-based logistic regression model
--   **Credible intervals**
-    -   Clearly represent uncertainty and confirm overall model robustness
-
-------------------------------------------------------------------------
-
-::: panel-tabset
-### Code
+### Bayesian Model Formula
 
 ```{r}
-# Summarize Bayesian model results
-summary(bayes_fit)
-
-# Evaluate model fit
-bayes_R2(bayes_fit)
+diabetes_dx | weights(wt_norm) ~ age_c + bmi_c + sex + race
 ```
 
-### Key Findings
+-   **Family:** Bernoulli (logit)\
+-   **Backend:** Stan (HMC / NUTS)\
+-   **Chains:** 4\
+-   **Iterations:** 2000 (1000 warmup)
 
--   All Rhat ≈ 1.00 → strong convergence
--   ESS \> 2000 → adequate sampling
--   Bayesian R² = 0.13 → moderate explanatory power
--   Posterior means consistent with frequentist results
+------------------------------------------------------------------------
 
-### Trace Plots
+### Priors Used
 
-![](figs/trace_age_bmi.png){width="90%"}
+-   **Regression coefficients:**\
+    `normal(0, 2.5)` — weakly informative
+
+-   **Intercept:**\
+    `student_t(3, 0, 10)` — heavy-tailed prior
+
+-   Priors stabilize estimates in sparse or imbalanced categories.
+
+------------------------------------------------------------------------
+
+### Standardization Reminder
+::: {style="font-size: 0.90em"}
+
+Age and BMI were standardized to:
+
+- mean = 0
+- sd = 1
+
+Benefits: 
+
+- Improves sampler convergence
+- Reduces autocorrelation
+- Makes coefficient interpretation clear (per 1 SD increase)
+:::
 :::
 
 ------------------------------------------------------------------------
 
-::: panel-tabset
-### Posterior Predictive Check
-
--   Posterior predictive checks (PPCs) evaluate how well the model reproduces observed data.
--   Here, replicated outcomes from the posterior closely match the observed diabetes prevalence, indicating good model calibration.
-
-### Posterior Plot
-
-![](figs/posterior_dists.png){width="90%"}
-:::
-
-------------------------------------------------------------------------
+## Diagnostics: Trace & Density
 
 ::: panel-tabset
 ### Code
 
 ```{r}
-# Posterior predictive check comparing observed vs. simulated outcomes
-pp_check(bayes_fit, nsamples = 100) +
-  labs(title = "Posterior Predictive Check: Observed vs. Replicated Outcomes")
+# Combine trace + density for Age and BMI
+bayesplot::mcmc_trace(as.array(bayes_fit), pars = c("b_age_c", "b_bmi_c"))
+bayesplot::mcmc_dens_overlay(as.array(bayes_fit), pars = c("b_age_c", "b_bmi_c"))
+```
+
+### Trace Plot
+![](figs/mcmc_trace_age_bmi.png){width="65%" fig-align="center"}
+
+### Density Plot
+![](figs/mcmc_dens_age_bmi.png){width="65%" fig-align="center"}
+
+### Interpretation
+
+-   Chains are stable with no drift.
+-   Densities are smooth, unimodal, confirming good mixing.
+-   R-hat ≈ 1.00 for all parameters → convergence achieved.
+:::
+
+------------------------------------------------------------------------
+
+## Diagnostics: Autocorrelation & ESS
+
+::: panel-tabset
+### Code
+
+```{r}
+# Autocorrelation for Age & BMI
+bayesplot::mcmc_acf(as.array(bayes_fit), pars = c("b_age_c", "b_bmi_c"))
+
+# Extract effective sample size
+ess <- posterior::ess(bayes_fit)
+ess
 ```
 
 ### Plot
 
-![](figs/pp_check.png){width="90%"}
+![](figs/acf_age_bmi.png){width="65%" fig-align="center"}
 
 ### Interpretation
 
--   The PPC plot compares **predicted vs. observed** outcomes.
--   **Strong overlap** between simulated and actual data → good model fit.
--   **Simulated outcomes** accurately reflect real diabetes prevalence.
--   Confirms model is **well-calibrated** and **not overfitting**.
--   Supports adequacy of priors and overall Bayesian structure.
--   Reinforces reliability of the Bayesian framework.
+-   Autocorrelation drops quickly → efficient sampling.
+-   Bulk ESS and Tail ESS are high → reliable posterior means and tail estimates.
+-   Indicates low autocorrelation and strong chain mixing.
 :::
 
 ------------------------------------------------------------------------
 
-## Discussion, Limitations & Conclusion
+## Diagnostics: Odds Ratios Summary
 
-::: {style="font-size: 0.8em"}
--   **Key Findings:** Age and BMI were the strongest predictors; sex was protective; racial disparities persisted.
--   **Consistency:** Both models — Bayesian and design-based — yielded nearly identical results.
--   **Advantages:** The Bayesian approach enhanced interpretability, providing richer uncertainty estimates via credible intervals and PPCs.
--   **Limitations:** Approximate weighting and non-tuned priors; results limited to the 2013–2014 cycle.
--   **Conclusion:** Bayesian inference complements frequentist methods by improving transparency, interpretability, and uncertainty quantification.
+::: panel-tabset
+### Code
+
+```{r}
+# Extract odds ratios from survey-weighted model
+OR_svy <- broom::tidy(design_fit, exponentiate = TRUE, conf.int = TRUE)
+
+# Extract odds ratios from Bayesian model
+OR_bayes <- broom.mixed::tidy(bayes_fit, exponentiate = TRUE, conf.int = TRUE)
+```
+
+### Table Summary
+::: {style="font-size: 0.80em"}
+
+| Predictor | Design-Based OR (95% CI) | Bayesian OR (95% CrI) |
+|----|----|----|
+| **Age (per 1 SD)** | 3.03 (2.70–3.40) | 2.99 (2.66–3.39) |
+| **BMI (per 1 SD)** | 1.89 (1.65–2.15) | 1.87 (1.71–2.05) |
+| **Female (vs. Male)** | 0.53 (0.41–0.68) | 0.52 (0.42–0.63) |
+| Black (vs. White) | 1.67 (1.16–2.40) | 1.70 (1.26–2.30) |
+| Hispanic (vs. White) | 1.59 (1.17–2.17) | 1.53 (0.94–2.43) |
+| Other (vs. White) | 2.33 (1.55–3.50) | 2.26 (1.56–3.24) |
+| Mexican American (vs. White) | 2.04 (1.49–2.79) | 1.99 (1.41–2.80) |
+::: 
+
+### Interpretation
+
+-   Both models produce nearly identical odds ratios, supporting model stability.
+-   Bayesian credible intervals are slightly wider, reflecting more complete uncertainty.
+-   Strongest predictors remain age and BMI.
+-   Sex and race/ethnicity effects are consistent across frameworks.
 :::
 
 ------------------------------------------------------------------------
 
-## Key Takeaways
+## Diagnostics: Prior vs Posterior Distributions
 
--   Consistent results across both modeling frameworks
--   Bayesian approach adds clarity through credible intervals and PPCs
--   Strong convergence and calibration confirm reliability
--   Future work: extend to later NHANES cycles and hierarchical priors
+::: panel-tabset
+### Code
+
+```{r}
+# Visualize prior vs posterior for all regression coefficients
+pp <- mcmc_areas(
+  bayes_fit,
+  pars = c("b_age_c", "b_bmi_c", "b_sexFemale", "b_raceBlack",
+           "b_raceHispanic", "b_raceOther", "b_raceMexAm"),
+  prob = 0.95
+)
+
+pp
+```
+
+### Plot
+
+![](figs/posterior_dists.png){width="75%" fig-align="center"}
+
+### Interpretation
+
+-   Priors were weakly informative (normal(0, 2.5)).
+-   Posteriors concentrate far from zero for age and BMI → strong positive associations.
+-   Race/ethnicity effects shift away from the prior toward their data-driven values.
+-   Wider posteriors reflect uncertainty, but clear separation from priors indicates the data are strongly informative.
+:::
 
 ------------------------------------------------------------------------
 
-## Future Directions
+## Diagnostics: Posterior Predictive Checks
 
--   **Expand Temporal Scope**
-    -   Incorporate additional NHANES cycles to assess temporal trends.
--   **Model Refinement**
-    -   Use hierarchical priors to capture subgroup variation.
-    -   Explore Bayesian model averaging for improved predictive accuracy.
--   **Validation**
-    -   Perform external validation on independent datasets.
-    -   Conduct sensitivity analyses for priors and imputation assumptions.
+::: panel-tabset
+### Code
+
+```{r}
+# Posterior predictive check comparing observed vs simulated outcomes
+pp_check(bayes_fit, type = "bars", ndraws = 100)
+```
+
+### Plot
+
+![](figs/pp_check.png){width="75%" fig-align="center"}
+
+### Interpretation
+
+-   Posterior predictive distributions closely match the observed diabetes prevalence (\~10.9% Bayesian vs \~8.9% observed).
+-   Strong overlap indicates good model calibration.
+-   No signs of systematic under- or over-prediction.
+-   Confirms that the Bayesian model is not misspecified for this dataset.
+:::
+
+------------------------------------------------------------------------
+
+## Diagnostics: Pairwise Posterior Relationships
+
+::: panel-tabset
+### Code
+
+```{r}
+# Pairwise posterior correlations for Age, BMI, and Sex (Female)
+bayesplot::mcmc_pairs(
+  posterior::as_draws_array(bayes_fit),
+  pars = c("b_age_c", "b_bmi_c", "b_sexFemale"),
+  off_diag_args = list(size = 1.5, alpha = 0.4)
+)
+```
+
+### Plot
+![](figs/mcmc_pairs.png){width="50%" fig-align="center"}
+
+### Interpretation
+
+- Pairwise plots show the joint posterior relationships among age, BMI, and sex effects.
+- All parameter pairs look well-mixed and approximately elliptical, indicating no problematic correlations.
+- No funnel shapes or multimodality → confirms stable sampling across parameters.
+:::
+
+------------------------------------------------------------------------
+
+## Diagnostics: Observed vs Predicted (Scatter)
+
+::: panel-tabset
+### Code
+
+```{r}
+# 100 posterior draws for predictive comparison
+pp_scat <- bayesplot::ppc_scatter_avg(
+  y    = adult_imp1$diabetes_dx,
+  yrep = posterior_predict(bayes_fit, ndraws = 100)
+)
+pp_scat
+```
+
+### Plot
+
+![](figs/pp_scatter.png){width="70%" fig-align="center"}
+
+### Interpretation
+
+-   Points near (0,0) and (1,1) indicate good predictive alignment.
+-   Model reproduces both non-diabetic and diabetic outcomes well.
+-   No major miscalibration—supports posterior predictive validity.
+:::
+
+------------------------------------------------------------------------
+
+## Diagnostics: Model-Level Comparisons
+
+::: panel-tabset
+### Code
+
+```{r}
+# 1. Compute prevalence in observed data
+obs_prev <- mean(adult_imp1$diabetes_dx)
+
+# 2. Posterior predicted prevalence
+post_prev <- posterior_predict(bayes_fit) |> colMeans() |> mean()
+
+# 3. Combine ORs from survey-weighted and Bayesian models
+comparison_table <- data.frame(
+  Predictor = predictors,
+  Design_OR = design_or,
+  Design_LCL = design_lcl,
+  Design_UCL = design_ucl,
+  Bayes_OR   = bayes_or,
+  Bayes_LCL  = bayes_lcl,
+  Bayes_UCL  = bayes_ucl
+)
+```
+
+### Table Summary
+::: {style="font-size: 0.90em"}
+
+| Metric             | Observed (NHANES)  | Predicted (Posterior Mean) |
+|--------------------|--------------------|----------------------------|
+| Mean diabetes rate | 0.0889             | 0.1094                     |
+| SD                 | 0.0048 (survey SE) | NA                         |
+:::
+
+### Plot
+![](figs/pop_vs_post_prev.png){width="70%" fig-align="center"}
+
+### Interpretation
+::: {style="font-size: 0.90em"}
+
+- The NHANES survey-weighted prevalence is ≈ 8.9%, which reflects the true population estimate after accounting for complex sampling.
+- The Bayesian posterior predictive prevalence is ≈ 10.9%, slightly higher but still within a reasonable range given sampling variability and model assumptions.
+- The credible interval for the posterior mean overlaps the survey-weighted 95% CI, indicating acceptable calibration, though the model shows a modest upward shift in predicted diabetes prevalence.
+- This pattern is typical when using standardized predictors and weakly informative priors—Bayesian models tend to slightly smooth or regularize prevalence upward.
+:::
+:::
+
+------------------------------------------------------------------------
+
+## Diagnostics: Bayesian Model Fit
+::: {style="font-size: 0.70em"}
+
+**Autocorrelation:**\
+-   Low lag autocorrelation across all parameters.\
+-   Indicates efficient sampling and good mixing.
+
+**Assumptions:**\
+-   Posterior predictive checks show no major violations.\
+-   Standardization of age and BMI improves logit-scale linearity.
+
+**Correlation Matrix:**\
+-   No problematic multicollinearity among predictors.\
+-   Correlations small-to-moderate, consistent with epidemiology.
+
+**Bayesian R²:**\
+-   Bayesian R² ≈ **0.13**\
+-   Typical for epidemiologic binary outcomes, where complex unmeasured factors contribute to risk.
+
+**Validation:**\
+-   Posterior predictions closely match observed NHANES prevalence.\
+-   No evidence of overfitting.\
+-   Replicated datasets resemble observed data.
+:::
+
+------------------------------------------------------------------------
+
+## Conclusion
+
+::: panel-tabset
+### Key Findings
+
+-   Age and BMI were consistently the strongest predictors of diabetes.\
+-   Female sex showed a protective association.\
+-   Race/ethnicity differences persisted across all models.\
+-   Bayesian estimates closely matched survey-weighted estimates, showing strong robustness.\
+-   Posterior predictive prevalence (\~10.9%) was slightly higher than the survey-weighted prevalence (\~8.9%), but still well-calibrated.
+
+### Bayesian Strengths
+
+-   Provides full posterior distributions rather than only point estimates.\
+-   Credible intervals are intuitive and convey uncertainty effectively.\
+-   Priors helped regularize coefficients, useful under missingness.\
+-   Posterior predictive checks demonstrated strong model calibration.
+
+### Limitations
+
+-   NHANES data are cross-sectional, limiting causal inference.\
+-   MICE assumes Missing At Random (MAR); violations may bias results.\
+-   Bayesian model used normalized weights, not full survey design.\
+-   Only one imputed dataset was used for modeling; pooling across imputations may improve inference.\
+-   No interaction effects modeled (e.g., age × BMI).
+
+### Conclusion
+
+-   Bayesian logistic regression complements survey-weighted logistic regression.\
+-   Produces stable, interpretable results with clear uncertainty.\
+-   Posterior predictive checks confirm good model fit and calibration.\
+-   Framework is flexible and extendable for more complex models or additional predictors.
+:::
+
+------------------------------------------------------------------------
+
+## Next Steps
+::: {style="font-size: 0.90em"}
+
+-   **Expand NHANES Cycles**\
+    Incorporate additional survey years to assess trends over time.
+
+-   **Enhanced Bayesian Modeling**\
+    Explore hierarchical or multilevel models, and consider Bayesian model averaging for improved predictive performance.
+
+-   **Additional Predictors**\
+    Include lifestyle, dietary, clinical, or genetic factors when available.
+
+-   **Validation**\
+    Perform external validation with an independent dataset and conduct sensitivity analyses for priors and imputation assumptions.
+
+-   **Interaction Effects**\
+    Evaluate interactions (e.g., age × BMI) to refine risk estimation.
+:::
 
 ------------------------------------------------------------------------
 
@@ -390,4 +604,8 @@ pp_check(bayes_fit, nsamples = 100) +
 
 ------------------------------------------------------------------------
 
-### Thank you!
+### Thank You!
+
+**Dr. Ashraf Cohen, PhD, MS**\
+Department of Mathematics and Statistics\
+University of West Florida
