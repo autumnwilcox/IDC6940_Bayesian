@@ -154,24 +154,26 @@ editor: visual
 ::: panel-tabset
 ### Why Imputation?
 
-- NHANES has **non-trivial missingness** in BMI and diabetes variables.
-- Complete-case analysis can bias estimates if data are **Missing at Random (MAR)**.
-- Bayesian models require **complete data**, so imputation is essential.
+-   NHANES has **non-trivial missingness** in BMI and diabetes variables.
+-   Complete-case analysis can bias estimates if data are **Missing at Random (MAR)**.
+-   Bayesian models require **complete data**, so imputation is essential.
 
 **MAR definition:** Missingness depends on *observed* variables (e.g., age, sex) but not on the missing value itself.
 
 ### MICE Overview
-- **Multivariate Imputation by Chained Equations (MICE)**
-- Iteratively imputes missing variables using prediction models.
-- Produces multiple plausible datasets.
-- Captures uncertainty in parameters and imputations.
-- We use the completed dataset: **adult_imp1**.
+
+-   **Multivariate Imputation by Chained Equations (MICE)**
+-   Iteratively imputes missing variables using prediction models.
+-   Produces multiple plausible datasets.
+-   Captures uncertainty in parameters and imputations.
+-   We use the completed dataset: **adult_imp1**.
 
 ### Methods Used
-- **Continuous variables:** Predictive Mean Matching (PMM)
-- **Binary variables:** Logistic regression
-- **Iterations:** 5 imputations × 5 iterations
-- Bayesian model uses: **adult_imp1**
+
+-   **Continuous variables:** Predictive Mean Matching (PMM)
+-   **Binary variables:** Logistic regression
+-   **Iterations:** 5 imputations × 5 iterations
+-   Bayesian model uses: **adult_imp1**
 :::
 
 ------------------------------------------------------------------------
@@ -180,46 +182,48 @@ editor: visual
 
 ::: panel-tabset
 ### Missingness Plot
+
 ![](figs/missingness.png){width="60%" fig-align="center"}
 
 ### Interpretation
-- Missingness mainly affects **BMI** and **diabetes variables**.
-- Pattern is consistent with **MAR**, supporting use of MICE.
+
+-   Missingness mainly affects **BMI** and **diabetes variables**.
+-   Pattern is consistent with **MAR**, supporting use of MICE.
 :::
 
 ------------------------------------------------------------------------
 
 ### Resulting Imputed Dataset
 
--   Raw adults: 10,175\
+-   Raw adults: 10,175
 
--   Merged adults ≥20: 5,769\
+-   Merged adults ≥20: 5,769
 
--   Complete-case subset: 5,348\
+-   Complete-case subset: 5,348
 
 -   **Imputed dataset (adult_imp1): 5,592**
 
--   Imputation restores sample size\
+-   Imputation restores sample size
 
 -   Improves posterior stability
 
 ------------------------------------------------------------------------
 
-## Final Bayesian Modeling Dataset
+## Final Modeling Dataset
 
-::: panel-tabset
-### Adult Analytic Dataset
+::::: panel-tabset
+### Adult Dataset
+
 ::: {style="font-size: 0.8em"}
-
 -   Bayesian model uses the **final imputed dataset:**\
     **adult_imp1 (n = 5,592)**
 
 -   Variables included:
 
-    -   `diabetes_dx` — binary outcome\
-    -   `age_c` — standardized age\
-    -   `bmi_c` — standardized BMI\
-    -   `sex` — Female vs Male\
+    -   `diabetes_dx` — binary outcome
+    -   `age_c` — standardized age
+    -   `bmi_c` — standardized BMI
+    -   `sex` — Female vs Male
     -   `race` — 5-level categorical variable
 
 -   NHANES weights (`wt_norm`) were **normalized** and passed as importance weights.
@@ -233,40 +237,35 @@ editor: visual
 diabetes_dx | weights(wt_norm) ~ age_c + bmi_c + sex + race
 ```
 
--   **Family:** Bernoulli (logit)\
--   **Backend:** Stan (HMC / NUTS)\
--   **Chains:** 4\
+::: {style="font-size: 0.8em"}
+-   **Family:** Bernoulli (logit)
+-   **Backend:** Stan (HMC / NUTS)
+-   **Chains:** 4
 -   **Iterations:** 2000 (1000 warmup)
+:::
 
 ------------------------------------------------------------------------
 
-### Priors Used
+### Priors & Standardization
 
--   **Regression coefficients:**\
-    `normal(0, 2.5)` — weakly informative
+::: {style="font-size: 0.7em"}
+**Regression Coefficients:**\
+-   `normal(0, 2.5)` — weakly informative
 
--   **Intercept:**\
-    `student_t(3, 0, 10)` — heavy-tailed prior
-
+**Intercept:**\
+-   `student_t(3, 0, 10)` — heavy-tailed prior\
 -   Priors stabilize estimates in sparse or imbalanced categories.
 
-------------------------------------------------------------------------
+**Age and BMI were standardized to:**\
+-   mean = 0\
+-   sd = 1
 
-### Standardization Reminder
-::: {style="font-size: 0.90em"}
-
-Age and BMI were standardized to:
-
-- mean = 0
-- sd = 1
-
-Benefits: 
-
-- Improves sampler convergence
-- Reduces autocorrelation
-- Makes coefficient interpretation clear (per 1 SD increase)
+**Benefits:**\
+-   Improves sampler convergence\
+-   Reduces autocorrelation\
+-   Makes coefficient interpretation clear (per 1 SD increase)
 :::
-:::
+:::::
 
 ------------------------------------------------------------------------
 
@@ -282,9 +281,11 @@ bayesplot::mcmc_dens_overlay(as.array(bayes_fit), pars = c("b_age_c", "b_bmi_c")
 ```
 
 ### Trace Plot
+
 ![](figs/mcmc_trace_age_bmi.png){width="65%" fig-align="center"}
 
 ### Density Plot
+
 ![](figs/mcmc_dens_age_bmi.png){width="65%" fig-align="center"}
 
 ### Interpretation
@@ -325,7 +326,7 @@ ess
 
 ## Diagnostics: Odds Ratios Summary
 
-::: panel-tabset
+:::: panel-tabset
 ### Code
 
 ```{r}
@@ -337,8 +338,8 @@ OR_bayes <- broom.mixed::tidy(bayes_fit, exponentiate = TRUE, conf.int = TRUE)
 ```
 
 ### Table Summary
-::: {style="font-size: 0.80em"}
 
+::: {style="font-size: 0.80em"}
 | Predictor | Design-Based OR (95% CI) | Bayesian OR (95% CrI) |
 |----|----|----|
 | **Age (per 1 SD)** | 3.03 (2.70–3.40) | 2.99 (2.66–3.39) |
@@ -348,7 +349,7 @@ OR_bayes <- broom.mixed::tidy(bayes_fit, exponentiate = TRUE, conf.int = TRUE)
 | Hispanic (vs. White) | 1.59 (1.17–2.17) | 1.53 (0.94–2.43) |
 | Other (vs. White) | 2.33 (1.55–3.50) | 2.26 (1.56–3.24) |
 | Mexican American (vs. White) | 2.04 (1.49–2.79) | 1.99 (1.41–2.80) |
-::: 
+:::
 
 ### Interpretation
 
@@ -356,7 +357,7 @@ OR_bayes <- broom.mixed::tidy(bayes_fit, exponentiate = TRUE, conf.int = TRUE)
 -   Bayesian credible intervals are slightly wider, reflecting more complete uncertainty.
 -   Strongest predictors remain age and BMI.
 -   Sex and race/ethnicity effects are consistent across frameworks.
-:::
+::::
 
 ------------------------------------------------------------------------
 
@@ -430,13 +431,14 @@ bayesplot::mcmc_pairs(
 ```
 
 ### Plot
+
 ![](figs/mcmc_pairs.png){width="50%" fig-align="center"}
 
 ### Interpretation
 
-- Pairwise plots show the joint posterior relationships among age, BMI, and sex effects.
-- All parameter pairs look well-mixed and approximately elliptical, indicating no problematic correlations.
-- No funnel shapes or multimodality → confirms stable sampling across parameters.
+-   Pairwise plots show the joint posterior relationships among age, BMI, and sex effects.
+-   All parameter pairs look well-mixed and approximately elliptical, indicating no problematic correlations.
+-   No funnel shapes or multimodality → confirms stable sampling across parameters.
 :::
 
 ------------------------------------------------------------------------
@@ -470,7 +472,7 @@ pp_scat
 
 ## Diagnostics: Model-Level Comparisons
 
-::: panel-tabset
+::::: panel-tabset
 ### Code
 
 ```{r}
@@ -493,8 +495,8 @@ comparison_table <- data.frame(
 ```
 
 ### Table Summary
-::: {style="font-size: 0.90em"}
 
+::: {style="font-size: 0.90em"}
 | Metric             | Observed (NHANES)  | Predicted (Posterior Mean) |
 |--------------------|--------------------|----------------------------|
 | Mean diabetes rate | 0.0889             | 0.1094                     |
@@ -502,43 +504,44 @@ comparison_table <- data.frame(
 :::
 
 ### Plot
+
 ![](figs/pop_vs_post_prev.png){width="70%" fig-align="center"}
 
 ### Interpretation
-::: {style="font-size: 0.90em"}
 
-- The NHANES survey-weighted prevalence is ≈ 8.9%, which reflects the true population estimate after accounting for complex sampling.
-- The Bayesian posterior predictive prevalence is ≈ 10.9%, slightly higher but still within a reasonable range given sampling variability and model assumptions.
-- The credible interval for the posterior mean overlaps the survey-weighted 95% CI, indicating acceptable calibration, though the model shows a modest upward shift in predicted diabetes prevalence.
-- This pattern is typical when using standardized predictors and weakly informative priors—Bayesian models tend to slightly smooth or regularize prevalence upward.
+::: {style="font-size: 0.90em"}
+-   The NHANES survey-weighted prevalence is ≈ 8.9%, which reflects the true population estimate after accounting for complex sampling.
+-   The Bayesian posterior predictive prevalence is ≈ 10.9%, slightly higher but still within a reasonable range given sampling variability and model assumptions.
+-   The credible interval for the posterior mean overlaps the survey-weighted 95% CI, indicating acceptable calibration, though the model shows a modest upward shift in predicted diabetes prevalence.
+-   This pattern is typical when using standardized predictors and weakly informative priors—Bayesian models tend to slightly smooth or regularize prevalence upward.
 :::
-:::
+:::::
 
 ------------------------------------------------------------------------
 
 ## Diagnostics: Bayesian Model Fit
-::: {style="font-size: 0.70em"}
 
+::: {style="font-size: 0.70em"}
 **Autocorrelation:**\
--   Low lag autocorrelation across all parameters.\
--   Indicates efficient sampling and good mixing.
+- Low lag autocorrelation across all parameters.\
+- Indicates efficient sampling and good mixing.
 
 **Assumptions:**\
--   Posterior predictive checks show no major violations.\
--   Standardization of age and BMI improves logit-scale linearity.
+- Posterior predictive checks show no major violations.\
+- Standardization of age and BMI improves logit-scale linearity.
 
 **Correlation Matrix:**\
--   No problematic multicollinearity among predictors.\
--   Correlations small-to-moderate, consistent with epidemiology.
+- No problematic multicollinearity among predictors.\
+- Correlations small-to-moderate, consistent with epidemiology.
 
 **Bayesian R²:**\
--   Bayesian R² ≈ **0.13**\
--   Typical for epidemiologic binary outcomes, where complex unmeasured factors contribute to risk.
+- Bayesian R² ≈ **0.13**\
+- Typical for epidemiologic binary outcomes, where complex unmeasured factors contribute to risk.
 
 **Validation:**\
--   Posterior predictions closely match observed NHANES prevalence.\
--   No evidence of overfitting.\
--   Replicated datasets resemble observed data.
+- Posterior predictions closely match observed NHANES prevalence.\
+- No evidence of overfitting.\
+- Replicated datasets resemble observed data.
 :::
 
 ------------------------------------------------------------------------
@@ -580,8 +583,8 @@ comparison_table <- data.frame(
 ------------------------------------------------------------------------
 
 ## Next Steps
-::: {style="font-size: 0.90em"}
 
+::: {style="font-size: 0.90em"}
 -   **Expand NHANES Cycles**\
     Incorporate additional survey years to assess trends over time.
 

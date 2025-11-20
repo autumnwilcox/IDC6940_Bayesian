@@ -427,22 +427,18 @@ December 13, 2025</p><p></p>
 
 <h3 id="resulting-imputed-dataset">Resulting Imputed Dataset</h3>
 <ul>
-<li><p>Raw adults: 10,175<br>
-</p></li>
-<li><p>Merged adults ≥20: 5,769<br>
-</p></li>
-<li><p>Complete-case subset: 5,348<br>
-</p></li>
+<li><p>Raw adults: 10,175</p></li>
+<li><p>Merged adults ≥20: 5,769</p></li>
+<li><p>Complete-case subset: 5,348</p></li>
 <li><p><strong>Imputed dataset (adult_imp1): 5,592</strong></p></li>
-<li><p>Imputation restores sample size<br>
-</p></li>
+<li><p>Imputation restores sample size</p></li>
 <li><p>Improves posterior stability</p></li>
 </ul>
 </section>
-<section id="final-bayesian-modeling-dataset" class="slide level2">
-<h2>Final Bayesian Modeling Dataset</h2>
+<section id="final-modeling-dataset" class="slide level2">
+<h2>Final Modeling Dataset</h2>
 <div class="panel-tabset">
-<ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-4-1">Adult Analytic Dataset</a></li><li><a href="#tabset-4-2">Bayesian Model Formula</a></li><li><a href="#tabset-4-3">Priors Used</a></li><li><a href="#tabset-4-4">Standardization Reminder</a></li></ul>
+<ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-4-1">Adult Dataset</a></li><li><a href="#tabset-4-2">Bayesian Model Formula</a></li><li><a href="#tabset-4-3">Priors &amp; Standardization</a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1">
 <div style="font-size: 0.8em">
@@ -451,14 +447,10 @@ December 13, 2025</p><p></p>
 <strong>adult_imp1 (n = 5,592)</strong></p></li>
 <li><p>Variables included:</p>
 <ul>
-<li><code>diabetes_dx</code> — binary outcome<br>
-</li>
-<li><code>age_c</code> — standardized age<br>
-</li>
-<li><code>bmi_c</code> — standardized BMI<br>
-</li>
-<li><code>sex</code> — Female vs Male<br>
-</li>
+<li><code>diabetes_dx</code> — binary outcome</li>
+<li><code>age_c</code> — standardized age</li>
+<li><code>bmi_c</code> — standardized BMI</li>
+<li><code>sex</code> — Female vs Male</li>
 <li><code>race</code> — 5-level categorical variable</li>
 </ul></li>
 <li><p>NHANES weights (<code>wt_norm</code>) were <strong>normalized</strong> and passed as importance weights.</p></li>
@@ -470,40 +462,30 @@ December 13, 2025</p><p></p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a aria-hidden="true" tabindex="-1"></a>diabetes_dx <span class="sc">|</span> <span class="fu">weights</span>(wt_norm) <span class="sc">~</span> age_c <span class="sc">+</span> bmi_c <span class="sc">+</span> sex <span class="sc">+</span> race</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<div style="font-size: 0.8em">
 <ul>
-<li><strong>Family:</strong> Bernoulli (logit)<br>
-</li>
-<li><strong>Backend:</strong> Stan (HMC / NUTS)<br>
-</li>
-<li><strong>Chains:</strong> 4<br>
-</li>
+<li><strong>Family:</strong> Bernoulli (logit)</li>
+<li><strong>Backend:</strong> Stan (HMC / NUTS)</li>
+<li><strong>Chains:</strong> 4</li>
 <li><strong>Iterations:</strong> 2000 (1000 warmup)</li>
 </ul>
+</div>
 <hr>
 </div>
 <div id="tabset-4-3">
-<ul>
-<li><p><strong>Regression coefficients:</strong><br>
-<code>normal(0, 2.5)</code> — weakly informative</p></li>
-<li><p><strong>Intercept:</strong><br>
-<code>student_t(3, 0, 10)</code> — heavy-tailed prior</p></li>
-<li><p>Priors stabilize estimates in sparse or imbalanced categories.</p></li>
-</ul>
-<hr>
-</div>
-<div id="tabset-4-4">
-<div style="font-size: 0.90em">
-<p>Age and BMI were standardized to:</p>
-<ul>
-<li>mean = 0</li>
-<li>sd = 1</li>
-</ul>
-<p>Benefits:</p>
-<ul>
-<li>Improves sampler convergence</li>
-<li>Reduces autocorrelation</li>
-<li>Makes coefficient interpretation clear (per 1 SD increase)</li>
-</ul>
+<div style="font-size: 0.7em">
+<p><strong>Regression Coefficients:</strong><br>
+- <code>normal(0, 2.5)</code> — weakly informative</p>
+<p><strong>Intercept:</strong><br>
+- <code>student_t(3, 0, 10)</code> — heavy-tailed prior<br>
+- Priors stabilize estimates in sparse or imbalanced categories.</p>
+<p><strong>Age and BMI were standardized to:</strong><br>
+- mean = 0<br>
+- sd = 1</p>
+<p><strong>Benefits:</strong><br>
+- Improves sampler convergence<br>
+- Reduces autocorrelation<br>
+- Makes coefficient interpretation clear (per 1 SD increase)</p>
 </div>
 </div>
 </div>
