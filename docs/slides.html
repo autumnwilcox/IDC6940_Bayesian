@@ -27,72 +27,6 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
-    /* CSS for syntax highlighting */
-    html { -webkit-text-size-adjust: 100%; }
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
-    div.sourceCode { margin: 1em 0; }
-    pre.sourceCode { margin: 0; }
-    @media screen {
-    div.sourceCode { overflow: auto; }
-    }
-    @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-    }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
-        position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
-        -webkit-touch-callout: none; -webkit-user-select: none;
-        -khtml-user-select: none; -moz-user-select: none;
-        -ms-user-select: none; user-select: none;
-        padding: 0 4px; width: 4em;
-        color: #aaaaaa;
-      }
-    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-    div.sourceCode
-      { color: #003b4f; background-color: #f1f3f5; }
-    @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-    }
-    code span { color: #003b4f; } /* Normal */
-    code span.al { color: #ad0000; } /* Alert */
-    code span.an { color: #5e5e5e; } /* Annotation */
-    code span.at { color: #657422; } /* Attribute */
-    code span.bn { color: #ad0000; } /* BaseN */
-    code span.bu { } /* BuiltIn */
-    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #20794d; } /* Char */
-    code span.cn { color: #8f5902; } /* Constant */
-    code span.co { color: #5e5e5e; } /* Comment */
-    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
-    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
-    code span.dt { color: #ad0000; } /* DataType */
-    code span.dv { color: #ad0000; } /* DecVal */
-    code span.er { color: #ad0000; } /* Error */
-    code span.ex { } /* Extension */
-    code span.fl { color: #ad0000; } /* Float */
-    code span.fu { color: #4758ab; } /* Function */
-    code span.im { color: #00769e; } /* Import */
-    code span.in { color: #5e5e5e; } /* Information */
-    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
-    code span.op { color: #5e5e5e; } /* Operator */
-    code span.ot { color: #003b4f; } /* Other */
-    code span.pp { color: #ad0000; } /* Preprocessor */
-    code span.sc { color: #5e5e5e; } /* SpecialChar */
-    code span.ss { color: #20794d; } /* SpecialString */
-    code span.st { color: #20794d; } /* String */
-    code span.va { color: #111111; } /* Variable */
-    code span.vs { color: #20794d; } /* VerbatimString */
-    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto-7262fb28817f0fdf3c802d565bf43787.css">
   <link rel="stylesheet" href="styles.css">
@@ -203,746 +137,643 @@ December 13, 2025</p><p></p>
 </div>
 
 </section>
-<section id="introduction" class="slide level2 scrollable">
-<h2>Introduction</h2>
-<ul>
-<li><strong>Diabetes mellitus (DM)</strong> affects over <strong>37 million U.S. adults</strong>.</li>
-<li>Major risk factors include <strong>age</strong>, <strong>BMI</strong>, <strong>sex</strong>, and <strong>race/ethnicity</strong>.</li>
-<li>Traditional logistic regression can struggle with <strong>missing data</strong> and <strong>small subgroup instability</strong>.</li>
-<li><strong>Bayesian logistic regression</strong> incorporates prior information and provides full <strong>posterior uncertainty</strong>.</li>
-<li>This analysis compares:
-<ol type="1">
-<li><strong>Design-based logistic regression</strong> (survey-weighted)</li>
-<li><strong>Bayesian logistic regression</strong> (<em>brms</em> with HMC/NUTS)</li>
-</ol></li>
-</ul>
-</section>
-<section id="why-bayesian" class="slide level2">
-<h2>Why Bayesian?</h2>
-<div style="font-size: 0.85em">
-<ul>
-<li><strong>Why consider Bayesian methods?</strong>
-<ul>
-<li>Traditional logistic regression can produce <strong>unstable estimates</strong> with missing data or sparse categories.</li>
-<li>Bayesian inference incorporates <strong>prior information</strong> and provides richer <strong>uncertainty quantification</strong> through posterior distributions.</li>
-</ul></li>
-<li><strong>Prior research</strong>
-<ul>
-<li>Bayesian models improve parameter stability in epidemiologic studies.</li>
-<li>Limited work directly compares <strong>Bayesian vs.&nbsp;design-based logistic regression</strong> for diabetes prediction using NHANES.</li>
-</ul></li>
-<li><strong>Motivation for this analysis</strong>
-<ul>
-<li>Evaluate whether Bayesian logistic regression improves <strong>stability</strong>, <strong>interpretability</strong>, and <strong>predictive calibration</strong>.</li>
-<li>Use the NHANES complex survey design with normalized weights to approximate population inference.</li>
-</ul></li>
-</ul>
-</div>
-</section>
-<section id="data-source-design" class="slide level2">
-<h2>Data Source &amp; Design</h2>
-<ul>
-<li><strong>Dataset:</strong> NHANES 2013–2014
-<ul>
-<li>Adults aged <strong>≥20 years</strong></li>
-<li>Final analytic cohort size after merging: <strong>5,769</strong></li>
-</ul></li>
-<li><strong>Variables collected</strong>
-<ul>
-<li><strong>Outcome:</strong> Doctor-diagnosed diabetes (<code>diabetes_dx</code>)</li>
-<li><strong>Predictors:</strong> Age, BMI, sex, race/ethnicity</li>
-</ul></li>
-<li><strong>NHANES survey design</strong>
-<ul>
-<li>Multistage, complex sample with <strong>strata</strong>, <strong>clusters</strong>, and <strong>weights</strong></li>
-<li>Weights were <strong>normalized</strong> and used as importance weights in the Bayesian model</li>
-</ul></li>
-</ul>
-</section>
-<section id="variables" class="slide level2">
-<h2>Variables</h2>
-<div style="font-size: 0.69em">
-<ul>
-<li><p><strong>Source:</strong> NHANES 2013–2014</p></li>
-<li><p><strong>Merged components:</strong></p>
-<ul>
-<li>DEMO_H (Demographics)</li>
-<li>BMX_H (Body Measures)</li>
-<li>DIQ_H (Diabetes Questionnaire)</li>
-</ul></li>
-<li><p><strong>Outcome variable</strong></p>
-<ul>
-<li><code>diabetes_dx</code> — self-reported doctor diagnosis of diabetes</li>
-</ul></li>
-<li><p><strong>Predictors</strong></p>
-<ul>
-<li><strong>Age</strong> (standardized)</li>
-<li><strong>BMI</strong> (standardized)</li>
-<li><strong>Sex</strong> (Female vs Male)</li>
-<li><strong>Race/Ethnicity</strong> (5-level categorical variable)</li>
-</ul></li>
-<li><p><strong>Purpose of this step</strong></p>
-<ul>
-<li>Prepare a unified dataset for both:
-<ul>
-<li>Design-based logistic regression</li>
-<li>Bayesian logistic regression</li>
-</ul></li>
-</ul></li>
-</ul>
-</div>
-</section>
-<section id="data-cleaning-setup" class="slide level2">
-<h2>Data Cleaning &amp; Setup</h2>
-<div style="font-size: 0.85em">
-<ul>
-<li><strong>Missing data</strong>
-<ul>
-<li>Small proportion of missingness (~3–4%) in BMI and diabetes variables</li>
-<li>Complete-case data were insufficient → motivated the need for MICE</li>
-</ul></li>
-<li><strong>Standardization</strong>
-<ul>
-<li>Age and BMI were converted to <strong>z-scores</strong>
-<ul>
-<li>Improves convergence of Bayesian HMC</li>
-<li>Makes effect sizes comparable (per 1 SD increase)</li>
-</ul></li>
-</ul></li>
-<li><strong>Recoding</strong>
-<ul>
-<li>Sex simplified to Female vs Male</li>
-<li>Race/Ethnicity grouped into 5 categories with <strong>Non-Hispanic White</strong> as the reference</li>
-</ul></li>
-<li><strong>Goal</strong>
-<ul>
-<li>Produce a clean, consistent dataset before imputation and modeling</li>
-</ul></li>
-</ul>
-</div>
-</section>
-<section id="exploratory-data-analysis-eda" class="slide level2">
-<h2>Exploratory Data Analysis (EDA)</h2>
+<section id="introduction-aims" class="slide level2">
+<h2>Introduction &amp; Aims</h2>
 <div class="panel-tabset">
-<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">Summary</a></li><li><a href="#tabset-1-2">BMI Distribution</a></li><li><a href="#tabset-1-3">Race/Ethnicity Distribution</a></li></ul>
+<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">Introduction</a></li><li><a href="#tabset-1-2">Aims</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1">
-<div style="font-size: 0.8em">
 <ul>
-<li><strong>Missing Data</strong>
-<ul>
-<li>Low overall (~3–4%) in BMI and diabetes variables</li>
-<li>MICE needed for restoring full sample size</li>
-</ul></li>
-<li><strong>Outcome distribution</strong>
-<ul>
-<li>Survey-weighted diabetes prevalence ≈ <strong>9%</strong><br>
-(Observed weighted mean = <strong>0.0889</strong>)</li>
-</ul></li>
-<li><strong>Predictor relationships</strong>
-<ul>
-<li>Higher <strong>age</strong> and <strong>BMI</strong> strongly associated with diabetes</li>
-<li><strong>Non-Hispanic Black</strong> and <strong>Hispanic</strong> adults show higher prevalence</li>
-<li><strong>Females</strong> show slightly lower prevalence than males</li>
-</ul></li>
-<li><strong>Takeaway</strong>
-<ul>
-<li>EDA confirms expected epidemiologic patterns and supports subsequent modeling.</li>
-</ul></li>
+<li>Diabetes is a major public health issue.</li>
+<li>Classical logistic regression can become unstable with missing data or separation issues.</li>
+<li>Bayesian logistic regression improves stability by incorporating prior information and providing stronger uncertainty estimates.</li>
+<li>This project evaluates whether Bayesian methods offer more reliable and interpretable diabetes risk estimates than traditional approaches.</li>
 </ul>
 </div>
-</div>
 <div id="tabset-1-2">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figs/bmi_by_diabetes.png" class="quarto-figure quarto-figure-center" style="width:80.0%"></p>
-</figure>
-</div>
-</div>
-<div id="tabset-1-3">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figs/diabetes_by_race.png" class="quarto-figure quarto-figure-center" style="width:80.0%"></p>
-</figure>
-</div>
+<ul>
+<li>Apply Bayesian logistic regression to predict diabetes status.</li>
+<li>Examine associations between diabetes and BMI, age (≥20), sex, and race.</li>
+<li>Use NHANES 2013–2014 data accounting for complex survey design.</li>
+<li>Address challenges such as missing data, complete case bias, and data separation.</li>
+</ul>
 </div>
 </div>
 </div>
 </section>
-<section id="missing-data-mice" class="slide level2">
-<h2>Missing Data &amp; MICE</h2>
+<section id="bayesian-logistic-regression" class="slide level2">
+<h2>Bayesian Logistic Regression</h2>
 <div class="panel-tabset">
-<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Why Imputation?</a></li><li><a href="#tabset-2-2">MICE Overview</a></li><li><a href="#tabset-2-3">Methods Used</a></li></ul>
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Overview</a></li><li><a href="#tabset-2-2">Model Structure</a></li><li><a href="#tabset-2-3">Prior Specification</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1">
 <ul>
-<li>NHANES has <strong>non-trivial missingness</strong> in BMI and diabetes variables.</li>
-<li>Complete-case analysis can bias estimates if data are <strong>Missing at Random (MAR)</strong>.</li>
-<li>Bayesian models require <strong>complete data</strong>, so imputation is essential.</li>
+<li>Integrates prior knowledge with observed data to form posterior distributions.</li>
+<li>Parameters represented as random variables with full probability distributions.</li>
+<li>Produces credible intervals and direct probabilistic interpretations.</li>
 </ul>
-<p><strong>MAR definition:</strong> Missingness depends on <em>observed</em> variables (e.g., age, sex) but not on the missing value itself.</p>
 </div>
 <div id="tabset-2-2">
 <ul>
-<li><strong>Multivariate Imputation by Chained Equations (MICE)</strong></li>
-<li>Iteratively imputes missing variables using prediction models.</li>
-<li>Produces multiple plausible datasets.</li>
-<li>Captures uncertainty in parameters and imputations.</li>
-<li>We use the completed dataset: <strong>adult_imp1</strong>.</li>
+<li>Logistic model uses predictors to estimate log-odds of a binary outcome.</li>
+<li>Priors assigned to parameters; posterior obtained via Bayes’ theorem.</li>
+<li>Posterior reflects updated beliefs after observing data.</li>
 </ul>
 </div>
 <div id="tabset-2-3">
 <ul>
-<li><strong>Continuous variables:</strong> Predictive Mean Matching (PMM)</li>
-<li><strong>Binary variables:</strong> Logistic regression</li>
-<li><strong>Iterations:</strong> 5 imputations × 5 iterations</li>
-<li>Bayesian model uses: <strong>adult_imp1</strong></li>
+<li>Weakly informative priors stabilize estimation.</li>
+<li><strong>Coefficients</strong>: Normal(0, 2.5).</li>
+<li><strong>Intercept</strong>: Student t(3, 0, 10).</li>
 </ul>
 </div>
 </div>
 </div>
 </section>
-<section id="missingness-pattern" class="slide level2">
-<h2>Missingness Pattern</h2>
+<section id="model-evaluation-diagnostics" class="slide level2">
+<h2>Model Evaluation &amp; Diagnostics</h2>
 <div class="panel-tabset">
-<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-3-1">Missingness Plot</a></li><li><a href="#tabset-3-2">Interpretation</a></li></ul>
+<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-3-1">Convergence Checks</a></li><li><a href="#tabset-3-2">Model Fit</a></li></ul>
 <div class="tab-content">
 <div id="tabset-3-1">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figs/missingness.png" class="quarto-figure quarto-figure-center" style="width:60.0%"></p>
-</figure>
-</div>
+<p>Assessed using NUTS, R-hat, ESS, autocorrelation.</p>
 </div>
 <div id="tabset-3-2">
 <ul>
-<li>Missingness mainly affects <strong>BMI</strong> and <strong>diabetes variables</strong>.</li>
-<li>Pattern is consistent with <strong>MAR</strong>, supporting use of MICE.</li>
+<li>Posterior predictive checks.</li>
+<li>Bayesian R² (~0.13) — reflects variance explained on the latent scale and is typical for logistic models using population health data.</li>
 </ul>
 </div>
 </div>
 </div>
 </section>
-<section class="slide level2">
-
-<h3 id="resulting-imputed-dataset">Resulting Imputed Dataset</h3>
-<ul>
-<li><p>Raw adults: 10,175</p></li>
-<li><p>Merged adults ≥20: 5,769</p></li>
-<li><p>Complete-case subset: 5,348</p></li>
-<li><p><strong>Imputed dataset (adult_imp1): 5,592</strong></p></li>
-<li><p>Imputation restores sample size</p></li>
-<li><p>Improves posterior stability</p></li>
-</ul>
-</section>
-<section id="final-modeling-dataset" class="slide level2">
-<h2>Final Modeling Dataset</h2>
+<section id="data-preparation" class="slide level2">
+<h2>Data Preparation</h2>
 <div class="panel-tabset">
-<ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-4-1">Adult Dataset</a></li><li><a href="#tabset-4-2">Bayesian Model Formula</a></li><li><a href="#tabset-4-3">Priors &amp; Standardization</a></li></ul>
+<ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-4-1">Overview</a></li><li><a href="#tabset-4-2">Import &amp; Merge</a></li><li><a href="#tabset-4-3">Variable Definitions</a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1">
-<div style="font-size: 0.8em">
 <ul>
-<li><p>Bayesian model uses the <strong>final imputed dataset:</strong><br>
-<strong>adult_imp1 (n = 5,592)</strong></p></li>
-<li><p>Variables included:</p>
-<ul>
-<li><code>diabetes_dx</code> — binary outcome</li>
-<li><code>age_c</code> — standardized age</li>
-<li><code>bmi_c</code> — standardized BMI</li>
-<li><code>sex</code> — Female vs Male</li>
-<li><code>race</code> — 5-level categorical variable</li>
-</ul></li>
-<li><p>NHANES weights (<code>wt_norm</code>) were <strong>normalized</strong> and passed as importance weights.</p></li>
+<li>Uses NHANES 2013–2014 public data (DEMO_H, BMX_H, DIQ_H).</li>
+<li>Files imported in .XPT format using haven in R.</li>
+<li>Merged using SEQN to create an adult dataset (age ≥ 20).</li>
+<li>Standardized variable types before merging.</li>
+<li>Ensured consistent numeric/factor formatting for modeling.</li>
 </ul>
-</div>
-<hr>
 </div>
 <div id="tabset-4-2">
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a aria-hidden="true" tabindex="-1"></a>diabetes_dx <span class="sc">|</span> <span class="fu">weights</span>(wt_norm) <span class="sc">~</span> age_c <span class="sc">+</span> bmi_c <span class="sc">+</span> sex <span class="sc">+</span> race</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div style="font-size: 0.8em">
 <ul>
-<li><strong>Family:</strong> Bernoulli (logit)</li>
-<li><strong>Backend:</strong> Stan (HMC / NUTS)</li>
-<li><strong>Chains:</strong> 4</li>
-<li><strong>Iterations:</strong> 2000 (1000 warmup)</li>
+<li>Data loaded and combined using tidyverse + base R.</li>
+<li>SEQN used as the unique key to preserve record linkage.</li>
+<li>Merged dataset includes demographics, body measures, and diabetes answers.</li>
+<li>Adults (≥20) retained for the analytic cohort.</li>
+<li>Missing BMI and some demographic predictors handled later via MICE. <em>Outcome (diabetes_dx) was not imputed.</em></li>
 </ul>
-</div>
-<hr>
 </div>
 <div id="tabset-4-3">
-<div style="font-size: 0.7em">
-<p><strong>Regression Coefficients:</strong><br>
-- <code>normal(0, 2.5)</code> — weakly informative</p>
-<p><strong>Intercept:</strong><br>
-- <code>student_t(3, 0, 10)</code> — heavy-tailed prior<br>
-- Priors stabilize estimates in sparse or imbalanced categories.</p>
-<p><strong>Age and BMI were standardized to:</strong><br>
-- mean = 0<br>
-- sd = 1</p>
-<p><strong>Benefits:</strong><br>
-- Improves sampler convergence<br>
-- Reduces autocorrelation<br>
-- Makes coefficient interpretation clear (per 1 SD increase)</p>
-</div>
+<ul>
+<li><strong>Response Variable:</strong> diabetes_dx (binary), derived from DIQ010.</li>
+<li><strong>Survey Design Variables:</strong> WTMEC2YR, SDMVPSU, SDMVSTRA.</li>
+<li><strong>Derived Variables:</strong> age_c, bmi_c.</li>
+</ul>
 </div>
 </div>
 </div>
 </section>
-<section id="diagnostics-trace-density" class="slide level2">
-<h2>Diagnostics: Trace &amp; Density</h2>
+<section id="study-design-overview" class="slide level2">
+<h2>Study Design Overview</h2>
+<div style="font-size: 0.75em">
 <div class="panel-tabset">
-<ul id="tabset-5" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-5-1">Code</a></li><li><a href="#tabset-5-2">Trace Plot</a></li><li><a href="#tabset-5-3">Density Plot</a></li><li><a href="#tabset-5-4">Interpretation</a></li></ul>
+<ul id="tabset-5" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-5-1">NHANES Design</a></li><li><a href="#tabset-5-2">Why Weighting Matters</a></li></ul>
 <div class="tab-content">
 <div id="tabset-5-1">
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a aria-hidden="true" tabindex="-1"></a><span class="co"># Combine trace + density for Age and BMI</span></span>
-<span id="cb2-2"><a aria-hidden="true" tabindex="-1"></a>bayesplot<span class="sc">::</span><span class="fu">mcmc_trace</span>(<span class="fu">as.array</span>(bayes_fit), <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_age_c"</span>, <span class="st">"b_bmi_c"</span>))</span>
-<span id="cb2-3"><a aria-hidden="true" tabindex="-1"></a>bayesplot<span class="sc">::</span><span class="fu">mcmc_dens_overlay</span>(<span class="fu">as.array</span>(bayes_fit), <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_age_c"</span>, <span class="st">"b_bmi_c"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
+<ul>
+<li>Multistage probability sampling with stratification, clustering, oversampling.</li>
+<li>Nationally representative U.S. adult estimates.</li>
+<li><strong>Key Design Variables:</strong> SDMVPSU, SDMVSTRA, WTMEC2YR.</li>
+</ul>
 </div>
 <div id="tabset-5-2">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figs/mcmc_trace_age_bmi.png" class="quarto-figure quarto-figure-center" style="width:65.0%"></p>
-</figure>
-</div>
-</div>
-<div id="tabset-5-3">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figs/mcmc_dens_age_bmi.png" class="quarto-figure quarto-figure-center" style="width:65.0%"></p>
-</figure>
-</div>
-</div>
-<div id="tabset-5-4">
 <ul>
-<li>Chains are stable with no drift.</li>
-<li>Densities are smooth, unimodal, confirming good mixing.</li>
-<li>R-hat ≈ 1.00 for all parameters → convergence achieved.</li>
+<li>Adjusts for unequal selection probability and nonresponse.</li>
+<li>Provides unbiased prevalence estimates.</li>
+<li>Ensures valid standard errors for population inference.</li>
 </ul>
 </div>
 </div>
 </div>
+</div>
 </section>
-<section id="diagnostics-autocorrelation-ess" class="slide level2">
-<h2>Diagnostics: Autocorrelation &amp; ESS</h2>
+<section id="building-the-analytic-cohort" class="slide level2">
+<h2>Building the Analytic Cohort</h2>
+<div style="font-size: 0.75em">
 <div class="panel-tabset">
-<ul id="tabset-6" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-6-1">Code</a></li><li><a href="#tabset-6-2">Plot</a></li><li><a href="#tabset-6-3">Interpretation</a></li></ul>
+<ul id="tabset-6" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-6-1">Data Workflow</a></li><li><a href="#tabset-6-2">Adult Cohort</a></li></ul>
 <div class="tab-content">
 <div id="tabset-6-1">
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a aria-hidden="true" tabindex="-1"></a><span class="co"># Autocorrelation for Age &amp; BMI</span></span>
-<span id="cb3-2"><a aria-hidden="true" tabindex="-1"></a>bayesplot<span class="sc">::</span><span class="fu">mcmc_acf</span>(<span class="fu">as.array</span>(bayes_fit), <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_age_c"</span>, <span class="st">"b_bmi_c"</span>))</span>
-<span id="cb3-3"><a aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a aria-hidden="true" tabindex="-1"></a><span class="co"># Extract effective sample size</span></span>
-<span id="cb3-5"><a aria-hidden="true" tabindex="-1"></a>ess <span class="ot">&lt;-</span> posterior<span class="sc">::</span><span class="fu">ess</span>(bayes_fit)</span>
-<span id="cb3-6"><a aria-hidden="true" tabindex="-1"></a>ess</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
+<ul>
+<li>Imported DEMO_H, BMX_H, DIQ_H (.XPT) using haven.</li>
+<li>Merged using SEQN; restricted to adults ≥20.</li>
+<li>Standardized variable formats before merging.</li>
+</ul>
 </div>
 <div id="tabset-6-2">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figs/acf_age_bmi.png" class="quarto-figure quarto-figure-center" style="width:65.0%"></p>
-</figure>
-</div>
-</div>
-<div id="tabset-6-3">
 <ul>
-<li>Autocorrelation drops quickly → efficient sampling.</li>
-<li>Bulk ESS and Tail ESS are high → reliable posterior means and tail estimates.</li>
-<li>Indicates low autocorrelation and strong chain mixing.</li>
+<li><strong>Final Analytic Sample:</strong> 5,769 adults.</li>
+<li>Includes demographics, BMI, diabetes status, survey design vars.</li>
+<li><strong>Predictors:</strong> age, BMI, sex, race.</li>
 </ul>
 </div>
 </div>
 </div>
+</div>
 </section>
-<section id="diagnostics-odds-ratios-summary" class="slide level2">
-<h2>Diagnostics: Odds Ratios Summary</h2>
+<section id="missingness-data-quality" class="slide level2">
+<h2>Missingness &amp; Data Quality</h2>
+<div style="font-size: 0.75em">
 <div class="panel-tabset">
-<ul id="tabset-7" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-7-1">Code</a></li><li><a href="#tabset-7-2">Table Summary</a></li><li><a href="#tabset-7-3">Interpretation</a></li></ul>
+<ul id="tabset-7" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-7-1">Missingness Overview</a></li><li><a href="#tabset-7-2">Missingness Visualization</a></li></ul>
 <div class="tab-content">
 <div id="tabset-7-1">
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a aria-hidden="true" tabindex="-1"></a><span class="co"># Extract odds ratios from survey-weighted model</span></span>
-<span id="cb4-2"><a aria-hidden="true" tabindex="-1"></a>OR_svy <span class="ot">&lt;-</span> broom<span class="sc">::</span><span class="fu">tidy</span>(design_fit, <span class="at">exponentiate =</span> <span class="cn">TRUE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-3"><a aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a aria-hidden="true" tabindex="-1"></a><span class="co"># Extract odds ratios from Bayesian model</span></span>
-<span id="cb4-5"><a aria-hidden="true" tabindex="-1"></a>OR_bayes <span class="ot">&lt;-</span> broom.mixed<span class="sc">::</span><span class="fu">tidy</span>(bayes_fit, <span class="at">exponentiate =</span> <span class="cn">TRUE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-<div id="tabset-7-2">
-<div style="font-size: 0.80em">
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th>Predictor</th>
-<th>Design-Based OR (95% CI)</th>
-<th>Bayesian OR (95% CrI)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Age (per 1 SD)</strong></td>
-<td>3.03 (2.70–3.40)</td>
-<td>2.99 (2.66–3.39)</td>
-</tr>
-<tr class="even">
-<td><strong>BMI (per 1 SD)</strong></td>
-<td>1.89 (1.65–2.15)</td>
-<td>1.87 (1.71–2.05)</td>
-</tr>
-<tr class="odd">
-<td><strong>Female (vs.&nbsp;Male)</strong></td>
-<td>0.53 (0.41–0.68)</td>
-<td>0.52 (0.42–0.63)</td>
-</tr>
-<tr class="even">
-<td>Black (vs.&nbsp;White)</td>
-<td>1.67 (1.16–2.40)</td>
-<td>1.70 (1.26–2.30)</td>
-</tr>
-<tr class="odd">
-<td>Hispanic (vs.&nbsp;White)</td>
-<td>1.59 (1.17–2.17)</td>
-<td>1.53 (0.94–2.43)</td>
-</tr>
-<tr class="even">
-<td>Other (vs.&nbsp;White)</td>
-<td>2.33 (1.55–3.50)</td>
-<td>2.26 (1.56–3.24)</td>
-</tr>
-<tr class="odd">
-<td>Mexican American (vs.&nbsp;White)</td>
-<td>2.04 (1.49–2.79)</td>
-<td>1.99 (1.41–2.80)</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div id="tabset-7-3">
 <ul>
-<li>Both models produce nearly identical odds ratios, supporting model stability.</li>
-<li>Bayesian credible intervals are slightly wider, reflecting more complete uncertainty.</li>
-<li>Strongest predictors remain age and BMI.</li>
-<li>Sex and race/ethnicity effects are consistent across frameworks.</li>
+<li>Missing mainly in BMI (~4.3%).</li>
+<li>Diabetes diagnosis variable (diabetes_dx) has ~3% missing, but those observations were excluded before MICE.</li>
+<li>Demographics and survey design variables fully observed.</li>
+<li>Pattern consistent with MAR; suitable for imputation.</li>
 </ul>
 </div>
-</div>
-</div>
-</section>
-<section id="diagnostics-prior-vs-posterior-distributions" class="slide level2">
-<h2>Diagnostics: Prior vs Posterior Distributions</h2>
-<div class="panel-tabset">
-<ul id="tabset-8" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-8-1">Code</a></li><li><a href="#tabset-8-2">Plot</a></li><li><a href="#tabset-8-3">Interpretation</a></li></ul>
-<div class="tab-content">
-<div id="tabset-8-1">
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize prior vs posterior for all regression coefficients</span></span>
-<span id="cb5-2"><a aria-hidden="true" tabindex="-1"></a>pp <span class="ot">&lt;-</span> <span class="fu">mcmc_areas</span>(</span>
-<span id="cb5-3"><a aria-hidden="true" tabindex="-1"></a>  bayes_fit,</span>
-<span id="cb5-4"><a aria-hidden="true" tabindex="-1"></a>  <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_age_c"</span>, <span class="st">"b_bmi_c"</span>, <span class="st">"b_sexFemale"</span>, <span class="st">"b_raceBlack"</span>,</span>
-<span id="cb5-5"><a aria-hidden="true" tabindex="-1"></a>           <span class="st">"b_raceHispanic"</span>, <span class="st">"b_raceOther"</span>, <span class="st">"b_raceMexAm"</span>),</span>
-<span id="cb5-6"><a aria-hidden="true" tabindex="-1"></a>  <span class="at">prob =</span> <span class="fl">0.95</span></span>
-<span id="cb5-7"><a aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-8"><a aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a aria-hidden="true" tabindex="-1"></a>pp</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-<div id="tabset-8-2">
+<div id="tabset-7-2">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="figs/posterior_dists.png" class="quarto-figure quarto-figure-center" style="width:75.0%"></p>
+<p><img data-src="figs/missingness.png" class="quarto-figure quarto-figure-center" style="width:70.0%"></p>
 </figure>
 </div>
 </div>
-<div id="tabset-8-3">
-<ul>
-<li>Priors were weakly informative (normal(0, 2.5)).</li>
-<li>Posteriors concentrate far from zero for age and BMI → strong positive associations.</li>
-<li>Race/ethnicity effects shift away from the prior toward their data-driven values.</li>
-<li>Wider posteriors reflect uncertainty, but clear separation from priors indicates the data are strongly informative.</li>
-</ul>
 </div>
 </div>
 </div>
 </section>
-<section id="diagnostics-posterior-predictive-checks" class="slide level2">
-<h2>Diagnostics: Posterior Predictive Checks</h2>
+<section id="exploratory-data-analysis-eda" class="slide level2">
+<h2>Exploratory Data Analysis (EDA)</h2>
+<div style="font-size: 0.75em">
 <div class="panel-tabset">
-<ul id="tabset-9" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-9-1">Code</a></li><li><a href="#tabset-9-2">Plot</a></li><li><a href="#tabset-9-3">Interpretation</a></li></ul>
+<ul id="tabset-8" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-8-1">Outcome Distribution</a></li><li><a href="#tabset-8-2">Predictor Patterns</a></li></ul>
+<div class="tab-content">
+<div id="tabset-8-1">
+<ul>
+<li>Diabetes prevalence ~11%.</li>
+</ul>
+</div>
+<div id="tabset-8-2">
+<ul>
+<li>Age ↑ and BMI ↑ associated with diabetes</li>
+<li>Prevalence varies by sex and race</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="eda-figures" class="slide level2">
+<h2>EDA Figures</h2>
+<div class="panel-tabset">
+<ul id="tabset-9" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-9-1">BMI by Diabetes Status</a></li><li><a href="#tabset-9-2">Diabetes by Race/Ethnicity</a></li></ul>
 <div class="tab-content">
 <div id="tabset-9-1">
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a aria-hidden="true" tabindex="-1"></a><span class="co"># Posterior predictive check comparing observed vs simulated outcomes</span></span>
-<span id="cb6-2"><a aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(bayes_fit, <span class="at">type =</span> <span class="st">"bars"</span>, <span class="at">ndraws =</span> <span class="dv">100</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/bmi_by_diabetes.png" class="quarto-figure quarto-figure-center" style="width:65.0%"></p>
+</figure>
 </div>
 </div>
 <div id="tabset-9-2">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="figs/pp_check.png" class="quarto-figure quarto-figure-center" style="width:75.0%"></p>
+<p><img data-src="figs/diabetes_by_race.png" class="quarto-figure quarto-figure-center" style="width:65.0%"></p>
 </figure>
 </div>
-</div>
-<div id="tabset-9-3">
-<ul>
-<li>Posterior predictive distributions closely match the observed diabetes prevalence (~10.9% Bayesian vs ~8.9% observed).</li>
-<li>Strong overlap indicates good model calibration.</li>
-<li>No signs of systematic under- or over-prediction.</li>
-<li>Confirms that the Bayesian model is not misspecified for this dataset.</li>
-</ul>
 </div>
 </div>
 </div>
 </section>
-<section id="diagnostics-pairwise-posterior-relationships" class="slide level2">
-<h2>Diagnostics: Pairwise Posterior Relationships</h2>
+<section id="modeling-frameworks" class="slide level2">
+<h2>Modeling Frameworks</h2>
+<div style="font-size: 0.75em">
 <div class="panel-tabset">
-<ul id="tabset-10" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-10-1">Code</a></li><li><a href="#tabset-10-2">Plot</a></li><li><a href="#tabset-10-3">Interpretation</a></li></ul>
+<ul id="tabset-10" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-10-1">Overview</a></li><li><a href="#tabset-10-2">Survey-Weighted Logistic Regression</a></li><li><a href="#tabset-10-3">Bayesian Logistic Regression (brms)</a></li></ul>
 <div class="tab-content">
 <div id="tabset-10-1">
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a aria-hidden="true" tabindex="-1"></a><span class="co"># Pairwise posterior correlations for Age, BMI, and Sex (Female)</span></span>
-<span id="cb7-2"><a aria-hidden="true" tabindex="-1"></a>bayesplot<span class="sc">::</span><span class="fu">mcmc_pairs</span>(</span>
-<span id="cb7-3"><a aria-hidden="true" tabindex="-1"></a>  posterior<span class="sc">::</span><span class="fu">as_draws_array</span>(bayes_fit),</span>
-<span id="cb7-4"><a aria-hidden="true" tabindex="-1"></a>  <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">"b_age_c"</span>, <span class="st">"b_bmi_c"</span>, <span class="st">"b_sexFemale"</span>),</span>
-<span id="cb7-5"><a aria-hidden="true" tabindex="-1"></a>  <span class="at">off_diag_args =</span> <span class="fu">list</span>(<span class="at">size =</span> <span class="fl">1.5</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>)</span>
-<span id="cb7-6"><a aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
+<p><strong>Reference Groups:</strong></p>
+<ul>
+<li>Male (sex)</li>
+<li>Non-Hispanic White (race).</li>
+</ul>
+<p><strong>Continuous Predictors:</strong></p>
+<ul>
+<li>Survey-weighted model: raw age and BMI</li>
+<li>Bayesian model: standardized age_c and bmi_c (1 SD increase)</li>
+</ul>
 </div>
 <div id="tabset-10-2">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figs/mcmc_pairs.png" class="quarto-figure quarto-figure-center" style="width:50.0%"></p>
-</figure>
-</div>
+<ul>
+<li>Accounts for NHANES multistage sampling:
+<ul>
+<li>Strata: SDMVSTRA</li>
+<li>Clusters: SDMVPSU</li>
+<li>Weights: WTMEC2YR<br>
+</li>
+</ul></li>
+<li>Provides population-representative estimates.</li>
+</ul>
 </div>
 <div id="tabset-10-3">
 <ul>
-<li>Pairwise plots show the joint posterior relationships among age, BMI, and sex effects.</li>
-<li>All parameter pairs look well-mixed and approximately elliptical, indicating no problematic correlations.</li>
-<li>No funnel shapes or multimodality → confirms stable sampling across parameters.</li>
+<li>Weakly informative priors (Normal(0,2.5), t(3,0,10)).</li>
+<li>Incorporates NHANES exam weights (wt_norm).</li>
+<li>Produces posterior distributions and credible intervals for all parameters.</li>
 </ul>
 </div>
 </div>
 </div>
+</div>
 </section>
-<section id="diagnostics-observed-vs-predicted-scatter" class="slide level2">
-<h2>Diagnostics: Observed vs Predicted (Scatter)</h2>
+<section id="survey-weighted-logistic-regression-1" class="slide level2">
+<h2>Survey-Weighted Logistic Regression</h2>
+<div style="font-size: 0.75em">
+<p><strong>Key Findings:</strong></p>
+<ul>
+<li><p>Age: odds ratio ~3.03</p></li>
+<li><p>BMI: odds ratio ~1.89</p></li>
+<li><p>Females: lower odds vs.&nbsp;males (OR ~0.53)</p></li>
+<li><p>Race disparities:</p>
+<ul>
+<li>Mexican American: ~2.04x higher odds</li>
+<li>Other Hispanic: ~1.59x</li>
+<li>NH Black: ~1.67x</li>
+<li>Other/Multi: ~2.33x</li>
+</ul></li>
+</ul>
+<p><em>Note: Age is modeled in its raw units from NHANES; the OR reflects the scale of the age variable used in the survey-weighted model.</em></p>
+</div>
+</section>
+<section id="define-model-and-priors" class="slide level2">
+<h2>Define Model and Priors</h2>
+<div style="font-size: 0.9em">
 <div class="panel-tabset">
-<ul id="tabset-11" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-11-1">Code</a></li><li><a href="#tabset-11-2">Plot</a></li><li><a href="#tabset-11-3">Interpretation</a></li></ul>
+<ul id="tabset-11" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-11-1">Model Formula</a></li><li><a href="#tabset-11-2">Priors</a></li><li><a href="#tabset-11-3">Prior Visualization</a></li></ul>
 <div class="tab-content">
 <div id="tabset-11-1">
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a aria-hidden="true" tabindex="-1"></a><span class="co"># 100 posterior draws for predictive comparison</span></span>
-<span id="cb8-2"><a aria-hidden="true" tabindex="-1"></a>pp_scat <span class="ot">&lt;-</span> bayesplot<span class="sc">::</span><span class="fu">ppc_scatter_avg</span>(</span>
-<span id="cb8-3"><a aria-hidden="true" tabindex="-1"></a>  <span class="at">y    =</span> adult_imp1<span class="sc">$</span>diabetes_dx,</span>
-<span id="cb8-4"><a aria-hidden="true" tabindex="-1"></a>  <span class="at">yrep =</span> <span class="fu">posterior_predict</span>(bayes_fit, <span class="at">ndraws =</span> <span class="dv">100</span>)</span>
-<span id="cb8-5"><a aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb8-6"><a aria-hidden="true" tabindex="-1"></a>pp_scat</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
+<p><code>diabetes_dx | weights(wt_norm) ~ age_c + bmi_c + sex + race</code></p>
 </div>
 <div id="tabset-11-2">
+<ul>
+<li>Coefficients: Normal(0, 2.5)</li>
+<li>Intercept: Student t(3, 0, 10)</li>
+</ul>
+</div>
+<div id="tabset-11-3">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="figs/pp_scatter.png" class="quarto-figure quarto-figure-center" style="width:70.0%"></p>
+<p><img data-src="figs/prior_age_bmi.png" class="quarto-figure quarto-figure-center" style="width:75.0%"></p>
 </figure>
 </div>
 </div>
-<div id="tabset-11-3">
-<ul>
-<li>Points near (0,0) and (1,1) indicate good predictive alignment.</li>
-<li>Model reproduces both non-diabetic and diabetic outcomes well.</li>
-<li>No major miscalibration—supports posterior predictive validity.</li>
-</ul>
 </div>
 </div>
 </div>
 </section>
-<section id="diagnostics-model-level-comparisons" class="slide level2">
-<h2>Diagnostics: Model-Level Comparisons</h2>
+<section id="data-preparation-mice-imputation" class="slide level2">
+<h2>Data Preparation: MICE Imputation</h2>
+<ul>
+<li>Multiple Imputation by Chained Equations (MICE) used for missing BMI, age, sex, race.</li>
+<li>Generated <strong>5 imputations</strong>; adult_imp1 used for modeling.</li>
+<li>Outcome variable (diabetes_dx) was <em>not</em> imputed.</li>
+<li>Categorical vars: logistic or polytomous regression.</li>
+<li>Completed dataset: n = 5,592 adults with full predictor availability.</li>
+</ul>
+</section>
+<section id="imputed-dataset" class="slide level2">
+<h2>Imputed Dataset</h2>
+<div style="font-size: 0.75em">
 <div class="panel-tabset">
-<ul id="tabset-12" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-12-1">Code</a></li><li><a href="#tabset-12-2">Table Summary</a></li><li><a href="#tabset-12-3">Plot</a></li><li><a href="#tabset-12-4">Interpretation</a></li></ul>
+<ul id="tabset-12" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-12-1">Standardized Predictors</a></li><li><a href="#tabset-12-2">Distribution of Standardized Predictors</a></li><li><a href="#tabset-12-3">Dataset Structure</a></li></ul>
 <div class="tab-content">
 <div id="tabset-12-1">
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Compute prevalence in observed data</span></span>
-<span id="cb9-2"><a aria-hidden="true" tabindex="-1"></a>obs_prev <span class="ot">&lt;-</span> <span class="fu">mean</span>(adult_imp1<span class="sc">$</span>diabetes_dx)</span>
-<span id="cb9-3"><a aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Posterior predicted prevalence</span></span>
-<span id="cb9-5"><a aria-hidden="true" tabindex="-1"></a>post_prev <span class="ot">&lt;-</span> <span class="fu">posterior_predict</span>(bayes_fit) <span class="sc">|&gt;</span> <span class="fu">colMeans</span>() <span class="sc">|&gt;</span> <span class="fu">mean</span>()</span>
-<span id="cb9-6"><a aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-7"><a aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Combine ORs from survey-weighted and Bayesian models</span></span>
-<span id="cb9-8"><a aria-hidden="true" tabindex="-1"></a>comparison_table <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb9-9"><a aria-hidden="true" tabindex="-1"></a>  <span class="at">Predictor =</span> predictors,</span>
-<span id="cb9-10"><a aria-hidden="true" tabindex="-1"></a>  <span class="at">Design_OR =</span> design_or,</span>
-<span id="cb9-11"><a aria-hidden="true" tabindex="-1"></a>  <span class="at">Design_LCL =</span> design_lcl,</span>
-<span id="cb9-12"><a aria-hidden="true" tabindex="-1"></a>  <span class="at">Design_UCL =</span> design_ucl,</span>
-<span id="cb9-13"><a aria-hidden="true" tabindex="-1"></a>  <span class="at">Bayes_OR   =</span> bayes_or,</span>
-<span id="cb9-14"><a aria-hidden="true" tabindex="-1"></a>  <span class="at">Bayes_LCL  =</span> bayes_lcl,</span>
-<span id="cb9-15"><a aria-hidden="true" tabindex="-1"></a>  <span class="at">Bayes_UCL  =</span> bayes_ucl</span>
-<span id="cb9-16"><a aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
+<p>Variables standardized as z-scores:</p>
+<ul>
+<li>age_c</li>
+<li>bmi_c</li>
+</ul>
 </div>
 <div id="tabset-12-2">
-<div style="font-size: 0.90em">
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th>Metric</th>
-<th>Observed (NHANES)</th>
-<th>Predicted (Posterior Mean)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Mean diabetes rate</td>
-<td>0.0889</td>
-<td>0.1094</td>
-</tr>
-<tr class="even">
-<td>SD</td>
-<td>0.0048 (survey SE)</td>
-<td>NA</td>
-</tr>
-</tbody>
-</table>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/dist_age_bmi.png" class="quarto-figure quarto-figure-center" style="width:75.0%"></p>
+</figure>
 </div>
 </div>
 <div id="tabset-12-3">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="figs/pop_vs_post_prev.png" class="quarto-figure quarto-figure-center" style="width:70.0%"></p>
+<p><img data-src="figs/str_adult_imp1.png" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
 </figure>
 </div>
 </div>
-<div id="tabset-12-4">
-<div style="font-size: 0.90em">
-<ul>
-<li>The NHANES survey-weighted prevalence is ≈ 8.9%, which reflects the true population estimate after accounting for complex sampling.</li>
-<li>The Bayesian posterior predictive prevalence is ≈ 10.9%, slightly higher but still within a reasonable range given sampling variability and model assumptions.</li>
-<li>The credible interval for the posterior mean overlaps the survey-weighted 95% CI, indicating acceptable calibration, though the model shows a modest upward shift in predicted diabetes prevalence.</li>
-<li>This pattern is typical when using standardized predictors and weakly informative priors—Bayesian models tend to slightly smooth or regularize prevalence upward.</li>
-</ul>
-</div>
 </div>
 </div>
 </div>
 </section>
-<section id="diagnostics-bayesian-model-fit" class="slide level2">
-<h2>Diagnostics: Bayesian Model Fit</h2>
-<div style="font-size: 0.70em">
-<p><strong>Autocorrelation:</strong><br>
-- Low lag autocorrelation across all parameters.<br>
-- Indicates efficient sampling and good mixing.</p>
-<p><strong>Assumptions:</strong><br>
-- Posterior predictive checks show no major violations.<br>
-- Standardization of age and BMI improves logit-scale linearity.</p>
-<p><strong>Correlation Matrix:</strong><br>
-- No problematic multicollinearity among predictors.<br>
-- Correlations small-to-moderate, consistent with epidemiology.</p>
-<p><strong>Bayesian R²:</strong><br>
-- Bayesian R² ≈ <strong>0.13</strong><br>
-- Typical for epidemiologic binary outcomes, where complex unmeasured factors contribute to risk.</p>
-<p><strong>Validation:</strong><br>
-- Posterior predictions closely match observed NHANES prevalence.<br>
-- No evidence of overfitting.<br>
-- Replicated datasets resemble observed data.</p>
-</div>
-</section>
-<section id="conclusion" class="slide level2">
-<h2>Conclusion</h2>
+<section id="fit-the-bayesian-model" class="slide level2">
+<h2>Fit the Bayesian Model</h2>
+<div style="font-size: 0.75em">
 <div class="panel-tabset">
-<ul id="tabset-13" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-13-1">Key Findings</a></li><li><a href="#tabset-13-2">Bayesian Strengths</a></li><li><a href="#tabset-13-3">Limitations</a></li><li><a href="#tabset-13-4">Conclusion</a></li></ul>
+<ul id="tabset-13" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-13-1">Model Fit</a></li><li><a href="#tabset-13-2">Extraction of Posterior Odd Ratios</a></li><li><a href="#tabset-13-3">Outcome</a></li></ul>
 <div class="tab-content">
 <div id="tabset-13-1">
 <ul>
-<li>Age and BMI were consistently the strongest predictors of diabetes.<br>
-</li>
-<li>Female sex showed a protective association.<br>
-</li>
-<li>Race/ethnicity differences persisted across all models.<br>
-</li>
-<li>Bayesian estimates closely matched survey-weighted estimates, showing strong robustness.<br>
-</li>
-<li>Posterior predictive prevalence (~10.9%) was slightly higher than the survey-weighted prevalence (~8.9%), but still well-calibrated.</li>
+<li><p>Model fit using <code>brm()</code> with:</p>
+<ul>
+<li>bernoulli(link = “logit”)</li>
+<li>priors defined previously</li>
+<li>4 chains, 2000 iterations, adapt_delta = 0.95</li>
+</ul></li>
+<li><p>All four MCMC chains converged (R-hat ≈ 1.00).</p></li>
 </ul>
 </div>
 <div id="tabset-13-2">
+<p><code>bayes_or</code> created by exponentiating fixed effects:</p>
 <ul>
-<li>Provides full posterior distributions rather than only point estimates.<br>
-</li>
-<li>Credible intervals are intuitive and convey uncertainty effectively.<br>
-</li>
-<li>Priors helped regularize coefficients, useful under missingness.<br>
-</li>
-<li>Posterior predictive checks demonstrated strong model calibration.</li>
+<li>OR</li>
+<li>95% credible intervals (LCL, UCL)</li>
 </ul>
 </div>
 <div id="tabset-13-3">
-<ul>
-<li>NHANES data are cross-sectional, limiting causal inference.<br>
-</li>
-<li>MICE assumes Missing At Random (MAR); violations may bias results.<br>
-</li>
-<li>Bayesian model used normalized weights, not full survey design.<br>
-</li>
-<li>Only one imputed dataset was used for modeling; pooling across imputations may improve inference.<br>
-</li>
-<li>No interaction effects modeled (e.g., age × BMI).</li>
-</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/bayes_or.png" class="quarto-figure quarto-figure-center" style="width:75.0%"></p>
+</figure>
 </div>
-<div id="tabset-13-4">
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="posterior-odds-ratios-bayesian-model" class="slide level2">
+<h2>Posterior Odds Ratios (Bayesian Model)</h2>
+<div class="panel-tabset">
+<ul id="tabset-14" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-14-1">Summary</a></li><li><a href="#tabset-14-2">OR Table</a></li></ul>
+<div class="tab-content">
+<div id="tabset-14-1">
+<div style="font-size: 0.75em">
+<p>Posterior odds ratios (ORs) derived from exponentiated fixed effects.</p>
+<p>Credible intervals (CrI) quantify uncertainty around each effect.</p>
+<p>Interpretation reflects change in odds for a 1 SD increase (age_c, bmi_c) or relative to reference groups.</p>
+</div>
+</div>
+<div id="tabset-14-2">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/bayes_or.png" class="quarto-figure quarto-figure-center" style="width:70.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="model-comparison-survey-weighted-vs-bayesian" class="slide level2">
+<h2>Model Comparison: Survey-Weighted vs Bayesian</h2>
+<p>Odds ratios (95% intervals) compared across both modeling frameworks.</p>
+<div class="panel-tabset">
+<ul id="tabset-15" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-15-1">Comparison Table</a></li><li><a href="#tabset-15-2">Key Patterns</a></li></ul>
+<div class="tab-content">
+<div id="tabset-15-1">
+<p><img data-src="figs/model_comparison_or.png" style="width:80.0%"></p>
+</div>
+<div id="tabset-15-2">
 <ul>
-<li>Bayesian logistic regression complements survey-weighted logistic regression.<br>
-</li>
-<li>Produces stable, interpretable results with clear uncertainty.<br>
-</li>
-<li>Posterior predictive checks confirm good model fit and calibration.<br>
-</li>
-<li>Framework is flexible and extendable for more complex models or additional predictors.</li>
+<li>Age and BMI show strong positive associations with diabetes.</li>
+<li>Female sex has lower odds relative to males.</li>
+<li>Non-White racial/ethnic groups have higher odds than White adults.</li>
+<li>All posteriors show unimodal, well-defined distributions with narrow credible intervals.</li>
 </ul>
 </div>
 </div>
 </div>
 </section>
-<section id="next-steps" class="slide level2">
-<h2>Next Steps</h2>
-<div style="font-size: 0.90em">
+<section id="bayesian-diagnostics-model-fit" class="slide level2">
+<h2>Bayesian Diagnostics &amp; Model Fit</h2>
+<div class="panel-tabset">
+<ul id="tabset-16" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-16-1">Convergence Indicators</a></li><li><a href="#tabset-16-2">Trace Plots</a></li><li><a href="#tabset-16-3">Posterior Distributions</a></li><li><a href="#tabset-16-4">Autocorrelation</a></li></ul>
+<div class="tab-content">
+<div id="tabset-16-1">
+<p><img data-src="figs/mcmc_diagnostics.png"></p>
 <ul>
-<li><p><strong>Expand NHANES Cycles</strong><br>
-Incorporate additional survey years to assess trends over time.</p></li>
-<li><p><strong>Enhanced Bayesian Modeling</strong><br>
-Explore hierarchical or multilevel models, and consider Bayesian model averaging for improved predictive performance.</p></li>
-<li><p><strong>Additional Predictors</strong><br>
-Include lifestyle, dietary, clinical, or genetic factors when available.</p></li>
-<li><p><strong>Validation</strong><br>
-Perform external validation with an independent dataset and conduct sensitivity analyses for priors and imputation assumptions.</p></li>
-<li><p><strong>Interaction Effects</strong><br>
-Evaluate interactions (e.g., age × BMI) to refine risk estimation.</p></li>
+<li>R-hat ≈ 1.00 for all parameters → excellent convergence<br>
+</li>
+<li>Bulk / Tail ESS &gt; 2,000 → stable posterior sampling<br>
+</li>
+<li>No divergences or mixing issues</li>
 </ul>
 </div>
+<div id="tabset-16-2">
+<p><img data-src="figs/mcmc_trace.png" style="width:85.0%"></p>
+<ul>
+<li>Chains overlap well<br>
+</li>
+<li>No drift or instability<br>
+</li>
+<li>Strong evidence of convergence</li>
+</ul>
+</div>
+<div id="tabset-16-3">
+<p><img data-src="figs/mcmc_areas.png" style="width:85.0%"></p>
+<ul>
+<li>Unimodal and well-centered<br>
+</li>
+<li>Age &amp; BMI → positive associations<br>
+</li>
+<li>Female sex → protective effect</li>
+</ul>
+</div>
+<div id="tabset-16-4">
+<p><img data-src="figs/mcmc_acf.png" style="width:85.0%"></p>
+<ul>
+<li>Rapid decay across all parameters<br>
+</li>
+<li>Indicates efficient sampling and chain independence</li>
+</ul>
+</div>
+</div>
+</div>
 </section>
-<section id="qa" class="slide level2">
-<h2>Q&amp;A</h2>
+<section id="posterior-predictive-checks" class="slide level2">
+<h2>Posterior Predictive Checks</h2>
+<div class="panel-tabset">
+<ul id="tabset-17" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-17-1">Observed vs Replicated</a></li><li><a href="#tabset-17-2">Interpretation</a></li></ul>
+<div class="tab-content">
+<div id="tabset-17-1">
+<p><img data-src="figs/ppc_bars.png" style="width:80.0%"></p>
+</div>
+<div id="tabset-17-2">
+<ul>
+<li>Observed (<code>y</code>) and replicated (<code>y_rep</code>) outcome distributions align closely.</li>
+<li>Indicates that the Bayesian model accurately reproduces the empirical binary outcome structure.</li>
+</ul>
+</div>
+</div>
+</div>
 </section>
-<section class="slide level2">
+<section id="posterior-predictive-checks-cont." class="slide level2">
+<h2>Posterior Predictive Checks (cont.)</h2>
+<div class="panel-tabset">
+<ul id="tabset-18" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-18-1">Mean of Outcome</a></li><li><a href="#tabset-18-2">Standard Deviation</a></li><li><a href="#tabset-18-3">Interpretation</a></li></ul>
+<div class="tab-content">
+<div id="tabset-18-1">
+<p><img data-src="figs/ppc_mean.png" style="width:80.0%"></p>
+</div>
+<div id="tabset-18-2">
+<p><img data-src="figs/ppc_sd.png" style="width:80.0%"></p>
+</div>
+<div id="tabset-18-3">
+<ul>
+<li>Posterior replicated datasets match the observed mean and variability.</li>
+<li>Strong evidence of <strong>good model calibration</strong>.</li>
+<li>The Bayesian model captures both <strong>central tendency</strong> and <strong>dispersion</strong> of diabetes outcomes.</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="prior-vs.-posterior" class="slide level2">
+<h2>Prior vs.&nbsp;Posterior</h2>
+<div class="panel-tabset">
+<ul id="tabset-19" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-19-1">Distributions</a></li><li><a href="#tabset-19-2">Conclusion</a></li></ul>
+<div class="tab-content">
+<div id="tabset-19-1">
+<p><img data-src="figs/prior_posterior.png" style="width:85.0%"></p>
+<ul>
+<li>Posterior shifts strongly for <strong>Age</strong> and <strong>BMI</strong>, showing they are highly informed by data.</li>
+<li>Posterior is narrower than the prior → increased certainty.</li>
+<li>Sex shows more overlap → weaker evidence compared to age/BMI.</li>
+</ul>
+</div>
+<div id="tabset-19-2">
+<ul>
+<li>Model incorporates priors appropriately.</li>
+<li>Strong predictors show clear posterior learning.</li>
+<li>Weak predictors are regularized without distortion.</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="model-fit-and-calibration" class="slide level2">
+<h2>Model Fit and Calibration</h2>
+<div class="panel-tabset">
+<ul id="tabset-20" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-20-1">Calibration Plot</a></li><li><a href="#tabset-20-2">Diabetes Prevalence Comparison</a></li><li><a href="#tabset-20-3">Population vs Posterior Prevalence</a></li></ul>
+<div class="tab-content">
+<div id="tabset-20-1">
+<p><img data-src="figs/pred_calibration.png" style="width:80.0%"></p>
+<ul>
+<li>Compares <strong>observed diabetes outcomes</strong> to <strong>model-predicted probabilities</strong>.</li>
+<li>LOESS curve aligns closely with the diagonal → <strong>good model calibration</strong>.</li>
+</ul>
+</div>
+<div id="tabset-20-2">
+<p><img data-src="figs/posterior_prevalence_density.png" style="width:80.0%"></p>
+<ul>
+<li>Posterior predictive mean matches survey-weighted NHANES prevalence.</li>
+</ul>
+</div>
+<div id="tabset-20-3">
+<p><img data-src="figs/pop_vs_posterior_bar.png" style="width:80.0%"></p>
+<ul>
+<li>Bayesian posterior prevalence overlaps with survey-weighted estimate.</li>
+<li>Confirms <strong>strong agreement</strong> and <strong>no systematic bias</strong>.</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="internal-validation-individual-level-predictions" class="slide level2">
+<h2>Internal Validation: Individual-Level Predictions</h2>
+<p><em>Posterior Predictive Distribution for an Example Participant</em></p>
 
-<h3 id="thank-you">Thank You!</h3>
-<p><strong>Dr.&nbsp;Ashraf Cohen, PhD, MS</strong><br>
-Department of Mathematics and Statistics<br>
-University of West Florida</p>
+<img data-src="figs/posterior_density_participant1.png" style="width:80.0%" class="r-stretch"><ul>
+<li>Shows uncertainty in an individual’s predicted diabetes probability.</li>
+<li>95% credible interval (red dashed lines) highlights plausible risk range.</li>
+<li>Demonstrates how Bayesian models produce distributions—not point predictions.</li>
+</ul>
+</section>
+<section id="posterior-predictions-and-inverse-inference" class="slide level2">
+<h2>Posterior Predictions and Inverse Inference</h2>
+<p><em>Inverse Prediction: BMI Needed for Target Diabetes Risk</em></p>
+
+<img data-src="figs/inverse_prediction_bmi.png" style="width:80.0%" class="r-stretch"><ul>
+<li>Uses the posterior model to determine what BMI corresponds to a target diabetes probability.</li>
+<li>Example target probability: <strong>0.30</strong>.</li>
+<li>Posterior predictions show that age and race have a stronger influence on diabetes risk than BMI, although BMI still shows a positive association.</li>
+<li>The estimated BMI associated with a 30% predicted diabetes probability is approximately <strong>18 kg/m²</strong>.</li>
+</ul>
+</section>
+<section id="comparison-across-models" class="slide level2">
+<h2>Comparison Across Models</h2>
+<h3 id="odds-ratios-survey-weighted-vs-bayesian">Odds Ratios: Survey-Weighted vs Bayesian</h3>
+
+<img data-src="figs/results_comparison.png" style="width:80.0%" class="r-stretch"></section>
+<section id="discussion-and-limitations" class="slide level2">
+<h2>Discussion and Limitations</h2>
+<div class="panel-tabset">
+<ul id="tabset-21" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-21-1">Discussion</a></li><li><a href="#tabset-21-2">Limitations</a></li></ul>
+<div class="tab-content">
+<div id="tabset-21-1">
+<ul>
+<li>Bayesian modeling provided full posterior distributions, offering richer uncertainty quantification than classical MLE.</li>
+<li>Posterior predictive checks showed that simulated diabetes prevalence closely matched the survey-weighted estimate, indicating excellent model calibration.</li>
+</ul>
+</div>
+<div id="tabset-21-2">
+<ul>
+<li>Used a <strong>single imputed dataset</strong> rather than fully propagating imputation uncertainty → possible slight understatement of variance.</li>
+<li>NHANES examination weights were <strong>normalized</strong> rather than modeled with full design-based structure → may slightly impact SEs.</li>
+<li>Weakly informative priors (Normal(0,2.5), t(3,0,10)) were not tuned; alternatives could shift posterior widths or shrinkage.</li>
+<li>All diagnostics were excellent, but results apply specifically to NHANES <strong>2013–2014</strong> and may not generalize to other cycles or longitudinal contexts.</li>
+<li>No external validation or sensitivity analysis; individual-level predictions are <strong>illustrative only</strong>, not clinical.</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="conclusion-1" class="slide level2">
+<h2>Conclusion</h2>
+<ul>
+<li><p>Bayesian and survey-weighted logistic regression frameworks yielded <strong>consistent predictors</strong>: advancing age, higher BMI, female sex (protective), and non-White race/ethnicity (higher risk).</p></li>
+<li><p>Bayesian results closely matched frequentist estimates while adding:</p>
+<ul>
+<li>posterior uncertainty quantification</li>
+<li>credible intervals</li>
+<li>posterior predictive calibration</li>
+</ul></li>
+<li><p>Diagnostics confirmed strong model performance (R̂ ≈ 1.00, excellent ESS, Bayesian R² ≈ 0.13).</p></li>
+<li><p>Bayesian inference enhances transparency, interpretability, and reproducibility in complex survey modeling.</p></li>
+<li><p>Future work may incorporate hierarchical priors, combined NHANES cycles, or Bayesian model averaging to explore heterogeneity and trends.</p></li>
+</ul>
+</section>
+<section id="thank-you" class="slide level2">
+<h2>Thank You</h2>
+<h3 id="questions">Questions?</h3>
+<p><br>
+<br>
+Presented by:<br>
+<strong>Namita Mishra</strong><br>
+<strong>Autumn S. Wilcox</strong></p>
 
 
 </section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
-<p>University of West Florida</p>
+
 </div>
 </div></div>
 
@@ -1154,44 +985,6 @@ University of West Florida</p>
         ]
       });
     </script>
-    
-    <script>
-      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
-      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
-      // slide changes (different for each slide format).
-      (function () {
-        // dispatch for htmlwidgets
-        function fireSlideEnter() {
-          const event = window.document.createEvent("Event");
-          event.initEvent("slideenter", true, true);
-          window.document.dispatchEvent(event);
-        }
-
-        function fireSlideChanged(previousSlide, currentSlide) {
-          fireSlideEnter();
-
-          // dispatch for shiny
-          if (window.jQuery) {
-            if (previousSlide) {
-              window.jQuery(previousSlide).trigger("hidden");
-            }
-            if (currentSlide) {
-              window.jQuery(currentSlide).trigger("shown");
-            }
-          }
-        }
-
-        // hookup for slidy
-        if (window.w3c_slidy) {
-          window.w3c_slidy.add_observer(function (slide_num) {
-            // slide_num starts at position 1
-            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
-          });
-        }
-
-      })();
-    </script>
-
     <script id="quarto-html-after-body" type="application/javascript">
       window.document.addEventListener("DOMContentLoaded", function (event) {
         const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")

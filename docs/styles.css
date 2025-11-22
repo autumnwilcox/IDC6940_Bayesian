@@ -1,84 +1,134 @@
-.reveal section {
-  font-size: 0.85em;
-}
-
-/* === UWF Themed Reveal.js Styling === */
-
-/* Main colors (UWF palette) */
+/* ----------------------------------------
+   UWF COLOR PALETTE
+---------------------------------------- */
 :root {
   --uwf-blue: #003366;
   --uwf-green: #78be20;
   --uwf-gray: #e6e6e6;
+  --uwf-dark-gray: #444444;
 }
 
-/* Background & text */
+/* ----------------------------------------
+   GLOBAL SLIDE STYLE
+---------------------------------------- */
 .reveal {
-  background-color: white;
-  color: #1a1a1a;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background: white !important;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  color: #1a1a1a !important;
 }
 
-/* Headings */
-.reveal h1, .reveal h2, .reveal h3 {
-  color: var(--uwf-blue);
-  font-weight: 700;
+.reveal p,
+.reveal li {
+  font-size: 1.15em !important;
+  line-height: 1.35em !important;
 }
 
-/* Accents (like links and highlights) */
+/* ----------------------------------------
+   HEADINGS
+---------------------------------------- */
+.reveal h1,
+.reveal h2,
+.reveal h3 {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  color: var(--uwf-blue) !important;
+  font-weight: 700 !important;
+}
+
+.reveal h1 {
+  font-size: 2.2em !important;
+}
+
+/* ----------------------------------------
+   TITLE SLIDE OVERRIDE
+---------------------------------------- */
+.title-slide {
+  background: var(--uwf-blue) !important;
+  color: white !important;
+  text-align: center !important;
+  padding-top: 20vh !important;
+  padding-bottom: 20vh !important;
+}
+
+.title-slide h1,
+.title-slide h2,
+.title-slide h3,
+.title-slide p {
+  color: white !important;
+}
+
+/* ----------------------------------------
+   LINKS
+---------------------------------------- */
 .reveal a {
-  color: var(--uwf-green);
-  text-decoration: none;
+  color: var(--uwf-green) !important;
+  text-decoration: none !important;
 }
+
 .reveal a:hover {
-  color: var(--uwf-blue);
+  color: var(--uwf-blue) !important;
 }
 
-/* Horizontal rules */
-.reveal hr {
-  border: 1px solid var(--uwf-green);
-  margin: 1em 0;
-}
-
-/* Lists and table text */
-.reveal ul, .reveal ol, .reveal table {
-  color: #222;
-  font-size: 0.95em;
-}
-
-/* Footer styling */
-.reveal .footer {
-  background-color: var(--uwf-blue);
-  color: white;
-  padding: 0.3em 0.8em;
-  border-radius: 6px;
-  font-size: 0.85em;
-  position: relative;
-}
-
-/* Title slide gradient */
-.reveal .slide:first-of-type {
-  background: linear-gradient(135deg, var(--uwf-blue), var(--uwf-green));
-  color: white;
-}
-.reveal .slide:first-of-type h1,
-.reveal .slide:first-of-type h2 {
-  color: white;
-}
-
-/* Tables */
+/* ----------------------------------------
+   TABLES
+---------------------------------------- */
 .reveal table th {
-  background-color: var(--uwf-blue);
-  color: white;
-}
-.reveal table td {
-  border: 1px solid var(--uwf-gray);
-  padding: 0.4em 0.8em;
+  background-color: var(--uwf-blue) !important;
+  color: white !important;
+  padding: 0.5em !important;
 }
 
-/* Code or inline highlights */
+.reveal table td {
+  border: 1px solid var(--uwf-gray) !important;
+  padding: 0.4em 0.6em !important;
+}
+
+/* ----------------------------------------
+   CODE BLOCKS
+---------------------------------------- */
+.reveal pre code,
 .reveal code {
-  background-color: var(--uwf-gray);
-  color: var(--uwf-blue);
-  padding: 0.15em 0.4em;
-  border-radius: 4px;
+  background-color: var(--uwf-gray) !important;
+  color: var(--uwf-blue) !important;
+  padding: 0.15em 0.4em !important;
+  border-radius: 4px !important;
+  font-size: 0.9em !important;
+}
+
+/* ----------------------------------------
+   TABS (PANEL-TABSET)
+---------------------------------------- */
+
+/* Tab container border */
+.panel-tabset .tabset-tabs {
+  border-bottom: 2px solid var(--uwf-gray) !important;
+}
+
+/* Inactive tabs */
+.panel-tabset .tabset-tabs a {
+  color: var(--uwf-dark-gray) !important;
+  padding: 0.4em 0.8em !important;
+  font-size: 1.0em !important;
+  border: 1px solid var(--uwf-gray) !important;
+  border-bottom: none !important;
+}
+
+/* Hover effect */
+.panel-tabset .tabset-tabs a:hover {
+  color: var(--uwf-blue) !important;
+}
+
+/* ACTIVE tab text + border */
+.panel-tabset .tabset-tabs a.active {
+  color: var(--uwf-green) !important;
+  font-weight: 700 !important;
+  border: 2px solid var(--uwf-green) !important;
+  border-bottom: 2px solid white !important;
+}
+
+/* ----------------------------------------
+   IMAGES
+---------------------------------------- */
+.reveal img {
+  border-radius: 4px !important;
+  margin: 10px 0 !important;
 }
