@@ -23,6 +23,16 @@
   line-height: 1.35em !important;
 }
 
+/* Shrink all slide content slightly */
+.reveal section {
+  font-size: 0.75em !important;
+}
+
+/* Shrink content inside tabsets */
+.panel-tabset {
+  font-size: 0.75em !important;
+}
+
 /* ----------------------------------------
    HEADINGS
 ---------------------------------------- */
@@ -34,8 +44,18 @@
   font-weight: 700 !important;
 }
 
+/* Large title slide font */
 .reveal h1 {
   font-size: 2.2em !important;
+}
+
+/* Optional heading size tuning (keeps things readable on small slides) */
+.reveal h2 {
+  font-size: 1.6em !important;
+}
+
+.reveal h3 {
+  font-size: 1.3em !important;
 }
 
 /* ----------------------------------------
@@ -117,7 +137,7 @@
   color: var(--uwf-blue) !important;
 }
 
-/* ACTIVE tab text + border */
+/* Active tab */
 .panel-tabset .tabset-tabs a.active {
   color: var(--uwf-green) !important;
   font-weight: 700 !important;
