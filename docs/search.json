@@ -632,9 +632,9 @@
   {
     "objectID": "slides.html#aim",
     "href": "slides.html#aim",
-    "title": "Bayesian Logistic Regression for Diabetes Risk (NHANES 2013–2014)",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Aim",
-    "text": "Aim\n\nEarly identification of key risk factors is essential for diabetes prevention.\n\nUse Bayesian logistic regression to model and predict diabetes risk\nbased on NHANES 2013–2014 data."
+    "text": "Aim\n\nImplement Bayesian logistic regression for diabetes prediction.\nCompare Bayesian vs survey-weighted frequentist models.\nAssess population-level burden and subgroup differences.\nUse posterior predictive modeling to evaluate calibration."
   },
   {
     "objectID": "slides.html#frequentist-methods",
@@ -667,9 +667,9 @@
   {
     "objectID": "slides.html#data-source",
     "href": "slides.html#data-source",
-    "title": "Bayesian Logistic Regression for Diabetes Risk (NHANES 2013–2014)",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Data Source",
-    "text": "Data Source\nNHANES 2013–2014 (Survey Weighted)\n\nExploratory Data AnalysisMissing Data Analysis\n\n\n\nResponse variable: diabetes_dx (binary) — Type 2 diagnosis (DIQ010: “Doctor told you have diabetes”).\nExcluded DIQ050 (insulin use) to avoid confounding.\nPredictors:\n\nBMXBMI — Body Mass Index (kg/m²), continuous and categorized (bmi_cat)\n\nRIDAGEYR — Age (continuous, 20–80 yrs)\n\nRIAGENDR — Sex (Male / Female)\n\nRIDRETH1 — Ethnicity (5 levels → 4 analytic groups)\n\n\n\n\n\n\nMissingness Plot\n \n\n\nOverall missingness ≈ 4%\n\nMissingness concentrated in BMI (4.3%) and diabetes_dx (3.1%)\n\nNo variable completely missing\n\nLikely MAR (Missing At Random) pattern"
+    "text": "Data Source\n\nNHANES 2013–2014\nComplex multistage probability sampling\nSurvey weights required for national inference"
   },
   {
     "objectID": "slides.html#bayesian-model-diagnostics",
@@ -697,14 +697,14 @@
     "href": "slides.html#limitations",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Limitations",
-    "text": "Limitations\n\nOverviewKey PointsVisual\n\n\n\nAll predictive models operate under constraints, and interpreting results requires awareness of those boundaries.\n\n\n\n\nNHANES is cross-sectional, limiting causal interpretation.\nUnmeasured factors (diet, activity, genetics) may influence diabetes risk but are not included in the model.\nPosterior estimates reflect the chosen priors and model specification.\nPredictive performance may differ in populations not represented in NHANES."
+    "text": "Limitations\n\nCross-sectional design\nImputation assumes MAR\nPriors may influence results\nUnmeasured confounding likely"
   },
   {
     "objectID": "slides.html#conclusion",
     "href": "slides.html#conclusion",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Conclusion",
-    "text": "Conclusion\n\nBayesian and survey-weighted logistic regression frameworks yielded consistent predictors: advancing age, higher BMI, female sex (protective), and non-White race/ethnicity (higher risk).\nBayesian results closely matched frequentist estimates while adding:\n\nposterior uncertainty quantification\ncredible intervals\nposterior predictive calibration\n\nDiagnostics confirmed strong model performance (R̂ ≈ 1.00, excellent ESS, Bayesian R² ≈ 0.13).\nBayesian inference enhances transparency, interpretability, and reproducibility in complex survey modeling.\nFuture work may incorporate hierarchical priors, combined NHANES cycles, or Bayesian model averaging to explore heterogeneity and trends."
+    "text": "Conclusion\n\nFrequentist and Bayesian models yield consistent predictors.\nBayesian approach provides credible intervals and improved uncertainty handling.\nPosterior predictive checks show strong calibration.\nFramework extendable to future cycles and risk prediction tasks."
   },
   {
     "objectID": "slides.html#acknowledgements",
@@ -926,9 +926,9 @@
   {
     "objectID": "slides.html#model-comparison",
     "href": "slides.html#model-comparison",
-    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk Using NHANES 2013–2014 Data",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Model Comparison",
-    "text": "Model Comparison\n\nLOO favors full model\nRace & sex contribute meaningfully"
+    "text": "Model Comparison\n\nInterpretation: Both models agree on direction of effects. Bayesian estimates show mild shrinkage toward zero and richer uncertainty quantification."
   },
   {
     "objectID": "slides.html#model-comparison-summary",
@@ -956,7 +956,7 @@
     "href": "slides.html#mcmc-diagnostics",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "MCMC Diagnostics",
-    "text": "MCMC Diagnostics\n\nR-hat ≈ 1.00 for all parameters → strong convergence\n\nEffective Sample Size (ESS &gt; 2000) → efficient sampling\n\nTrace plots show stable mixing across chains\n\nAutocorrelation low across lags → good efficiency"
+    "text": "MCMC Diagnostics\n\nInterpretation: Mixed chains with stable densities and no divergences show strong convergence and reliable sampling."
   },
   {
     "objectID": "slides.html#mice-multiple-imputation",
@@ -1159,7 +1159,7 @@
     "href": "slides.html#survey-weighted-logistic-regression",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Survey-Weighted Logistic Regression",
-    "text": "Survey-Weighted Logistic Regression\n\nOverviewCodeInterpretationVisual\n\n\n\nThis slide presents the main survey-weighted logistic regression results using the complete-case analytic dataset.\nThese estimates reflect population-adjusted associations between diabetes and the key predictors: age, BMI, sex, and race/ethnicity.\nThis model serves as the classical baseline for comparison with the Bayesian logistic regression results.\n\n\n\n\noptions(survey.lonely.psu = \"adjust\")\n\nnhanes_design_adult &lt;- survey::svydesign(\n  id      = ~SDMVPSU,\n  strata  = ~SDMVSTRA,\n  weights = ~WTMEC2YR,\n  nest    = TRUE,\n  data    = adult_clean\n)\n\nsvy_fit &lt;- survey::svyglm(\n  diabetes_dx ~ age_c + bmi_c + sex + race,\n  design = nhanes_design_adult,\n  family = quasibinomial()\n)\n\nsvy_or &lt;- broom::tidy(svy_fit, conf.int = TRUE) %&gt;%\n  dplyr::mutate(\n    OR  = exp(estimate),\n    LCL = exp(conf.low),\n    UCL = exp(conf.high)\n  ) %&gt;%\n  dplyr::select(term, OR, LCL, UCL, p.value) %&gt;%\n  dplyr::filter(term != \"(Intercept)\")\n\n\n\n\nAge and BMI show strong positive associations with diabetes risk.\nDifferences across sex and race/ethnicity remain after accounting for survey design.\nSurvey weighting ensures these findings reflect the U.S. adult population, not just the sample."
+    "text": "Survey-Weighted Logistic Regression\n\nModel: diabetes_dx ~ age_c + bmi_c + sex + race\nWeights: WTMEC2YR; PSU + strata for complex design\n\nKey Results:\n\nAge OR ≈ 3.03\nBMI OR ≈ 1.88\nFemale OR ≈ 0.53\nRacial/ethnic disparities present"
   },
   {
     "objectID": "slides.html#bayesian-logistic-regression",
@@ -1180,7 +1180,7 @@
     "href": "slides.html#posterior-predictive-checks",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Posterior Predictive Checks",
-    "text": "Posterior Predictive Checks\n\nObserved vs ReplicatedInterpretation\n\n\n\n\n\n\nObserved (y) and replicated (y_rep) outcome distributions align closely.\nIndicates that the Bayesian model accurately reproduces the empirical binary outcome structure."
+    "text": "Posterior Predictive Checks\n\nInterpretation: Observed diabetes frequencies fall within the replicated model distributions — strong evidence of good model fit."
   },
   {
     "objectID": "slides.html#prior-vs-posterior",
@@ -1222,7 +1222,7 @@
     "href": "slides.html#thank-you",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Thank You",
-    "text": "Thank You\nAdvisor\nDr. Achraf Cohen\nPresented by\nNamita Mishra\nAutumn S. Wilcox\nUniversity of West Florida\nQuestions?"
+    "text": "Thank You\nAdvisor: Dr. Achraf Cohen\nPresented by: Namita Mishra & Autumn S. Wilcox\nUniversity of West Florida"
   },
   {
     "objectID": "slides.html#bmi-distribution-by-diabetes-status",
@@ -1474,7 +1474,7 @@
     "href": "slides.html#posterior-odds-ratios",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Posterior Odds Ratios",
-    "text": "Posterior Odds Ratios\n\nBayesian OR CodeBayesian OR Table\n\n\nRendered from:\nknitr::kable(\n  dplyr::mutate(bayes_or, dplyr::across(c(OR, LCL, UCL), ~ round(.x, 2)))\n)"
+    "text": "Posterior Odds Ratios\n\nInterpretation: Age and BMI remain strong predictors. Race disparities persist. Female sex slightly protective. Bayesian ORs closely match frequentist results but include fuller uncertainty ranges."
   },
   {
     "objectID": "slides.html#model-comparison-survey-weighted-vs-bayesian",
@@ -1635,7 +1635,7 @@
     "href": "slides.html#transition-to-bayesian-modeling",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Transition to Bayesian Modeling",
-    "text": "Transition to Bayesian Modeling\n\nOverviewWhy Transition?What Comes NextVisual\n\n\n\nWith imputed data available, we transition from the classical survey-weighted approach to a Bayesian logistic regression framework.\nBayesian modeling provides full posterior uncertainty, richer predictive insight, and greater interpretability.\n\n\n\n\nSurvey-weighted models offer population-representative estimates but limited uncertainty characterization.\nBayesian models allow:\n\nPosterior distributions\nFlexible predictions\nIntuitive interpretation of uncertainty\n\n\n\n\n\nPriors\nMCMC sampling\nPosterior predictive checks\nModel diagnostics\nTranslational interpretation"
+    "text": "Transition to Bayesian Modeling\n\nAfter complete-case frequentist analysis, MICE is used for imputing missing predictors.\nBayesian model applied to imputed dataset."
   },
   {
     "objectID": "slides.html#implementing-bayesian-logistic-regression",
@@ -1684,7 +1684,7 @@
     "href": "slides.html#posterior-draws",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Posterior Draws",
-    "text": "Posterior Draws\n\nOverviewInterpretationVisual\n\n\n\nPosterior draws represent the full distribution of plausible parameter values sampled from the model.\nEach draw corresponds to one possible set of regression coefficients supported by both the priors and the NHANES data.\n\n\n\n\nThese draw distributions show the shape, spread, and uncertainty around each predictor.\nNarrower distributions indicate higher certainty; wider ranges indicate more variability.\nThis full distribution view complements the summary provided by the posterior estimates."
+    "text": "Posterior Draws\n\nInterpretation: Posterior distributions are well-defined, unimodal, and narrower than priors, indicating strong information from the data."
   },
   {
     "objectID": "slides.html#code",
@@ -1726,7 +1726,7 @@
     "href": "slides.html#internal-validation",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Internal Validation",
-    "text": "Internal Validation\n\nOverviewInterpretationVisual\n\n\n\nInternal validation assesses how well the model predicts outcomes for individuals within the same dataset used for training.\nPosterior predictive checks and calibration plots help evaluate reliability.\n\n\n\n\nThe model’s predicted probabilities align well with observed diabetes outcomes.\nConsistent calibration across probability ranges suggests stable internal performance."
+    "text": "Internal Validation\n\nInterpretation: Posterior predictive distribution for an individual reveals uncertainty in personalized diabetes risk, emphasizing probabilistic interpretation."
   },
   {
     "objectID": "slides.html#participant-data",
@@ -1740,7 +1740,7 @@
     "href": "slides.html#external-validation",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "External Validation",
-    "text": "External Validation\n\nOverviewInterpretationVisual\n\n\n\nExternal validation evaluates how well the model generalizes beyond the training data.\nPosterior predictive distributions are compared against population-level diabetes prevalence.\n\n\n\n\nModel-predicted prevalence closely aligns with observed NHANES estimates.\nThis agreement indicates strong generalizability and robust model performance."
+    "text": "External Validation\n\nInterpretation: Posterior mean prevalence ≈ 10.95% closely aligns with NHANES’ 8.9%, with overlapping intervals → good calibration."
   },
   {
     "objectID": "slides.html#reverse-prediction",
@@ -1762,5 +1762,110 @@
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Practical Implications",
     "text": "Practical Implications\n\nOverviewInterpretationVisual\n\n\n\nBayesian logistic regression provides flexible, uncertainty-aware estimates that can support decision-making in clinical and public health settings.\nProbability-based predictions allow for individualized risk assessment.\n\n\n\n\nPosterior distributions help identify individuals likely to benefit from early screening or intervention.\nThe model can be extended or updated as more data becomes available, improving long-term accuracy and relevance."
+  },
+  {
+    "objectID": "slides.html#frequentist",
+    "href": "slides.html#frequentist",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Frequentist",
+    "text": "Frequentist\n\nUnstable with missing data or quasi-separation.\nRelies on large-sample asymptotics.\nConfidence intervals rely on repeated sampling logic.\nParameters treated as fixed unknown constants."
+  },
+  {
+    "objectID": "slides.html#bayesian",
+    "href": "slides.html#bayesian",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Bayesian",
+    "text": "Bayesian\n\nProbability = degree of belief.\nIncorporates priors → stabilizes estimates.\nNaturally handles missingness and small samples.\nParameters treated as random variables.\nProduces full posterior distributions."
+  },
+  {
+    "objectID": "slides.html#frequentist-vs-bayesian-methods",
+    "href": "slides.html#frequentist-vs-bayesian-methods",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Frequentist vs Bayesian Methods",
+    "text": "Frequentist vs Bayesian Methods\n\nFrequentistBayesian\n\n\n\nUnstable with missing data or quasi-separation.\nRelies on large-sample asymptotics.\nConfidence intervals rely on repeated sampling logic.\nParameters treated as fixed unknown constants.\n\n\n\n\nProbability = degree of belief.\nIncorporates priors → stabilizes estimates.\nNaturally handles missingness and small samples.\nParameters treated as random variables.\nProduces full posterior distributions."
+  },
+  {
+    "objectID": "slides.html#bayes-theorem",
+    "href": "slides.html#bayes-theorem",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Bayes’ Theorem",
+    "text": "Bayes’ Theorem\nPosterior = Likelihood × Prior / Evidence\nP(θ | D) = [P(D | θ) × P(θ)] / P(D)\nInterpretation:\n\nθ: regression coefficients (age, BMI, sex, race)\nD: NHANES data\nPrior: reasonable ranges for effect sizes\nLikelihood: logistic model\nPosterior: updated beliefs after seeing the data"
+  },
+  {
+    "objectID": "slides.html#logistic-link-function",
+    "href": "slides.html#logistic-link-function",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Logistic Link Function",
+    "text": "Logistic Link Function\n\nUses the logit transformation.\nTranslates linear predictor → probability between 0 and 1.\nPredictors: standardized age, standardized BMI, sex, race.\n\nInterpretation: This structure ensures probability predictions stay within meaningful bounds."
+  },
+  {
+    "objectID": "slides.html#priors",
+    "href": "slides.html#priors",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Priors",
+    "text": "Priors\n\nIntercept: Student-t(3, 0, 10)\nCoefficients: Normal(0, 2.5)\n\nInterpretation: Weakly informative priors regularize coefficients, preventing extreme estimates in low-information subgroups while still letting the data dominate."
+  },
+  {
+    "objectID": "slides.html#posterior-distributions",
+    "href": "slides.html#posterior-distributions",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Posterior Distributions",
+    "text": "Posterior Distributions\n\nInterpretation: Posterior distributions shift away from the broad priors toward data-supported values, showing strong evidence for age and BMI effects."
+  },
+  {
+    "objectID": "slides.html#predictor-outcome-variables",
+    "href": "slides.html#predictor-outcome-variables",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Predictor & Outcome Variables",
+    "text": "Predictor & Outcome Variables\n\nOutcome: DIQ010 (doctor-diagnosed diabetes)\nPredictors: RIDAGEYR, BMXBMI, RIAGENDR, RIDRETH1\nStandardization applied to age & BMI"
+  },
+  {
+    "objectID": "slides.html#missing-data-complete-case",
+    "href": "slides.html#missing-data-complete-case",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Missing Data & Complete Case",
+    "text": "Missing Data & Complete Case\n\nInterpretation: Missingness primarily affects BMI; pattern supports MAR. Complete-case analysis reduces sample size but provides a baseline model."
+  },
+  {
+    "objectID": "slides.html#survey-regression-visualization",
+    "href": "slides.html#survey-regression-visualization",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Survey Regression Visualization",
+    "text": "Survey Regression Visualization\n\nInterpretation: Non-Hispanic Black and Hispanic groups show elevated predicted diabetes probability compared to White adults after adjustment."
+  },
+  {
+    "objectID": "slides.html#mice-imputation",
+    "href": "slides.html#mice-imputation",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "MICE Imputation",
+    "text": "MICE Imputation\n\nInterpretation: MICE preserves relationships among predictors, reducing complete-case bias and improving model precision."
+  },
+  {
+    "objectID": "slides.html#bayesian-model-specification",
+    "href": "slides.html#bayesian-model-specification",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Bayesian Model Specification",
+    "text": "Bayesian Model Specification\n\nFormula: diabetes_dx | weights(wt_norm) ~ age_c + bmi_c + sex + race\nPriors: weakly informative\nMCMC: 4 chains, 2000 iterations"
+  },
+  {
+    "objectID": "slides.html#prior-vs-posterior-age-bmi",
+    "href": "slides.html#prior-vs-posterior-age-bmi",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Prior vs Posterior (Age & BMI)",
+    "text": "Prior vs Posterior (Age & BMI)\n\nInterpretation: Posterior distributions shrink considerably, demonstrating how the data updates vague priors."
+  },
+  {
+    "objectID": "slides.html#model-fit-bayesian-r²",
+    "href": "slides.html#model-fit-bayesian-r²",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Model Fit — Bayesian R²",
+    "text": "Model Fit — Bayesian R²\n\nInterpretation: Bayesian R² centers around ~0.13. This is expected: diabetes is multifactorial, and a small number of predictors explains modest variance."
+  },
+  {
+    "objectID": "slides.html#reverse-prediction-bmi-threshold",
+    "href": "slides.html#reverse-prediction-bmi-threshold",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Reverse Prediction — BMI Threshold",
+    "text": "Reverse Prediction — BMI Threshold\n\nInterpretation: Reverse prediction indicates BMI levels associated with a target diabetes probability (e.g., 30%). Results reveal strong influence of age, sex, and race in risk thresholds."
   }
 ]
