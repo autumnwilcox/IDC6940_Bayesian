@@ -13,7 +13,6 @@ format:
     incremental: false
     scrollable: true
     toc: false
-    footer: "University of West Florida"
     code-overflow: wrap
     code-line-numbers: false
     css: styles.css
@@ -28,13 +27,13 @@ editor: visual
 
 ## Introduction
 
--   **Diabetes mellitus (DM)** affects over **37 million U.S. adults**.
--   Major risk factors include **age**, **BMI**, **sex**, and **race/ethnicity**.
--   Traditional logistic regression can struggle with **missing data** and **small subgroup instability**.
--   **Bayesian logistic regression** incorporates prior information and provides full **posterior uncertainty**.
+-   Diabetes mellitus (DM) affects over 37 million U.S. adults.
+-   Major risk factors include age, BMI, sex, and race/ethnicity.
+-   Traditional logistic regression can struggle with missing data and small subgroup instability.
+-   Bayesian logistic regression incorporates prior information and provides full posterior uncertainty.
 -   This analysis compares:
-    1.  **Design-based logistic regression** (survey-weighted)
-    2.  **Bayesian logistic regression** (*brms* with HMC/NUTS)
+    1.  Design-based logistic regression (survey-weighted)
+    2.  Bayesian logistic regression (*brms* with HMC/NUTS)
 
 ------------------------------------------------------------------------
 
@@ -42,13 +41,13 @@ editor: visual
 
 ::: {style="font-size: 0.85em"}
 -   **Why consider Bayesian methods?**
-    -   Traditional logistic regression can produce **unstable estimates** with missing data or sparse categories.
-    -   Bayesian inference incorporates **prior information** and provides richer **uncertainty quantification** through posterior distributions.
--   **Prior research**
+    -   Traditional logistic regression can produce unstable estimates with missing data or sparse categories.
+    -   Bayesian inference incorporates prior information and provides richer uncertainty quantification through posterior distributions.
+-   **Prior Research**
     -   Bayesian models improve parameter stability in epidemiologic studies.
-    -   Limited work directly compares **Bayesian vs. design-based logistic regression** for diabetes prediction using NHANES.
--   **Motivation for this analysis**
-    -   Evaluate whether Bayesian logistic regression improves **stability**, **interpretability**, and **predictive calibration**.
+    -   Limited work directly compares Bayesian vs. design-based logistic regression for diabetes prediction using NHANES.
+-   **Our Motivation**
+    -   Evaluate whether Bayesian logistic regression improves stability, interpretability, and predictive calibration.
     -   Use the NHANES complex survey design with normalized weights to approximate population inference.
 :::
 
@@ -211,12 +210,12 @@ editor: visual
 
 ## Final Modeling Dataset
 
-::::: panel-tabset
+:::::: panel-tabset
 ### Adult Dataset
 
-::: {style="font-size: 0.8em"}
--   Bayesian model uses the **final imputed dataset:**\
-    **adult_imp1 (n = 5,592)**
+::: {style="font-size: 0.6em"}
+-   Bayesian model uses the final imputed dataset:\
+    adult_imp1 (n = 5,592)
 
 -   Variables included:
 
@@ -226,7 +225,17 @@ editor: visual
     -   `sex` — Female vs Male
     -   `race` — 5-level categorical variable
 
--   NHANES weights (`wt_norm`) were **normalized** and passed as importance weights.
+-   NHANES weights (`wt_norm`) were normalized and passed as importance weights.
+
+-   Bayesian models require a fully complete dataset, so missing values must be resolved before model fitting.
+
+-   MICE imputation restored sample size and reduced potential bias compared to complete-case analysis.
+
+-   The final modeling dataset (adult_imp1) contains all predictors and the diabetes outcome with no missing values.
+
+-   Normalized NHANES weights (`wt_norm`) allow the Bayesian model to approximate population-level inference.
+
+-   This dataset is used for all Bayesian estimates, diagnostics, and posterior predictive checks throughout the analysis.
 :::
 
 ------------------------------------------------------------------------
@@ -250,22 +259,22 @@ diabetes_dx | weights(wt_norm) ~ age_c + bmi_c + sex + race
 
 ::: {style="font-size: 0.7em"}
 **Regression Coefficients:**\
--   `normal(0, 2.5)` — weakly informative
+- `normal(0, 2.5)` — weakly informative
 
 **Intercept:**\
--   `student_t(3, 0, 10)` — heavy-tailed prior\
--   Priors stabilize estimates in sparse or imbalanced categories.
+- `student_t(3, 0, 10)` — heavy-tailed prior\
+- Priors stabilize estimates in sparse or imbalanced categories.
 
 **Age and BMI were standardized to:**\
--   mean = 0\
--   sd = 1
+- mean = 0\
+- sd = 1
 
 **Benefits:**\
--   Improves sampler convergence\
--   Reduces autocorrelation\
--   Makes coefficient interpretation clear (per 1 SD increase)
+- Improves sampler convergence\
+- Reduces autocorrelation\
+- Makes coefficient interpretation clear (per 1 SD increase)
 :::
-:::::
+::::::
 
 ------------------------------------------------------------------------
 
@@ -469,6 +478,20 @@ pp_scat
 :::
 
 ------------------------------------------------------------------------
+
+::: panel-tabset
+### Mean BMI
+
+![](figs/bmi_predicted_vs_observed.png){width="70%" fig-align="center"}
+
+-   Each point represents an individual’s observed BMI versus the model’s posterior-predicted mean BMI.
+-   Error bars reflect the 95% credible intervals for predicted BMI values.
+-   Points closely aligned along the diagonal indicate that the model’s predictions match observed BMI values well.
+-   Confirms that the Bayesian model accurately captures BMI distribution within the dataset.
+
+:::
+
+---
 
 ## Diagnostics: Model-Level Comparisons
 
