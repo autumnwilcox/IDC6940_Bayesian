@@ -753,13 +753,7 @@ Exploratory analyses revealed several expected patterns:
 These distributional patterns reflect established epidemiologic relationships
 and support the suitability of the dataset for logistic regression modeling.
 
-### EDA Figures
-
-#### BMI Distribution by Diabetes Status
-![](figs/bmi_by_diabetes.png){width="80%" fig-align="center"}
-
-#### Diabetes Prevalence by Race/Ethnicity
-![](figs/diabetes_by_race.png){width="80%" fig-align="center"}
+#### EDA Visuals
 
 ```{r}
 #| label: eda-age-distribution
