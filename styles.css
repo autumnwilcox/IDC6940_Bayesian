@@ -152,3 +152,7 @@
   border-radius: 4px !important;
   margin: 10px 0 !important;
 }
+
+.reveal p, .reveal li {
+  line-height: 1.25;
+}

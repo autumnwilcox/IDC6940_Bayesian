@@ -28,31 +28,30 @@ editor: visual
 ## Introduction & Aim
 
 ::: panel-tabset
+
 ### Introduction
 
--   Diabetes is a major U.S. public health burden.
-
--   Key predictors include age, BMI, sex, and race/ethnicity.
-
--   Traditional (frequentist) logistic regression can become unstable with missing data, quasi-separation, or small effective sample sizes.
-
--   Bayesian logistic regression offers a solution by incorporating prior information, stabilizing estimates, and fully quantifying uncertainty.
-
--   This framework is widely used in diagnostic modeling, metabolic risk assessment, and NHANES analyses.
+- Diabetes is a major U.S. public health concern.
+- Key risk factors: **age**, **BMI**, **sex**, **race/ethnicity**.
+- Classical logistic regression struggles with:
+  - missing data  
+  - quasi-separation  
+  - small effective sample sizes
+- Bayesian logistic regression helps by:
+  - stabilizing estimates  
+  - incorporating prior information  
+  - quantifying full uncertainty
+- Commonly applied in diagnostic modeling and NHANES research.
 
 ### Aim
 
--   Predict doctor-diagnosed diabetes in U.S. adults using NHANES 2013–2014 data.
+- Predict **doctor-diagnosed diabetes** in U.S. adults (NHANES 2013–2014).
+- Evaluate **age, BMI, sex, and race/ethnicity** as predictors.
+- Incorporate **NHANES complex survey design**.
+- Handle missing data using **MICE**.
+- Compare **Bayesian** vs **survey-weighted** logistic regression.
+- Assess **model stability**, **interpretability**, and **predictive performance**.
 
--   Evaluate age, BMI, sex, and race/ethnicity as predictors.
-
--   Account for complex NHANES survey design.
-
--   Address missing data using MICE.
-
--   Compare Bayesian logistic regression with classical survey-weighted logistic regression.
-
--   Assess model stability, interpretability, and predictive performance.
 :::
 
 ---
@@ -60,41 +59,30 @@ editor: visual
 ## Frequentist Limitations (Motivation)
 
 ::: panel-tabset
-### Why MLE struggles
 
--   Sensitive to missing data.
-
--   Unstable estimates when outcome or predictors are sparse.
-
--   Quasi-separation causes infinite or extremely large coefficients.
-
--   Relies on large-sample assumptions that may not hold for subgroup analyses.
+### Why MLE Struggles
+- Sensitive to **missing data**  
+- Unstable when predictors or outcomes are **sparse**  
+- Vulnerable to **quasi-separation** (infinite or extreme coefficients)  
+- Depends on **large-sample assumptions** that may not hold in subgroups  
 
 ### Missing Data
+- Missing BMI/diabetes values reduce effective sample size  
+- Complete-case analysis can introduce **bias** and increase **variance**  
 
--   Missing BMI and diabetes variables reduce effective sample size.
-
--   Complete-case analysis can bias results and increase variance.
-
-### Quasi-separation
-
--   Occurs when a predictor perfectly or almost perfectly predicts the outcome.
-
--   Leads to unstable or non-finite MLE estimates.
+### Quasi-Separation
+- Occurs when a predictor perfectly (or nearly perfectly) predicts the outcome  
+- Causes non-finite or extremely large MLE estimates  
 
 ### Confounding
+- Limited covariates → residual confounding remains  
+- MLE provides only **point estimates**, not full uncertainty  
 
--   Residual confounding persists with limited covariates.
+### Why Bayesian Helps
+- Priors stabilize unstable coefficients  
+- Posterior distributions quantify **full uncertainty**  
+- Performs better with **missingness**, **small samples**, and **separation**  
 
--   MLE provides only point estimates without full uncertainty propagation.
-
-### Why Bayesian is needed
-
--   Priors regularize unstable coefficients.
-
--   Posterior distributions summarize full uncertainty.
-
--   Better performance with missingness, separation, and small effective sample sizes.
 :::
 
 ---
@@ -102,58 +90,40 @@ editor: visual
 ## Bayesian Logistic Regression
 
 ::: panel-tabset
+
 ### Overview
-
--   Combines priors + data → posterior distributions.
-
--   Treats parameters as random variables.
-
--   Produces credible intervals and probability-based interpretation.
-
--   Handles uncertainty and separation more effectively than MLE.
+- Combines **priors + data** → posterior distributions  
+- Parameters treated as **random variables**  
+- Produces **credible intervals** and probability-based interpretation  
+- Handles **uncertainty** and **separation** better than MLE  
 
 ### Model Structure
-
--   Outcome: diabetes_dx (binary).
-
--   Predictors: age_c, bmi_c, sex, race/ethnicity.
-
--   Logit model:
-
-    logit(P(diabetes = 1)) = α + β_age + β_bmi + β_sex + β_race.
+- **Outcome:** diabetes_dx (binary)  
+- **Predictors:** age_c, bmi_c, sex, race  
+- Logit model:  
+  *logit(P(diabetes = 1)) = α + β_age + β_bmi + β_sex + β_race*
 
 ### Prior Specification
-
--   Coefficients: Normal(0, 2.5), a weakly informative prior commonly recommended for logistic regression [@gelman2008].
-
-
--   Intercept: Student-t(3, 0, 10) → robust, heavy-tailed.
+- **Coefficients:** Normal(0, 2.5) — weakly informative, recommended for logistic regression [@gelman2008]  
+- **Intercept:** Student-t(3, 0, 10) — robust, heavy-tailed prior  
 
 ### Posterior Predictions
-
--   Posterior draws produce predicted diabetes probabilities.
-
--   Captures parameter + predictive uncertainty.
-
--   Supports individual-level and population-level inference.
+- Posterior draws → predicted diabetes probabilities  
+- Captures **parameter + predictive uncertainty**  
+- Supports **individual** and **population-level** inference  
 
 ### Model Evaluation & Diagnostics
+- Sampling via **Stan’s NUTS algorithm** [@stan2020]  
+- Convergence checks: R-hat ≈ 1, ESS values, trace plots, autocorrelation  
+- Posterior predictive checks to assess model fit  
 
--   Posterior sampling was performed using Stan’s No-U-Turn Sampler (NUTS) [@stan2020].
+### Advantages of Bayesian Approach
+- Stable under **quasi-separation**  
+- Direct probability statements (**credible intervals**)  
+- Priors provide **regularization**  
+- Full uncertainty propagation  
+- Flexible prediction and validation tools  
 
--   Convergence checks: R-hat ≈ 1, ESS values, trace plots, autocorrelation.
-
--   Posterior predictive checks for model fit.
-
-### Advantages of Bayesian approach
-
--   Stable estimates under separation.
-
--   Direct probability statements (credible intervals).
-
--   Regularization via priors. • Full uncertainty propagation.
-
--   Flexible prediction and validation tools.
 :::
 
 ---
@@ -161,61 +131,45 @@ editor: visual
 ## Study Data
 
 ::: panel-tabset
+
 ### NHANES Files
-
--   DEMO_H (demographics)
-
--   BMX_H (anthropometrics, BMI)
-
--   DIQ_H (diabetes questionnaire)
-
-Data were obtained from the National Health and Nutrition Examination Survey (NHANES) 2013–2014 cycle [@nhanes2013].
+- DEMO_H — demographics  
+- BMX_H — BMI & anthropometrics  
+- DIQ_H — diabetes questionnaire  
+Data from NHANES 2013–2014 [@nhanes2013].
 
 ### Merge Rules
-
--   Key variable: SEQN (unique participant ID).
-
--   Merged datasets using SEQN with harmonized variable types.
+- Key ID: **SEQN**  
+- Files merged on SEQN with harmonized variable types  
 
 ### Adult Cohort Definition
-
--   Restricted to adults ≥20 years.
-
--   Final analytic sample: 5,769 adults.
-
--   Outcome: doctor-diagnosed diabetes (DIQ010).
+- Adults **≥ 20 years**  
+- Final analytic sample: **5,769**  
+- Outcome: **doctor-diagnosed diabetes (DIQ010)**  
 
 ### Weighted Sample Characteristics
-
--   Weighted mean age: \~47.5 years.
-
--   Weighted diabetes prevalence: \~8.9%.
-
--   Design effect and effective sample size calculated.
+- Weighted mean age: **~47.5 yrs**  
+- Weighted diabetes prevalence: **~8.9%**  
+- Design effect & effective sample size computed  
 
 ### Variables & Coding
-
--   age_c: standardized age
-
--   bmi_c: standardized BMI
-
--   sex: Male/Female
-
--   race: 5 categories (NH White reference)
+- **age_c** — standardized age  
+- **bmi_c** — standardized BMI  
+- **sex** — Male / Female  
+- **race** — 5 categories (NH White reference)  
 
 ### Survey Design Variables
-
--   SDMVPSU – primary sampling units
-
--   SDMVSTRA – strata
-
--   WTMEC2YR – exam weights
+- **SDMVPSU** — primary sampling units  
+- **SDMVSTRA** — strata  
+- **WTMEC2YR** — exam weights  
 
 ### Final Analytic Sample
+- Cleaned dataset with design variables retained  
+- Ready for:  
+  - complete-case analysis  
+  - MICE imputation  
+  - Bayesian modeling  
 
--   Cleaned dataset with survey design variables preserved.
-
--   Ready for complete-case analysis, MICE imputation, and Bayesian modeling.
 :::
 
 ---
@@ -243,7 +197,7 @@ Data were obtained from the National Health and Nutrition Examination Survey (NH
 
 ### Missingness Visualization
 
-![](figs/missingness.png){fig-align="center" width="85%"}
+![](figs/missingness.png){fig-align="center" width="70%"}
 
 :::
 
@@ -271,7 +225,7 @@ Data were obtained from the National Health and Nutrition Examination Survey (NH
 
 ### Survey-Weighted Coefficient Plot
 
-![](figs/svy_or.png){fig-align="center" width="85%"}
+![](figs/svy_or.png){fig-align="center" width="70%"}
 :::
 
 ---
@@ -304,7 +258,6 @@ Data were obtained from the National Health and Nutrition Examination Survey (NH
 
 * **Iteratively imputes incomplete variables** using regression models.
 * MICE was used to handle missing data using predictive mean matching for continuous variables and logistic models for binary variables [@vanbuuren2011].
-* Uses **logistic regression for binary variables.**
 * **Rubin’s rule finds pooled estimates** from across posterior distributions to yield the full posterior:
   **Posterior = parameters + missing data uncertainty**
 
@@ -326,7 +279,7 @@ Model is fitted to each imputed dataset in **R** using brms **(Stan backend)**, 
 
 ### Prior
 
-* **Intercept prior: student_t(3, 0, 10)** (@VanDeSchoot2013)
+* **Intercept prior: student_t(3, 0, 10)** (@vandeschot2013)
 
   * **df = 3 (degrees of freedom):** heavy tails — allow for occasional extreme values.
   * **location = 0:** centered at 0, so the prior expects the parameter to be near 0.
@@ -437,15 +390,15 @@ Good convergence shows:
 
 ### Trace Plots (Stable Posteriors)
 
-![](figs/mcmc_trace.png){fig-align="center" width="85%"}
+![](figs/mcmc_trace.png){fig-align="center" width="70%"}
 
 ### Density Plot
 
-![](figs/prior_only_density.png){fig-align="center" width="85%"}
+![](figs/prior_only_density.png){fig-align="center" width="70%"}
 
 ### Autocorrelation Plot
 
-![](figs/acf_age_bmi.png){fig-align="center" width="85%"}
+![](figs/acf_age_bmi.png){fig-align="center" width="70%"}
 
 :::
 
@@ -468,7 +421,7 @@ Posterior draws = **4000 draws** (4 chains × 1000 iterations) via MCMC, giving 
 
 ### Plot
 
-![](figs/ppc_density.png){fig-align="center" width="85%"}
+![](figs/ppc_density.png){fig-align="center" width="70%"}
 * Y-axis: density (frequency of predicted probabilities)
 
 * X-axis: predicted probability of diabetes (0–1)
@@ -487,11 +440,11 @@ The model closely reproduces the observed data and captures the distribution of 
 
 ### Posterior Estimates
 
-![](figs/bayes_fit_summary.png){fig-align="center" width="85%"}
+![](figs/bayes_fit_summary.png){fig-align="center" width="70%"}
 
 ### Posterior Distribution
 
-![](figs/mcmc_areas.png){fig-align="center" width="85%"}
+![](figs/mcmc_areas.png){fig-align="center" width="70%"}
 
 ### Interpretation
 
@@ -515,7 +468,7 @@ The model closely reproduces the observed data and captures the distribution of 
 
 ### Plot
 
-![](figs/prior_vs_posterior.png){fig-align="center" width="85%"}
+![](figs/prior_vs_posterior.png){fig-align="center" width="70%"}
 
 ### Interpretation 
 
@@ -537,7 +490,7 @@ The model closely reproduces the observed data and captures the distribution of 
 
 We draw **500 samples** of predicted outcomes for each observation and calculate the proportion of outcomes (Diabetes = 1).
 
-![](figs/ppc_bars.png){fig-align="center" width="85%"}
+![](figs/ppc_bars.png){fig-align="center" width="70%"}
 
 **Fig:** Bar plot comparing counts/frequencies of each category (0 vs 1) in the observed data (`y`) and predictive samples (`y-rep`).
 
@@ -545,7 +498,7 @@ We draw **500 samples** of predicted outcomes for each observation and calculate
 
 ### Posterior Distribution of Diabetes
 
-![](figs/posterior_prevalence_hist.png){fig-align="center" width="85%"}
+![](figs/posterior_prevalence_hist.png){fig-align="center" width="70%"}
 
 Histogram shows the posterior distribution of the population proportion of diabetes.
 **x-axis:** proportion of diabetics (1s)
@@ -556,11 +509,11 @@ Histogram shows the posterior distribution of the population proportion of diabe
 
 ### Outcome Mean
 
-![](figs/ppc_mean.png){fig-align="center" width="85%"}
+![](figs/ppc_mean.png){fig-align="center" width="70%"}
 
 ### Outcome Standard Deviation 
 
-![](figs/ppc_sd.png){fig-align="center" width="85%"}
+![](figs/ppc_sd.png){fig-align="center" width="70%"}
 
 :::
 
@@ -568,9 +521,9 @@ Histogram shows the posterior distribution of the population proportion of diabe
 
 ## Bayesian vs Survey-Weighted NHANES (Diabetes Prevalence)
 
-![](figs/pop_vs_post_prev.png){fig-align="center" width="85%"}
+![](figs/pop_vs_post_prev.png){fig-align="center" width="70%"}
 
-![](figs/pop_vs_post_prev.png){fig-align="center" width="85%"}
+![](figs/pop_vs_post_prev.png){fig-align="center" width="70%"}
 
 * Model mean diabetes prevalence = **10.95%** (95% CI: **8.5%–12.8%**)
 * NHANES diabetes prevalence = **8.9%** (SE = 0.0048)
@@ -619,7 +572,7 @@ svy_tbl   <- svy_or   %>% mutate(Model = "Survey-weighted MLE")
 bayes_tbl <- bayes_or %>% mutate(Model = "Bayesian")
 ```
 
-![](figs/odds_ratio_comparison.png){fig-align="center" width="85%"}
+![](figs/odds_ratio_comparison.png){fig-align="center" width="70%"}
 
 * Both models consistently identified Age and BMI as strong predictors of diabetes.
 
@@ -643,7 +596,7 @@ bayes_tbl <- bayes_or %>% mutate(Model = "Bayesian")
 
 ### Plot
 
-![](figs/mcmc_pairs.png){fig-align="center" width="85%"}
+![](figs/mcmc_pairs.png){fig-align="center" width="70%"}
 
 ### Interpretation
 
@@ -659,7 +612,7 @@ bayes_tbl <- bayes_or %>% mutate(Model = "Bayesian")
 
 ## R Square
 
-![](figs/bayes_R2.png){fig-align="center" width="85%"}
+![](figs/bayes_R2.png){fig-align="center" width="70%"}
 
 **Interpretation**
 
@@ -735,7 +688,7 @@ The posterior predictive distribution for this profile shows **extremely high pr
 
 This demonstrates how the same Bayesian model yields **very different risk predictions** for individuals with **different demographic and clinical characteristics**, and highlights the importance of individualized risk assessment.
 
-![](figs/posterior_pred_dist.png){fig-align="center" width="85%"}
+![](figs/posterior_pred_dist.png){fig-align="center" width="70%"}
 
 **X-axis:** predicted probability of diabetes (Outcome = 1)
 **Y-axis:** density of predicted probabilities
@@ -758,7 +711,7 @@ This demonstrates how the same Bayesian model yields **very different risk predi
 Predicting BMI value for a given individual (diabetic, age = 40, female, Mexican American).
 **logit(Diabetes**ᵢ**) = β₀ + β_Ageᵢ + β_BMIᵢ + β_Sexᵢ + β_Raceᵢ**
 
-![](figs/inverse_prediction_bmi.png){fig-align="center" width="85%"}
+![](figs/inverse_prediction_bmi.png){fig-align="center" width="70%"}
 
 **X-axis:** BMI values (centered or raw, depending on the model)
 **Y-axis:** predicted probability of diabetes for a representative individual

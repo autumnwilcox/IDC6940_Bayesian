@@ -120,7 +120,7 @@ predictors, including body mass index (BMI), age (≥20 years), sex, and
 race. Using retrospective data from the 2013–2014 NHANES survey, the
 analysis accounts for the study’s complex sampling design, which
 involves stratification, clustering, and the oversampling of specific
-subpopulations rather than simple random sampling. The Bayesian
+sub-populations rather than simple random sampling. The Bayesian
 framework is applied to address common analytical challenges such as
 missing data, complete case bias, and data separation, thereby improving
 the robustness and reliability of inference compared to traditional
