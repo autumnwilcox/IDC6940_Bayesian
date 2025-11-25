@@ -3,7 +3,7 @@ title: "Bayesian Logistic Regression for Predicting Diabetes Risk"
 subtitle: |
   NHANES 2013–2014 Analysis  
   
-  **Namita Mishra & Autumn Wilcox**  
+  **Namita Mishra & Autumn Wilcox**\
   December 13, 2025
 format:
   revealjs:
@@ -462,14 +462,6 @@ Posterior draws = **4000 draws** (4 chains × 1000 iterations) via MCMC, giving 
 * **Influenced by the prior (prior subjectivity)**
 * **Sample size effect:** prior influence decreases as sample size increases
 
-### Code
-
-```r
-# Posterior predictive check comparing observed vs. simulated outcomes
-pp_check(bayes_fit, nsamples = 100) +
-  labs(title = "Posterior Predictive Check: Observed vs. Replicated Outcomes")
-```
-
 ### Plot
 
 ![](figs/ppc_density.png){fig-align="center" width="85%"}
@@ -519,28 +511,15 @@ The model closely reproduces the observed data and captures the distribution of 
 
 ### Plot
 
+![](figs/prior_vs_posterior.png){fig-align="center" width="85%"}
+
+### Interpretation 
+
 **Prior and posterior distributions** for the coefficient estimates of *Age (per 1 SD)* and *BMI (per 1 SD)*:
 
 * **Prior distribution:** wide spread (high variance), indicating a high degree of initial uncertainty
 * **Posterior distribution:** narrower and taller
 * **Data significantly updated the initial beliefs**
-
-### Code
-
-```r
-library(ggplot2)
-
-ggplot(combined_draws, aes(x = estimate, fill = type)) +
-  geom_density(alpha = 0.4) +
-  facet_wrap(~ term, scales = "free", ncol = 2) +
-  theme_minimal(base_size = 13) +
-  labs(
-    title = "Prior vs Posterior Distributions",
-    x = "Coefficient estimate",
-    y = "Density",
-    fill = ""
-  )
-```
 
 :::
 
@@ -554,11 +533,15 @@ ggplot(combined_draws, aes(x = estimate, fill = type)) +
 
 We draw **500 samples** of predicted outcomes for each observation and calculate the proportion of outcomes (Diabetes = 1).
 
+![](figs/ppc_bars.png){fig-align="center" width="85%"}
+
 **Fig:** Bar plot comparing counts/frequencies of each category (0 vs 1) in the observed data (`y`) and predictive samples (`y-rep`).
 
 **Bars for observed data fall within the range of simulated data:** the **model predicts the overall diabetes prevalence well**.
 
 ### Posterior Distribution of Diabetes
+
+![](figs/posterior_prevalence_hist.png){fig-align="center" width="85%"}
 
 Histogram shows the posterior distribution of the population proportion of diabetes.
 **x-axis:** proportion of diabetics (1s)
@@ -567,49 +550,23 @@ Histogram shows the posterior distribution of the population proportion of diabe
 * Highest bar ≈ 0.11 (11%), **symmetric**, centered at ~0.11
 * Spread: **95% credible interval ≈ 9%–13%** diabetes prevalence
 
-### Outcome Mean and SD
+### Outcome Mean
 
-### Code
+![](figs/ppc_mean.png){fig-align="center" width="85%"}
 
-```r
-pp_samples <- posterior_predict(bayes_fit, ndraws = 500)
-# 500 draws
+### Outcome Standard Deviation 
 
-# Check dimensions
-# dim(pp_samples)  # rows = draws, cols = observations
-
-ppc_bars(y = adult_imp1$diabetes_dx, yrep = pp_samples[1:500, ])
-```
-
-```r
-# pp_proportion <- rowMeans(pp_samples)  # if not already done
-known_prev <- 0.089   # NHANES prevalence
-posterior_mean <- mean(pp_proportion)
-posterior_ci <- quantile(pp_proportion, c(0.025, 0.975))  # 95% credible interval
-
-pp_df <- tibble(proportion = pp_proportion)
-
-ggplot(pp_df, aes(x = proportion)) +
-  geom_histogram(binwidth = 0.005, fill = "skyblue", color = "black") +
-  geom_vline(xintercept = known_prev, color = "red", linetype = "dashed", size = 1) +
-  geom_vline(xintercept = posterior_mean, color = "blue", linetype = "solid", size = 1) +
-  labs(
-    title = "Posterior Predicted Diabetes Proportion vs NHANES Prevalence",
-    subtitle = paste0(
-      "Red dashed = NHANES prevalence (", known_prev,
-      "), Blue solid = Posterior mean (", round(posterior_mean, 3), ")"
-    ),
-    x = "Proportion of Diabetes = 1",
-    y = "Frequency"
-  ) +
-  theme_minimal()
-```
+![](figs/ppc_sd.png){fig-align="center" width="85%"}
 
 :::
 
 ---
 
-## Bayesian vs Survey-weighted NHANES (Diabetes Prevalence)
+## Bayesian vs Survey-Weighted NHANES (Diabetes Prevalence)
+
+![](figs/pop_vs_post_prev.png){fig-align="center" width="85%"}
+
+![](figs/pop_vs_post_prev.png){fig-align="center" width="85%"}
 
 * Model mean diabetes prevalence = **10.95%** (95% CI: **8.5%–12.8%**)
 * NHANES diabetes prevalence = **8.9%** (SE = 0.0048)
@@ -626,6 +583,8 @@ ggplot(pp_df, aes(x = proportion)) +
 
 ### Average Diabetes
 
+![](figs/ppc_scatter_avg.png){fig-align="center" width="center"}
+
 * Each point = one individual
 * **x-axis = observed value** (0 or 1)
 * **y-axis = average predicted posterior probability** for that individual across simulated datasets
@@ -638,15 +597,6 @@ ggplot(pp_df, aes(x = proportion)) +
 
 **Model predictions generally align with the observed data.**
 
-### Code
-
-```r
-# PP checks with bayesplot options
-color_scheme_set("blue")
-ppc_scatter_avg(y = adult_imp1$diabetes_dx, yrep = pp_samples[1:100, ]) +
-  labs(title = "Observed vs Predicted (Avg) Posterior Predictive at Individual Level")
-```
-
 :::
 
 ---
@@ -655,7 +605,7 @@ ppc_scatter_avg(y = adult_imp1$diabetes_dx, yrep = pp_samples[1:100, ]) +
 
 ::: panel-tabset
 
-### Compare Models
+### Overview
 
 (1) **Survey-weighted maximum likelihood estimation (MLE)**
 (2) **Bayesian regression**
@@ -664,6 +614,8 @@ ppc_scatter_avg(y = adult_imp1$diabetes_dx, yrep = pp_samples[1:100, ]) +
 svy_tbl   <- svy_or   %>% mutate(Model = "Survey-weighted MLE")
 bayes_tbl <- bayes_or %>% mutate(Model = "Bayesian")
 ```
+
+![](figs/odds_ratio_comparison.png){fig-align="center" width="85%"}
 
 * Both models consistently identified Age and BMI as strong predictors of diabetes.
 
@@ -685,31 +637,9 @@ bayes_tbl <- bayes_or %>% mutate(Model = "Bayesian")
 
 ::: panel-tabset
 
-### Code
-
-```r
-# Extract posterior draws
-post <- as_draws_df(bayes_fit)
-
-# Select numeric parameters of interest
-post_subset <- post %>%
-  dplyr::select(
-    b_age_c, b_bmi_c, b_sexFemale,
-    b_raceMexicanAmerican, b_raceNHBlack
-  )
-
-# Compute correlation matrix
-cor_matrix <- cor(post_subset)
-
-# Visualize
-mcmc_pairs(
-  as_draws_array(bayes_fit),
-  pars = c("b_age_c", "b_bmi_c", "b_sexFemale"),
-  off_diag_args = list(size = 1.5, alpha = 0.4)
-)
-```
-
 ### Plot
+
+![](figs/mcmc_pairs.png){fig-align="center" width="85%"}
 
 ### Interpretation
 
@@ -725,9 +655,7 @@ mcmc_pairs(
 
 ## R Square
 
-```r
-Model fit: bayes_R2(bayes_fit)
-```
+![](figs/bayes_R2.png){fig-align="center" width="85%"}
 
 **Interpretation**
 
@@ -761,6 +689,8 @@ Model fit: bayes_R2(bayes_fit)
 **Threshold > 30%**
 **BMI is modifiable** — interventions can lower risk (Sex & Race = constant).
 Used **posterior_linpred(transform = TRUE)**.
+
+![](figs/posterior_density_participant1.png){fig-align="center" width="85%"}
 
 **Median predicted probability ≈ 0.25**, 95% CrI = **0.20–0.31** (~1 in 4 chance of diabetes).
 
@@ -796,6 +726,8 @@ new_participant <- data.frame(
 Computed the posterior predicted probability with 95% credible intervals for:
 **age_c = 40, bmi_c = 25, sex = "Female", race = "Mexican American"**
 
+![](figs/posterior_pred_dist.png){fig-align="center" width="85%"}
+
 **X-axis:** predicted probability of diabetes (Outcome = 1)
 **Y-axis:** density of predicted probabilities
 **Blue curve:** posterior predictive distribution
@@ -817,24 +749,13 @@ Computed the posterior predicted probability with 95% credible intervals for:
 Predicting BMI value for a given individual (diabetic, age = 40, female, Mexican American).
 **logit(Diabetes**ᵢ**) = β₀ + β_Ageᵢ + β_BMIᵢ + β_Sexᵢ + β_Raceᵢ**
 
+![](figs/inverse_prediction_bmi.png){fig-align="center" width="85%"}
+
 **X-axis:** BMI values (centered or raw, depending on the model)
 **Y-axis:** predicted probability of diabetes for a representative individual
 **Blue curve:** predicted probability of diabetes across the BMI range; consistently high (≈1)
 **Red horizontal line:** target probability of diabetes = 0.3
 **Red vertical line:** targeted BMI where predicted probability is closest to the target (≈18)
-
-### Code
-
-```r
-bmi_seq <- seq(18, 40, by = 0.5)
-
-newdata_grid <- data.frame(
-  age_c = 40,
-  bmi_c = bmi_seq,
-  sex   = "Female",
-  race  = "Mexican American"
-)
-```
 
 ### Practical Implications
 
