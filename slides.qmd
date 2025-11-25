@@ -124,7 +124,8 @@ editor: visual
 
 ### Prior Specification
 
--   Coefficients: Normal(0, 2.5) → weakly informative.
+-   Coefficients: Normal(0, 2.5), a weakly informative prior commonly recommended for logistic regression [@gelman2008].
+
 
 -   Intercept: Student-t(3, 0, 10) → robust, heavy-tailed.
 
@@ -138,7 +139,7 @@ editor: visual
 
 ### Model Evaluation & Diagnostics
 
--   Stan’s NUTS sampler.
+-   Posterior sampling was performed using Stan’s No-U-Turn Sampler (NUTS) [@stan2020].
 
 -   Convergence checks: R-hat ≈ 1, ESS values, trace plots, autocorrelation.
 
@@ -167,6 +168,8 @@ editor: visual
 -   BMX_H (anthropometrics, BMI)
 
 -   DIQ_H (diabetes questionnaire)
+
+Data were obtained from the National Health and Nutrition Examination Survey (NHANES) 2013–2014 cycle [@nhanes2013].
 
 ### Merge Rules
 
@@ -287,7 +290,9 @@ editor: visual
 
 * **Statistics (Data = Adults)**
 
-* **Bayesian models assume complete data.**
+* **Bayesian logistic regression is fit on a completed dataset.**
+
+  * In this analysis, missing values were addressed using MICE before model fitting.
 
 * Imputed dataset (adult_imp1): **5,592**
 
@@ -298,8 +303,7 @@ editor: visual
 **Multivariate Imputation by Chained Equations**
 
 * **Iteratively imputes incomplete variables** using regression models.
-* MICE runs **5 iterations for each of the 5 imputed datasets** to ensure stability and convergence and provides multiple realistic versions of missing data.
-* Uses the **PMM method** for continuous variables **(Predictive Mean Matching)** to fill missing values with the observed values closest to predicted values.
+* MICE was used to handle missing data using predictive mean matching for continuous variables and logistic models for binary variables [@vanbuuren2011].
 * Uses **logistic regression for binary variables.**
 * **Rubin’s rule finds pooled estimates** from across posterior distributions to yield the full posterior:
   **Posterior = parameters + missing data uncertainty**
@@ -322,15 +326,15 @@ Model is fitted to each imputed dataset in **R** using brms **(Stan backend)**, 
 
 ### Prior
 
-* **Intercept prior: student_t(3, 0, 10)** — @VanDeSchoot2013
+* **Intercept prior: student_t(3, 0, 10)** (@VanDeSchoot2013)
 
   * **df = 3 (degrees of freedom):** heavy tails — allow for occasional extreme values.
   * **location = 0:** centered at 0, so the prior expects the parameter to be near 0.
   * **scale = 10:** controls how spread out the distribution is (larger scale → wider spread).
-* **Prior for regression coefficient: normal(0, 2.5)** — @VanDeSchoot2021
+* **Prior for regression coefficients: Normal(0, 2.5)**, a weakly informative default recommended for logistic regression (Gelman, 2008).
 
   * Weakly informative with **mean = 0, standard deviation = 2.5**.
-  * Probability of very large or very small parameter values is low and **stabilizes the model**.
+  * This prior regularizes extreme coefficient estimates, improving stability under sparse data or quasi-separation.
 
 ### Code
 
@@ -682,17 +686,14 @@ bayes_tbl <- bayes_or %>% mutate(Model = "Bayesian")
 
 ::: panel-tabset
 
-### Internal Validation
+### Internal Validation - Individual Participant 
 
-**Personalized Risk Estimation**
+This example evaluates the posterior predictive distribution for a **real participant from the dataset** (“Participant 1”), who has **lower-risk characteristics**.
 
-**Threshold > 30%**
-**BMI is modifiable** — interventions can lower risk (Sex & Race = constant).
-Used **posterior_linpred(transform = TRUE)**.
+- **Median predicted probability:** ≈ 0.25  
+- **95% Credible Interval:** ≈ 0.20–0.31  
 
-![](figs/posterior_density_participant1.png){fig-align="center" width="85%"}
-
-**Median predicted probability ≈ 0.25**, 95% CrI = **0.20–0.31** (~1 in 4 chance of diabetes).
+This illustrates how the model estimates personalized risk for an individual with **moderate demographic and clinical risk factors**.
 
 ### Participant Data
 
@@ -721,10 +722,18 @@ new_participant <- data.frame(
 )
 ```
 
-### External Validation
+### External Validation — Representative High-Risk Profile
 
-Computed the posterior predicted probability with 95% credible intervals for:
-**age_c = 40, bmi_c = 25, sex = "Female", race = "Mexican American"**
+In contrast to Participant 1, this example evaluates a **hypothetical individual** with a **high-risk profile**:
+
+- **age_c = 40**  
+- **bmi_c = 25**  
+- **sex = "Female"**  
+- **race = "Mexican American"**
+
+The posterior predictive distribution for this profile shows **extremely high predicted probability** of diabetes (with most posterior draws near **1.0**).
+
+This demonstrates how the same Bayesian model yields **very different risk predictions** for individuals with **different demographic and clinical characteristics**, and highlights the importance of individualized risk assessment.
 
 ![](figs/posterior_pred_dist.png){fig-align="center" width="85%"}
 
@@ -783,12 +792,27 @@ Predicting BMI value for a given individual (diabetic, age = 40, female, Mexican
 
 ---
 
+## Key Findings
+
+- **Age and BMI are the strongest predictors** of doctor-diagnosed diabetes, with consistent effects across both survey-weighted and Bayesian models.
+- **The Bayesian model provides stable, well-calibrated estimates**, with credible intervals that closely match the classical model’s uncertainty while avoiding quasi-separation issues.
+- **Posterior predictive checks confirm good model fit**, accurately reproducing observed diabetes prevalence and individual-level predictions.
+- **Population-level and individualized risk estimates align**, demonstrating that the model can support both public health interpretation and personalized risk assessment.
+
+---
+
 ## Conclusion
 
 Bayesian logistic regression effectively models uncertainty.
 MICE improved data completeness and reliability.
 Posterior predictions provide interpretable probabilities of diabetes risk.
 Framework is adaptable to other outcomes (e.g., hypertension, obesity).
+
+---
+
+## References
+::: {#refs}
+:::
 
 ---
 
