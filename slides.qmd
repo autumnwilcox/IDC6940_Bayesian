@@ -391,7 +391,7 @@ Good convergence is indicated by:
 
 ---
 
-## Posterior Predictive Distribution
+## Posterior Distribution
 
 ::: panel-tabset
 
@@ -452,7 +452,7 @@ the distribution of diabetes outcomes.
 
 ---
 
-## Compare Prior and Posterior Predictive Distribution (Age and BMI)
+## Compare Prior and Posterior Distribution (Age and BMI)
 
 ::: panel-tabset
 
@@ -490,9 +490,17 @@ and calculate the proportion of simulated outcomes where **Diabetes = 1**.
 **The observed bars fall within the range of simulated data**, indicating that  
 the **model accurately reproduces the overall diabetes prevalence**.
 
-### Posterior Distribution of Diabetes
+### Outcome Mean
 
-![](figs/posterior_prevalence_hist.png){fig-align="center" width="55%"}
+![](figs/ppc_mean.png){fig-align="center" width="55%"}
+
+### Outcome Standard Deviation 
+
+![](figs/ppc_sd.png){fig-align="center" width="55%"}
+
+### Diabetes Prevalence Compared (Model vs NHANES)
+
+![](figs/posterior_diabetes_prop.png){fig-align="center" width="55%"}
 
 Histogram shows the posterior distribution of the **population proportion of diabetes**.
 
@@ -501,14 +509,6 @@ Histogram shows the posterior distribution of the **population proportion of dia
 
 * Highest bar ≈ **0.11 (11%)**, symmetric and centered around ~0.11  
 * **95% credible interval:** approximately **9%–13%** prevalence  
-
-### Outcome Mean
-
-![](figs/ppc_mean.png){fig-align="center" width="55%"}
-
-### Outcome Standard Deviation 
-
-![](figs/ppc_sd.png){fig-align="center" width="55%"}
 
 :::
 

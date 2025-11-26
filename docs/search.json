@@ -1180,7 +1180,7 @@
     "href": "slides.html#posterior-predictive-checks",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Posterior Predictive Checks",
-    "text": "Posterior Predictive Checks\n\nProportion of DiabetesPosterior Distribution of DiabetesOutcome MeanOutcome Standard Deviation\n\n\nWe draw 500 posterior predictive samples of outcomes for each observation\nand calculate the proportion of simulated outcomes where Diabetes = 1.\n\n\n\n\n\nFigure: Bar plot comparing the counts/frequencies of each category\n(0 vs 1) in the observed data (y) and the posterior predictive samples (y-rep).\nThe observed bars fall within the range of simulated data, indicating that\nthe model accurately reproduces the overall diabetes prevalence.\n\n\n\n\n\n\n\nHistogram shows the posterior distribution of the population proportion of diabetes.\nx-axis: proportion of diabetics (1s)\ny-axis: frequency of posterior draws\n\nHighest bar ≈ 0.11 (11%), symmetric and centered around ~0.11\n\n95% credible interval: approximately 9%–13% prevalence"
+    "text": "Posterior Predictive Checks\n\nProportion of DiabetesOutcome MeanOutcome Standard DeviationDiabetes Prevalence Compared (Model vs NHANES)\n\n\nWe draw 500 posterior predictive samples of outcomes for each observation\nand calculate the proportion of simulated outcomes where Diabetes = 1.\n\n\n\n\n\nFigure: Bar plot comparing the counts/frequencies of each category\n(0 vs 1) in the observed data (y) and the posterior predictive samples (y-rep).\nThe observed bars fall within the range of simulated data, indicating that\nthe model accurately reproduces the overall diabetes prevalence.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHistogram shows the posterior distribution of the population proportion of diabetes.\nx-axis: proportion of diabetics (1s)\ny-axis: frequency of posterior draws\n\nHighest bar ≈ 0.11 (11%), symmetric and centered around ~0.11\n\n95% credible interval: approximately 9%–13% prevalence"
   },
   {
     "objectID": "slides.html#prior-vs-posterior",
@@ -2084,5 +2084,19 @@
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Key Findings",
     "text": "Key Findings\n\nAge and BMI are the strongest predictors of doctor-diagnosed diabetes across both survey-weighted and Bayesian models.\nBayesian modeling is stable and well-calibrated, avoiding quasi-separation and producing uncertainty estimates similar to the classical model.\nPosterior predictive checks support good fit, accurately reproducing diabetes prevalence and individual-level outcomes.\nConsistent population-level and individual predictions show that the model supports both broad public health insights and personalized risk assessment."
+  },
+  {
+    "objectID": "slides.html#posterior-distribution",
+    "href": "slides.html#posterior-distribution",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Posterior Distribution",
+    "text": "Posterior Distribution\n\nPosterior DrawsPlotInterpretation\n\n\nPosterior draws = 4000 samples (4 chains × 1000 iterations) generated via MCMC, producing the full posterior distribution of the predictors.\n\nRepresents the conditional distribution of parameters given the data\n\nEncodes the entire probability distribution, not just point estimates\n\nMeans and credible intervals summarize this distribution but do not replace it\n\nPosterior shape reflects the influence of the prior (prior subjectivity)\n\nSample size effect: as sample size increases, the prior has less influence on the posterior\n\n\n\n\n\n\n\n\n\n\n\nY-axis: density (frequency of predicted probabilities)\n\nX-axis: predicted probability of diabetes (0–1)\nMost individuals have low predicted probabilities (cluster near 0),\nwith a smaller secondary peak near 1.\n\nThe model closely reproduces the observed data and accurately captures\nthe distribution of diabetes outcomes."
+  },
+  {
+    "objectID": "slides.html#compare-prior-and-posterior-distribution-age-and-bmi",
+    "href": "slides.html#compare-prior-and-posterior-distribution-age-and-bmi",
+    "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
+    "section": "Compare Prior and Posterior Distribution (Age and BMI)",
+    "text": "Compare Prior and Posterior Distribution (Age and BMI)\n\nPlotInterpretation\n\n\n\n\n\n\n\n\n\nPrior and posterior distributions for the coefficient estimates of\nAge (per 1 SD) and BMI (per 1 SD):\n\nPrior distribution: wide spread (high variance), indicating high initial uncertainty\n\nPosterior distribution: narrower and taller\n\nData substantially updated the initial beliefs, pulling the estimates into a more precise range"
   }
 ]

@@ -717,8 +717,8 @@ logistic models used for <strong>binary</strong> variables <span class="citation
 </div>
 </div>
 </section>
-<section id="posterior-predictive-distribution" class="slide level2">
-<h2>Posterior Predictive Distribution</h2>
+<section id="posterior-distribution" class="slide level2">
+<h2>Posterior Distribution</h2>
 <div class="panel-tabset">
 <ul id="tabset-10" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-10-1">Posterior Draws</a></li><li><a href="#tabset-10-2">Plot</a></li><li><a href="#tabset-10-3">Interpretation</a></li></ul>
 <div class="tab-content">
@@ -791,8 +791,8 @@ the distribution of diabetes outcomes.</p>
 </div>
 </div>
 </section>
-<section id="compare-prior-and-posterior-predictive-distribution-age-and-bmi" class="slide level2">
-<h2>Compare Prior and Posterior Predictive Distribution (Age and BMI)</h2>
+<section id="compare-prior-and-posterior-distribution-age-and-bmi" class="slide level2">
+<h2>Compare Prior and Posterior Distribution (Age and BMI)</h2>
 <div class="panel-tabset">
 <ul id="tabset-12" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-12-1">Plot</a></li><li><a href="#tabset-12-2">Interpretation</a></li></ul>
 <div class="tab-content">
@@ -820,7 +820,7 @@ the distribution of diabetes outcomes.</p>
 <section id="posterior-predictive-checks" class="slide level2">
 <h2>Posterior Predictive Checks</h2>
 <div class="panel-tabset">
-<ul id="tabset-13" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-13-1">Proportion of Diabetes</a></li><li><a href="#tabset-13-2">Posterior Distribution of Diabetes</a></li><li><a href="#tabset-13-3">Outcome Mean</a></li><li><a href="#tabset-13-4">Outcome Standard Deviation</a></li></ul>
+<ul id="tabset-13" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-13-1">Proportion of Diabetes</a></li><li><a href="#tabset-13-2">Outcome Mean</a></li><li><a href="#tabset-13-3">Outcome Standard Deviation</a></li><li><a href="#tabset-13-4">Diabetes Prevalence Compared (Model vs NHANES)</a></li></ul>
 <div class="tab-content">
 <div id="tabset-13-1">
 <p>We draw <strong>500 posterior predictive samples</strong> of outcomes for each observation<br>
@@ -838,7 +838,21 @@ the <strong>model accurately reproduces the overall diabetes prevalence</strong>
 <div id="tabset-13-2">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="figs/posterior_prevalence_hist.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
+<p><img data-src="figs/ppc_mean.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
+</figure>
+</div>
+</div>
+<div id="tabset-13-3">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/ppc_sd.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
+</figure>
+</div>
+</div>
+<div id="tabset-13-4">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/posterior_diabetes_prop.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
 </figure>
 </div>
 <p>Histogram shows the posterior distribution of the <strong>population proportion of diabetes</strong>.</p>
@@ -849,20 +863,6 @@ the <strong>model accurately reproduces the overall diabetes prevalence</strong>
 </li>
 <li><strong>95% credible interval:</strong> approximately <strong>9%–13%</strong> prevalence</li>
 </ul>
-</div>
-<div id="tabset-13-3">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figs/ppc_mean.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
-</figure>
-</div>
-</div>
-<div id="tabset-13-4">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figs/ppc_sd.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
-</figure>
-</div>
 </div>
 </div>
 </div>
