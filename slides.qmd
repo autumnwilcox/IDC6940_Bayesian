@@ -193,7 +193,7 @@ Data from NHANES 2013–2014 [@nhanes2013].
   (e.g., exam attendance), not on the missing value itself  
 
 ### Missingness Visualization
-![](figs/missingness.png){fig-align="center" width="70%"}
+![](figs/missingness.png){fig-align="center" width="55%"}
 
 :::
 
@@ -214,7 +214,7 @@ Data from NHANES 2013–2014 [@nhanes2013].
 - **Race:** several groups show higher odds vs NH White  
 
 ### Survey-Weighted Coefficient Plot
-![](figs/svy_or.png){fig-align="center" width="70%"}
+![](figs/svy_or.png){fig-align="center" width="55%"}
 
 :::
 
@@ -377,15 +377,15 @@ Good convergence is indicated by:
 
 ### Trace Plots (Stable Posteriors)
 
-![](figs/mcmc_trace.png){fig-align="center" width="70%"}
+![](figs/mcmc_trace.png){fig-align="center" width="55%"}
 
 ### Density Plot
 
-![](figs/prior_only_density.png){fig-align="center" width="70%"}
+![](figs/prior_only_density.png){fig-align="center" width="55%"}
 
 ### Autocorrelation Plot
 
-![](figs/acf_age_bmi.png){fig-align="center" width="70%"}
+![](figs/acf_age_bmi.png){fig-align="center" width="55%"}
 
 :::
 
@@ -407,7 +407,8 @@ Posterior draws = **4000 samples** (4 chains × 1000 iterations) generated via M
 
 ### Plot
 
-![](figs/ppc_density.png){fig-align="center" width="70%"}
+![](figs/ppc_density.png){fig-align="center" width="55%"}
+
 ### Interpretation
 
 * **Y-axis:** density (frequency of predicted probabilities)  
@@ -433,7 +434,7 @@ the distribution of diabetes outcomes.
 
 ### Posterior Distribution
 
-![](figs/mcmc_areas.png){fig-align="center" width="70%"}
+![](figs/mcmc_areas.png){fig-align="center" width="55%"}
 
 ### Interpretation
 
@@ -481,7 +482,7 @@ the distribution of diabetes outcomes.
 We draw **500 posterior predictive samples** of outcomes for each observation  
 and calculate the proportion of simulated outcomes where **Diabetes = 1**.
 
-![](figs/ppc_bars.png){fig-align="center" width="70%"}
+![](figs/ppc_bars.png){fig-align="center" width="55%"}
 
 **Figure:** Bar plot comparing the counts/frequencies of each category  
 (0 vs 1) in the observed data (`y`) and the posterior predictive samples (`y-rep`).
@@ -491,7 +492,7 @@ the **model accurately reproduces the overall diabetes prevalence**.
 
 ### Posterior Distribution of Diabetes
 
-![](figs/posterior_prevalence_hist.png){fig-align="center" width="70%"}
+![](figs/posterior_prevalence_hist.png){fig-align="center" width="55%"}
 
 Histogram shows the posterior distribution of the **population proportion of diabetes**.
 
@@ -503,11 +504,11 @@ Histogram shows the posterior distribution of the **population proportion of dia
 
 ### Outcome Mean
 
-![](figs/ppc_mean.png){fig-align="center" width="70%"}
+![](figs/ppc_mean.png){fig-align="center" width="55%"}
 
 ### Outcome Standard Deviation 
 
-![](figs/ppc_sd.png){fig-align="center" width="70%"}
+![](figs/ppc_sd.png){fig-align="center" width="55%"}
 
 :::
 
@@ -515,9 +516,13 @@ Histogram shows the posterior distribution of the **population proportion of dia
 
 ## Bayesian vs Survey-Weighted NHANES (Diabetes Prevalence)
 
-![](figs/pop_vs_post_prev.png){fig-align="center" width="70%"}
+::: panel-tabset
+
+### Plot
 
 ![](figs/pop_vs_post_prev.png){fig-align="center" width="70%"}
+
+### Interpretation
 
 * **Model mean diabetes prevalence:** 10.95%  
   **95% CI:** 8.5%–12.8%  
@@ -527,6 +532,8 @@ The **model mean is slightly higher**, but its credible interval overlaps with t
 
 NHANES lies near the **lower end of the posterior distribution**, but still well within a plausible range—showing that the **Bayesian model aligns closely with the population estimate**.
 
+:::
+
 ---
 
 ## Observed vs Predicted in Individuals
@@ -535,7 +542,7 @@ NHANES lies near the **lower end of the posterior distribution**, but still well
 
 ### Average Diabetes
 
-![](figs/ppc_scatter_avg.png){fig-align="center" width="70%"}
+![](figs/ppc_scatter_avg.png){fig-align="center" width="55%"}
 
 * Each point = one individual  
 * **x-axis:** observed value (0 or 1)  
@@ -567,7 +574,7 @@ svy_tbl   <- svy_or   %>% mutate(Model = "Survey-weighted MLE")
 bayes_tbl <- bayes_or %>% mutate(Model = "Bayesian")
 ```
 
-![](figs/odds_ratio_comparison.png){fig-align="center" width="70%"}
+![](figs/odds_ratio_comparison.png){fig-align="center" width="55%"}
 
 * Both models consistently identified **Age** and **BMI** as strong predictors of diabetes.
 
@@ -591,7 +598,7 @@ bayes_tbl <- bayes_or %>% mutate(Model = "Bayesian")
 
 ### Plot
 
-![](figs/mcmc_pairs.png){fig-align="center" width="70%"}
+![](figs/mcmc_pairs.png){fig-align="center" width="55%"}
 
 ### Interpretation
 
@@ -607,15 +614,19 @@ bayes_tbl <- bayes_or %>% mutate(Model = "Bayesian")
 
 ## R Square
 
-![](figs/bayes_R2.png){fig-align="center" width="70%"}
+::: panel-tabset
 
-**Interpretation**
+### Table
+
+![](figs/bayes_R2.png){fig-align="center" width="90%"}
 
 ### Interpretation
 
 * Approximately **13%** of the variability in diabetes status is explained, with credible uncertainty bounds indicating **modest explanatory power**.  
 * Predictors (Age, BMI, Sex, Race, etc.) capture **some—but not all—factors** influencing diabetes risk.  
 * Additional influences such as **genetics, lifestyle, and environmental factors** likely play substantial roles.
+
+:::
 
 ---
 
@@ -691,7 +702,7 @@ posterior draws clustering near **1.0**.
 
 This illustrates how the same Bayesian model can produce **very different risk estimates** for individuals with different demographic and clinical characteristics, highlighting the importance of **personalized risk assessment**.
 
-![](figs/posterior_pred_dist.png){fig-align="center" width="70%"}
+![](figs/posterior_pred_dist.png){fig-align="center" width="55%"}
 
 **X-axis:** predicted probability of diabetes (Outcome = 1)  
 **Y-axis:** density of predicted probabilities  
@@ -717,7 +728,7 @@ Predicting the BMI value for a representative individual
 
 **logit(Diabetesᵢ) = β₀ + β_Ageᵢ + β_BMIᵢ + β_Sexᵢ + β_Raceᵢ**
 
-![](figs/inverse_prediction_bmi.png){fig-align="center" width="70%"}
+![](figs/inverse_prediction_bmi.png){fig-align="center" width="55%"}
 
 **X-axis:** BMI values (centered or raw, depending on the model)  
 **Y-axis:** predicted probability of diabetes for a representative individual  

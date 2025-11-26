@@ -683,7 +683,7 @@
     "href": "slides.html#posterior-predictive-distribution",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Posterior Predictive Distribution",
-    "text": "Posterior Predictive Distribution\n\nPosterior DrawsPlot\n\n\nPosterior draws = 4000 samples (4 chains × 1000 iterations) generated via MCMC, producing the full posterior distribution of the predictors.\n\nRepresents the conditional distribution of parameters given the data\n\nEncodes the entire probability distribution, not just point estimates\n\nMeans and credible intervals summarize this distribution but do not replace it\n\nPosterior shape reflects the influence of the prior (prior subjectivity)\n\nSample size effect: as sample size increases, the prior has less influence on the posterior\n\n\n\n ### Interpretation\n\nY-axis: density (frequency of predicted probabilities)\n\nX-axis: predicted probability of diabetes (0–1)\nMost individuals have low predicted probabilities (cluster near 0),\nwith a smaller secondary peak near 1.\n\nThe model closely reproduces the observed data and accurately captures\nthe distribution of diabetes outcomes."
+    "text": "Posterior Predictive Distribution\n\nPosterior DrawsPlotInterpretation\n\n\nPosterior draws = 4000 samples (4 chains × 1000 iterations) generated via MCMC, producing the full posterior distribution of the predictors.\n\nRepresents the conditional distribution of parameters given the data\n\nEncodes the entire probability distribution, not just point estimates\n\nMeans and credible intervals summarize this distribution but do not replace it\n\nPosterior shape reflects the influence of the prior (prior subjectivity)\n\nSample size effect: as sample size increases, the prior has less influence on the posterior\n\n\n\n\n\n\n\n\n\n\n\nY-axis: density (frequency of predicted probabilities)\n\nX-axis: predicted probability of diabetes (0–1)\nMost individuals have low predicted probabilities (cluster near 0),\nwith a smaller secondary peak near 1.\n\nThe model closely reproduces the observed data and accurately captures\nthe distribution of diabetes outcomes."
   },
   {
     "objectID": "slides.html#assumptions-for-bayesian-logistic-regression",
@@ -1712,7 +1712,7 @@
     "href": "slides.html#r-square",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "R Square",
-    "text": "R Square\n\nInterpretation\nInterpretation\n\nApproximately 13% of the variability in diabetes status is explained, with credible uncertainty bounds indicating modest explanatory power.\n\nPredictors (Age, BMI, Sex, Race, etc.) capture some—but not all—factors influencing diabetes risk.\n\nAdditional influences such as genetics, lifestyle, and environmental factors likely play substantial roles."
+    "text": "R Square\n\nTableInterpretation\n\n\n\n\n\n\n\n\n\n\nApproximately 13% of the variability in diabetes status is explained, with credible uncertainty bounds indicating modest explanatory power.\n\nPredictors (Age, BMI, Sex, Race, etc.) capture some—but not all—factors influencing diabetes risk.\n\nAdditional influences such as genetics, lifestyle, and environmental factors likely play substantial roles."
   },
   {
     "objectID": "slides.html#translational-research",
@@ -2048,7 +2048,7 @@
     "href": "slides.html#bayesian-vs-survey-weighted-nhanes-diabetes-prevalence",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Bayesian vs Survey-Weighted NHANES (Diabetes Prevalence)",
-    "text": "Bayesian vs Survey-Weighted NHANES (Diabetes Prevalence)\n\n\n\n\n\n\n\n\n\n\n\nModel mean diabetes prevalence: 10.95%\n95% CI: 8.5%–12.8%\n\nNHANES diabetes prevalence: 8.9% (SE = 0.0048)\n\nThe model mean is slightly higher, but its credible interval overlaps with the NHANES estimate, indicating good calibration.\nNHANES lies near the lower end of the posterior distribution, but still well within a plausible range—showing that the Bayesian model aligns closely with the population estimate."
+    "text": "Bayesian vs Survey-Weighted NHANES (Diabetes Prevalence)\n\nPlotInterpretation\n\n\n\n\n\n\n\n\n\n\nModel mean diabetes prevalence: 10.95%\n95% CI: 8.5%–12.8%\n\nNHANES diabetes prevalence: 8.9% (SE = 0.0048)\n\nThe model mean is slightly higher, but its credible interval overlaps with the NHANES estimate, indicating good calibration.\nNHANES lies near the lower end of the posterior distribution, but still well within a plausible range—showing that the Bayesian model aligns closely with the population estimate."
   },
   {
     "objectID": "slides.html#observed-vs-predicted-in-individuals",
