@@ -985,16 +985,25 @@ the <strong>model accurately reproduces the overall diabetes prevalence</strong>
 <ul id="tabset-17" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-17-1">Internal Validation — Individual Participant</a></li><li><a href="#tabset-17-2">Participant Data</a></li><li><a href="#tabset-17-3">External Validation — Representative</a></li></ul>
 <div class="tab-content">
 <div id="tabset-17-1">
-<p>This example evaluates the posterior predictive distribution for a<br>
-<strong>real participant from the dataset</strong> (“Participant 1”) who has<br>
-<strong>lower-risk characteristics</strong>.</p>
+<p><strong>Threshold:</strong> &gt;30%<br>
+<strong>BMI is modifiable</strong> — interventions lower risk (sex &amp; race held constant).<br>
+Used <strong>posterior_linpred(transform = TRUE)</strong> to generate the posterior predictive distribution.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/internal_validation_participant_data.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/internal_validation_post_pred.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
+</figure>
+</div>
 <ul>
 <li><strong>Median predicted probability:</strong> ~0.25<br>
 </li>
 <li><strong>95% Credible Interval:</strong> ~0.20–0.31</li>
 </ul>
-<p>This demonstrates how the model estimates personalized diabetes risk<br>
-for an individual with <strong>moderate demographic and clinical risk factors</strong>.</p>
+<p>This corresponds to approximately a <strong>1 in 4 chance</strong> of diabetes.</p>
 </div>
 <div id="tabset-17-2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a aria-hidden="true" tabindex="-1"></a>participant1_data <span class="ot">&lt;-</span> adult[<span class="dv">1</span>, ]</span>
@@ -1035,7 +1044,7 @@ posterior draws clustering near <strong>1.0</strong>.</p>
 <p>This illustrates how the same Bayesian model can produce <strong>very different risk estimates</strong> for individuals with different demographic and clinical characteristics, highlighting the importance of <strong>personalized risk assessment</strong>.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="figs/posterior_pred_dist.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
+<p><img data-src="figs/external_validation_post_pred.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
 </figure>
 </div>
 <p><strong>X-axis:</strong> predicted probability of diabetes (Outcome = 1)<br>

@@ -673,7 +673,7 @@ posterior draws clustering near **1.0**.
 
 This illustrates how the same Bayesian model can produce **very different risk estimates** for individuals with different demographic and clinical characteristics, highlighting the importance of **personalized risk assessment**.
 
-![](figs/posterior_pred_dist.png){fig-align="center" width="55%"}
+![](figs/external_validation_post_pred.png){fig-align="center" width="55%"}
 
 **X-axis:** predicted probability of diabetes (Outcome = 1)\
 **Y-axis:** density of predicted probabilities
