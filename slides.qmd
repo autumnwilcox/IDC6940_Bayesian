@@ -36,7 +36,7 @@ editor: visual
 - Classical logistic regression struggles with:
   - missing data  
   - quasi-separation  
-  - small effective sample sizes
+  - small effective sample sizes (ESS)
 - Bayesian logistic regression helps by:
   - stabilizing estimates  
   - incorporating prior information  
@@ -67,7 +67,7 @@ editor: visual
 - Depends on **large-sample assumptions** that may not hold in subgroups  
 
 ### Missing Data
-- Missing BMI/diabetes values reduce effective sample size  
+- Missing BMI/diabetes values reduce effective sample size (ESS) 
 - Complete-case analysis can introduce **bias** and increase **variance**  
 
 ### Quasi-Separation
@@ -150,7 +150,7 @@ Data from NHANES 2013–2014 [@nhanes2013].
 ### Weighted Sample Characteristics
 - Weighted mean age: **~47.5 yrs**  
 - Weighted diabetes prevalence: **~8.9%**  
-- Design effect & effective sample size computed  
+- Design effect & effective sample size (ESS) computed  
 
 ### Variables & Coding
 - **age_c** — standardized age  
@@ -252,7 +252,7 @@ Model fitted in **R** using **brms** (Stan backend), with **2000 iterations**.
 
 **Bayesian Regression Formula**
 
-***diabetes_dx | weights(wt_norm) ~ age_c + bmi_c + sex + race***
+diabetes_dx | weights(wt_norm) ~ age_c + bmi_c + sex + race
 
 **Model settings:**  
 * Dataset: **pooled imputed dataset 1**  
@@ -266,12 +266,12 @@ Model fitted in **R** using **brms** (Stan backend), with **2000 iterations**.
 
 ### Prior
 
-* **Intercept prior: student_t(3, 0, 10)** (@vandeschot2013)
+* **Intercept prior: student_t(3, 0, 10)** [@vandeschoot2013]
   * **df = 3:** heavy-tailed → allows occasional extreme values  
   * **location = 0:** centered prior expectation  
   * **scale = 10:** wider distribution (more prior uncertainty)  
 
-* **Coefficient prior: Normal(0, 2.5)** (Gelman, 2008)
+* **Coefficient prior: Normal(0, 2.5)** [@gelman2008]
   * Weakly informative  
   * Mean = 0, SD = 2.5  
   * Regularizes extreme estimates and stabilizes coefficients under sparse data or quasi-separation  
@@ -296,7 +296,7 @@ bayes_fit <- brm(
 )
 ```
 
-* `brm()` from the {brms} package fits the Bayesian model using Stan.
+* `brm()` from the `brms` package fits the Bayesian model using Stan.
 
 :::
 
@@ -344,7 +344,7 @@ It provides:
 * **Posterior mean** and **standard deviation (SD)**
 * **Monte Carlo standard error (MCSE)**
 * **Quantiles:** 2.5%, 25%, 50%, 75%, 97.5%
-* **Effective sample sizes:** Bulk_ESS and Tail_ESS
+* **Effective sample sizes (ESS):** Bulk_ESS and Tail_ESS
 * **R-hat:** convergence diagnostic
 
 ### Result
@@ -372,20 +372,24 @@ Good convergence is indicated by:
 - **No drift** across iterations  
 - **Well-mixed chains** with stable posterior estimates  
 - **R-hat ≈ 1**  
-- **Effective sample size ≈ 3500**, meaning the chain contains information equivalent to ~3,500 independent samples  
+- **Effective sample size (ESS) ≈ 3500**, meaning the chain contains information equivalent to ~3,500 independent samples  
   - Reflects **good mixing**, **low autocorrelation**, and **highly reliable** posterior estimates
 
 ### Trace Plots (Stable Posteriors)
 
 ![](figs/mcmc_trace.png){fig-align="center" width="55%"}
+No upward or downward trend (no drift). Chains overlap and stay within the same band.
 
 ### Density Plot
 
 ![](figs/prior_only_density.png){fig-align="center" width="55%"}
+Stable posteriors with precise estimates and high uncertainty, narrow distributions, smooth and unimodal.
 
 ### Autocorrelation Plot
 
 ![](figs/acf_age_bmi.png){fig-align="center" width="55%"}
+- Rapid decay to zero shows. 
+- Well mixed, independent draws, no relationship between parameters.
 
 :::
 
@@ -404,29 +408,6 @@ Posterior draws = **4000 samples** (4 chains × 1000 iterations) generated via M
 * **Means** and **credible intervals** summarize this distribution but do not replace it  
 * Posterior shape reflects the **influence of the prior** (prior subjectivity)  
 * **Sample size effect:** as sample size increases, the prior has less influence on the posterior  
-
-### Plot
-
-![](figs/ppc_density.png){fig-align="center" width="55%"}
-
-### Interpretation
-
-* **Y-axis:** density (frequency of predicted probabilities)  
-* **X-axis:** predicted probability of diabetes (0–1)  
-
-* Most individuals have **low predicted probabilities** (cluster near 0),  
-  with a smaller secondary peak near 1.  
-
-The model closely reproduces the observed data and accurately captures  
-the distribution of diabetes outcomes.
-
-:::
-
----
-
-## Regression Results (Posterior Estimates and Distribution)
-
-::: panel-tabset
 
 ### Posterior Estimates
 
@@ -476,6 +457,21 @@ the distribution of diabetes outcomes.
 ## Posterior Predictive Checks
 
 ::: panel-tabset
+
+### Plot
+
+![](figs/ppc_density.png){fig-align="center" width="55%"}
+
+### Interpretation
+
+* **Y-axis:** density (frequency of predicted probabilities)  
+* **X-axis:** predicted probability of diabetes (0–1)  
+
+* Most individuals have **low predicted probabilities** (cluster near 0),  
+  with a smaller secondary peak near 1.  
+
+The model closely reproduces the observed data and accurately captures  
+the distribution of diabetes outcomes.
 
 ### Proportion of Diabetes
 
@@ -686,10 +682,10 @@ new_participant <- data.frame(
 )
 ```
 
-### External Validation — Representative High-Risk Profile
+### External Validation — Representative 
 
 In contrast to Participant 1, this example evaluates a  
-**hypothetical individual** with a **high-risk profile**:
+**hypothetical individual**:
 
 - **age_c = 40**  
 - **bmi_c = 25**  
@@ -757,6 +753,8 @@ This is an **inverse prediction**—identifying the BMI associated with a target
 
 ## Limitations
 
+<div style="font-size: 90%;">
+
 * **Cross-sectional design:** NHANES data cannot establish causality.
 * **Imputation assumptions:** MICE assumes MAR; violations (MNAR) may bias results.
 * **Residual confounding:** Lifestyle, SES, genetics, and other factors were not included.
@@ -765,23 +763,33 @@ This is an **inverse prediction**—identifying the BMI associated with a target
 * **Self-reported outcomes:** Potential recall and reporting bias.
 * **No interaction terms tested:** Effects such as age × BMI were not explored.
 
+</div>
+
 ---
 
 ## Key Findings
+
+<div style="font-size: 90%;">
 
 * **Age and BMI are the strongest predictors** of doctor-diagnosed diabetes across both survey-weighted and Bayesian models.
 * **Bayesian modeling is stable and well-calibrated**, avoiding quasi-separation and producing uncertainty estimates similar to the classical model.
 * **Posterior predictive checks support good fit**, accurately reproducing diabetes prevalence and individual-level outcomes.
 * **Consistent population-level and individual predictions** show that the model supports both broad public health insights and personalized risk assessment.
 
+</div>
+
 ---
 
 ## Conclusion
+
+<div style="font-size: 90%;">
 
 * **Bayesian logistic regression effectively models uncertainty**, producing stable estimates even under missing data and quasi-separation.
 * **MICE improved data completeness and reliability**, allowing the model to incorporate all available information.
 * **Posterior predictions provide interpretable diabetes risk probabilities**, supporting both population-level and individualized assessment.
 * **This framework is adaptable to other health outcomes** (e.g., hypertension, obesity) where uncertainty, missingness, and complex survey design are important.
+
+</div>
 
 ---
 
