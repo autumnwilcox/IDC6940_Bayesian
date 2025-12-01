@@ -617,15 +617,18 @@ bayes_tbl <- bayes_or %>% mutate(Model = "Bayesian")
 ::: panel-tabset
 ### Internal Validation — Individual Participant
 
-This example evaluates the posterior predictive distribution for a\
-**real participant from the dataset** (“Participant 1”) who has\
-**lower-risk characteristics**.
+**Threshold:** >30%  
+**BMI is modifiable** — interventions lower risk (sex & race held constant).  
+Used **posterior_linpred(transform = TRUE)** to generate the posterior predictive distribution.
 
--   **Median predicted probability:** \~0.25\
--   **95% Credible Interval:** \~0.20–0.31
+![](figs/internal_validation_participant_data.png){fig-align="center" width="55%"}
 
-This demonstrates how the model estimates personalized diabetes risk\
-for an individual with **moderate demographic and clinical risk factors**.
+![](figs/internal_validation_post_pred.png){fig-align="center" width="55%"}
+
+- **Median predicted probability:** ~0.25  
+- **95% Credible Interval:** ~0.20–0.31  
+
+This corresponds to approximately a **1 in 4 chance** of diabetes.
 
 ### Participant Data
 
