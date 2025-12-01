@@ -360,7 +360,7 @@ It provides:
 -   **Effective sample sizes (ESS):** Bulk_ESS and Tail_ESS
 -   **R-hat:** convergence diagnostic
 
-### Result
+### Posterior Estimates
 
 ![](figs/bayes_fit_summary.png){fig-align="center" width="70%"}
 
