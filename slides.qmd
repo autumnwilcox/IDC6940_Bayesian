@@ -166,6 +166,7 @@ editor: visual
 -   **bmi_c** — standardized BMI\
 -   **sex** — Male / Female\
 -   **race** — 5 categories (NH White reference)
+-   **DIQ010** — binary diabetes indicator (0 = No, 1 = Yes)
 
 ### Survey Design Variables
 
