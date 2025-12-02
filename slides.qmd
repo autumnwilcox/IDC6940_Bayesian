@@ -118,7 +118,7 @@ editor: visual
 
 ### Model Evaluation & Diagnostics
 
--   Sampling via **Stan’s NUTS algorithm** [@stan2020]\
+-   Sampling via **Stan’s NUTS algorithm** [@hoffman2014nuts]\
 -   Convergence checks: R-hat ≈ 1, ESS values, trace plots, autocorrelation\
 -   Posterior predictive checks to assess model fit
 
@@ -141,7 +141,7 @@ editor: visual
 -   DEMO_H — demographics\
 -   BMX_H — BMI & anthropometrics\
 -   DIQ_H — diabetes questionnaire\
-    Data from NHANES 2013–2014 [@nhanes2013].
+    Data from NHANES 2013–2014 [@nchs2014].
 
 ### Merge Rules
 
@@ -384,15 +384,23 @@ Good convergence is indicated by:
 
 ### Trace Plots (Stable Posteriors)
 
-![](figs/mcmc_trace.png){fig-align="center" width="55%"} No upward or downward trend (no drift). Chains overlap and stay within the same band.
+![](figs/mcmc_trace.png){fig-align="center" width="55%"} 
+
+No upward or downward trend (no drift). Chains overlap and stay within the same band.
 
 ### Density Plot
 
-![](figs/prior_only_density.png){fig-align="center" width="55%"} Stable posteriors with precise estimates and high uncertainty, narrow distributions, smooth and unimodal.
+![](figs/prior_only_density.png){fig-align="center" width="55%"} 
+
+Stable posteriors with precise estimates and high uncertainty, narrow distributions, smooth and unimodal.
 
 ### Autocorrelation Plot
 
-![](figs/acf_age_bmi.png){fig-align="center" width="55%"} - Rapid decay to zero shows. - Well mixed, independent draws, no relationship between parameters.
+![](figs/acf_age_bmi.png){fig-align="center" width="55%"} 
+
+-   Rapid decay to zero shows. 
+-   Well mixed, independent draws, no relationship between parameters.
+
 :::
 
 ------------------------------------------------------------------------
@@ -527,7 +535,7 @@ NHANES lies near the **lower end of the posterior distribution**, but still well
 
 **Average Diabetes**
 
-![](figs/ppc_scatter_avg.png){fig-align="center" width="55%"}
+![](figs/ppc_scatter_avg.png){fig-align="center"}
 
 -   Each point = one individual\
 -   **x-axis:** observed value (0 or 1)\

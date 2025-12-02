@@ -356,7 +356,7 @@ December 4, 2025</p><p></p>
 </div>
 <div id="tabset-3-5">
 <ul>
-<li>Sampling via <strong>Stan’s NUTS algorithm</strong> <span class="citation" data-cites="stan2020">(<a href="#/references" role="doc-biblioref" onclick=""><strong>stan2020?</strong></a>)</span><br>
+<li>Sampling via <strong>Stan’s NUTS algorithm</strong> <span class="citation" data-cites="hoffman2014nuts">(<a href="#/references" role="doc-biblioref" onclick="">Hoffman and Gelman 2014</a>)</span><br>
 </li>
 <li>Convergence checks: R-hat ≈ 1, ESS values, trace plots, autocorrelation<br>
 </li>
@@ -391,7 +391,7 @@ December 4, 2025</p><p></p>
 <li>BMX_H — BMI &amp; anthropometrics<br>
 </li>
 <li>DIQ_H — diabetes questionnaire<br>
-Data from NHANES 2013–2014 <span class="citation" data-cites="nhanes2013">(<a href="#/references" role="doc-biblioref" onclick=""><strong>nhanes2013?</strong></a>)</span>.</li>
+Data from NHANES 2013–2014 <span class="citation" data-cites="nchs2014">(<a href="#/references" role="doc-biblioref" onclick="">National Center for Health Statistics (NCHS) 2014</a>)</span>.</li>
 </ul>
 </div>
 <div id="tabset-4-2">
@@ -693,13 +693,31 @@ logistic models used for <strong>binary</strong> variables <span class="citation
 </ul>
 </div>
 <div id="tabset-9-2">
-<p><img data-src="figs/mcmc_trace.png" class="quarto-figure quarto-figure-center" style="width:55.0%"> No upward or downward trend (no drift). Chains overlap and stay within the same band.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/mcmc_trace.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
+</figure>
+</div>
+<p>No upward or downward trend (no drift). Chains overlap and stay within the same band.</p>
 </div>
 <div id="tabset-9-3">
-<p><img data-src="figs/prior_only_density.png" class="quarto-figure quarto-figure-center" style="width:55.0%"> Stable posteriors with precise estimates and high uncertainty, narrow distributions, smooth and unimodal.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/prior_only_density.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
+</figure>
+</div>
+<p>Stable posteriors with precise estimates and high uncertainty, narrow distributions, smooth and unimodal.</p>
 </div>
 <div id="tabset-9-4">
-<p><img data-src="figs/acf_age_bmi.png" class="quarto-figure quarto-figure-center" style="width:55.0%"> - Rapid decay to zero shows. - Well mixed, independent draws, no relationship between parameters.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figs/acf_age_bmi.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
+</figure>
+</div>
+<ul>
+<li>Rapid decay to zero shows.</li>
+<li>Well mixed, independent draws, no relationship between parameters.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -868,7 +886,7 @@ the <strong>model accurately reproduces the overall diabetes prevalence</strong>
 <h2>Observed vs Predicted in Individuals</h2>
 <p><strong>Average Diabetes</strong></p>
 
-<img data-src="figs/ppc_scatter_avg.png" class="quarto-figure quarto-figure-center r-stretch" style="width:55.0%"><ul>
+<img data-src="figs/ppc_scatter_avg.png" class="quarto-figure quarto-figure-center r-stretch"><ul>
 <li>Each point = one individual<br>
 </li>
 <li><strong>x-axis:</strong> observed value (0 or 1)<br>
@@ -1133,6 +1151,12 @@ Buuren, Stef van, and Karin Groothuis-Oudshoorn. 2011. <span>“Mice: Multivaria
 </div>
 <div id="ref-gelman2008" class="csl-entry" role="listitem">
 Gelman, A., A. Jakulin, M. G. Pittau, and Y. S. Su. 2008. <span>“A Weakly Informative Default Prior Distribution for Logistic and Other Regression Models.”</span> <em>Annals of Applied Statistics</em> 2 (4): 1360–83. <a href="https://doi.org/10.1214/08-AOAS191">https://doi.org/10.1214/08-AOAS191</a>.
+</div>
+<div id="ref-hoffman2014nuts" class="csl-entry" role="listitem">
+Hoffman, M. D., and A. Gelman. 2014. <span>“The No-u-Turn Sampler: Adaptively Setting Path Lengths in Hamiltonian Monte Carlo.”</span> <em>Journal of Machine Learning Research</em> 15 (1): 1593–623. <a href="https://www.jmlr.org/papers/volume15/hoffman14a/hoffman14a.pdf">https://www.jmlr.org/papers/volume15/hoffman14a/hoffman14a.pdf</a>.
+</div>
+<div id="ref-nchs2014" class="csl-entry" role="listitem">
+National Center for Health Statistics (NCHS). 2014. <span>“National Health and Nutrition Examination Survey (NHANES) 2013–2014 Data Documentation, Codebook, and Frequencies.”</span> U.S. Department of Health; Human Services, Centers for Disease Control; Prevention. <a href="https://wwwn.cdc.gov/nchs/nhanes/continuousnhanes/overview.aspx?BeginYear=2013">https://wwwn.cdc.gov/nchs/nhanes/continuousnhanes/overview.aspx?BeginYear=2013</a>.
 </div>
 <div id="ref-vandeschoot2013" class="csl-entry" role="listitem">
 Schoot, Rens van de, David Kaplan, Jaap Denissen, Jens Asendorpf, Franz Neyer, and Marcel van Aken. 2013. <span>“A Gentle Introduction to Bayesian Analysis: Applications to Developmental Research.”</span> <em>European Journal of Developmental Psychology</em> 10 (6): 723–49. <a href="https://doi.org/10.1080/17405629.2013.803373">https://doi.org/10.1080/17405629.2013.803373</a>.
