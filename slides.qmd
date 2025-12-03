@@ -365,6 +365,10 @@ It provides:
 
 ![](figs/bayes_fit_summary.png){fig-align="center" width="70%"}
 
+-   All four chains finished successfully.
+-   Mean chain execution time: 11.0 seconds.
+-   Total execution time: 44.5 seconds.
+
 :::
 
 ------------------------------------------------------------------------
