@@ -627,7 +627,7 @@ logistic models used for <strong>binary</strong> variables <span class="citation
 <div id="tabset-8-1">
 <p>MCMC convergence occurs when information from the <strong>prior</strong> and <strong>likelihood</strong> has been fully combined, and the sampler is drawing valid samples from the <strong>posterior distribution</strong>.</p>
 <ul>
-<li><strong>Gibbs sampler:</strong> an MCMC algorithm that generates a sequence of random parameter vectors.</li>
+<li><strong>NUTS (No-U-Turn Sampler):</strong> Stan’s Hamiltonian Monte Carlo algorithm that automatically adapts step size and trajectory length. <strong>It uses gradient information to make larger, informed moves</strong>, improving efficiency and reducing random walk behavior.</li>
 <li><strong>Burn-in period:</strong> the <strong>first 500–1,000 iterations</strong>, which are not representative of the posterior and are discarded.</li>
 <li>After burn-in, the chain reaches <strong>stationarity</strong>.</li>
 </ul>
@@ -668,6 +668,11 @@ logistic models used for <strong>binary</strong> variables <span class="citation
 <p><img data-src="figs/bayes_fit_summary.png" class="quarto-figure quarto-figure-center" style="width:70.0%"></p>
 </figure>
 </div>
+<ul>
+<li>All four chains finished successfully.</li>
+<li><strong>Mean chain execution time:</strong> 11.0 seconds.</li>
+<li><strong>Total execution time:</strong> 44.5 seconds.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -675,7 +680,7 @@ logistic models used for <strong>binary</strong> variables <span class="citation
 <section id="model-diagnostics" class="slide level2">
 <h2>Model Diagnostics</h2>
 <div class="panel-tabset">
-<ul id="tabset-9" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-9-1">MCMC Convergence</a></li><li><a href="#tabset-9-2">Trace Plots (Stable Posteriors)</a></li><li><a href="#tabset-9-3">Density Plot</a></li><li><a href="#tabset-9-4">Autocorrelation Plot</a></li></ul>
+<ul id="tabset-9" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-9-1">MCMC Convergence</a></li><li><a href="#tabset-9-2">Trace &amp; Density Plots</a></li><li><a href="#tabset-9-3">Autocorrelation Plot</a></li></ul>
 <div class="tab-content">
 <div id="tabset-9-1">
 <p>Good convergence is indicated by:</p>
@@ -695,20 +700,15 @@ logistic models used for <strong>binary</strong> variables <span class="citation
 <div id="tabset-9-2">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="figs/mcmc_trace.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
+<p><img data-src="figs/mcmc_density_trace.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
 </figure>
 </div>
-<p>No upward or downward trend (no drift). Chains overlap and stay within the same band.</p>
+<ul>
+<li><strong>Trace Plots:</strong> No upward or downward trend (no drift). Chains overlap and stay within the same band.</li>
+<li><strong>Density Plots:</strong> Stable posteriors with precise estimates and high uncertainty, narrow distributions, smooth and unimodal.</li>
+</ul>
 </div>
 <div id="tabset-9-3">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figs/prior_only_density.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
-</figure>
-</div>
-<p>Stable posteriors with precise estimates and high uncertainty, narrow distributions, smooth and unimodal.</p>
-</div>
-<div id="tabset-9-4">
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><img data-src="figs/acf_age_bmi.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
@@ -751,13 +751,18 @@ logistic models used for <strong>binary</strong> variables <span class="citation
 <div id="tabset-10-3">
 <p><strong>Posterior Coefficients</strong></p>
 <ul>
-<li><strong>Age (per 1 SD):</strong> strong positive effect (≈ +1.1, 80% CrI ≈ 0.9–1.3)</li>
-<li><strong>BMI (per 1 SD):</strong> positive association (≈ +0.6, 80% CrI ≈ 0.45–0.75)</li>
-<li><strong>Female:</strong> slightly protective (≈ –0.2, CrI spans slightly below zero)</li>
-<li><strong>Mexican American:</strong> small positive effect (≈ +0.25, wide CrI)</li>
-<li><strong>Other Hispanic:</strong> moderate positive effect (≈ +0.35, wide CrI)</li>
-<li><strong>Non-Hispanic Black:</strong> clear positive effect (≈ +0.75, CrI ≈ 0.6–0.9)</li>
-<li><strong>Other/Multi:</strong> small positive effect (≈ +0.3, wide CrI)</li>
+<li><p><strong>Age (per 1 SD):</strong> strong positive effect (≈ +1.1, 80% CrI ≈ 0.9–1.3)</p></li>
+<li><p><strong>BMI (per 1 SD):</strong> positive association (≈ +0.6, 80% CrI ≈ 0.45–0.75)</p></li>
+<li><p><strong>Female:</strong><br>
+<strong>b = –0.66 (SD = 0.10, 95% CrI: –0.86 to –0.47)</strong> → protective effect</p></li>
+<li><p><strong>Mexican American:</strong><br>
+<strong>b = 0.69 (SD = 0.17, 95% CrI: 0.34 to 1.03)</strong> → increased risk</p></li>
+<li><p><strong>Other Hispanic:</strong><br>
+<strong>b = 0.43 (SD = 0.25, 95% CrI: –0.07 to 0.89)</strong> → uncertain/slightly positive</p></li>
+<li><p><strong>Non-Hispanic Black:</strong><br>
+<strong>b = 0.53 (SD = 0.15, 95% CrI: 0.23 to 0.83)</strong> → clear positive effect</p></li>
+<li><p><strong>Other / Multiracial:</strong><br>
+<strong>b = 0.81 (SD = 0.19, 95% CrI: 0.45 to 1.18)</strong> → increased risk</p></li>
 </ul>
 </div>
 </div>
