@@ -30,6 +30,8 @@ editor: visual
 ::: panel-tabset
 ### Introduction
 
+::: {style="font-size: 90%;"}
+
 -   Diabetes is a major U.S. public health concern.
 -   Key risk factors: **age**, **BMI**, **sex**, **race/ethnicity**.
 -   Classical logistic regression struggles with:
@@ -42,6 +44,8 @@ editor: visual
     -   quantifying full uncertainty
 -   Commonly applied in diagnostic modeling and NHANES research.
 
+:::
+
 ### Aim
 
 -   Predict **doctor-diagnosed diabetes** in U.S. adults (NHANES 2013–2014).
@@ -50,6 +54,7 @@ editor: visual
 -   Handle missing data using **MICE**.
 -   Compare **Bayesian** vs **survey-weighted** logistic regression.
 -   Assess **model stability**, **interpretability**, and **predictive performance**.
+
 :::
 
 ------------------------------------------------------------------------
@@ -351,6 +356,8 @@ bayes_results <- post %>%
   select(term, Estimate, Est.Error, Q2.5, Q97.5, Rhat, n_eff, OR, OR_LCL, OR_UCL)
 ```
 
+::: {style="font-size: 80%;"}
+
 -   `rstan::monitor` (RStan) computes summary statistics and evaluates MCMC convergence.
 
 It provides:
@@ -360,15 +367,15 @@ It provides:
 -   **Quantiles:** 2.5%, 25%, 50%, 75%, 97.5%
 -   **Effective sample sizes (ESS):** Bulk_ESS and Tail_ESS
 -   **R-hat:** convergence diagnostic
+:::
 
 ### Posterior Estimates
 
-![](figs/bayes_fit_summary.png){fig-align="center" width="70%"}
+![](figs/bayes_fit_summary.png){width="50%"}
 
 -   All four chains finished successfully.
 -   **Mean chain execution time:** 11.0 seconds.
 -   **Total execution time:** 44.5 seconds.
-
 :::
 
 ------------------------------------------------------------------------
@@ -386,12 +393,14 @@ Good convergence is indicated by:
 -   **Effective sample size (ESS) ≈ 3500**, meaning the chain contains information equivalent to \~3,500 independent samples
     -   Reflects **good mixing**, **low autocorrelation**, and **highly reliable** posterior estimates
 
-### Trace & Density Plots
+###  Density & Trace Plots
 
-![](figs/mcmc_density_trace.png){fig-align="center" width="55%"} 
+**Left:** Density Plots; **Right:** Trace Plots
 
--   **Trace Plots:** No upward or downward trend (no drift). Chains overlap and stay within the same band.
+![](figs/mcmc_density_trace.png){width="60%"} 
+
 -   **Density Plots:** Stable posteriors with precise estimates and high uncertainty, narrow distributions, smooth and unimodal.
+-   **Trace Plots:** No upward or downward trend (no drift). Chains overlap and stay within the same band.
 
 ### Autocorrelation Plot
 
@@ -425,23 +434,29 @@ Posterior draws = **4000 samples** (4 chains × 1000 iterations) generated via M
 
 **Posterior Coefficients**
 
-- **Age (per 1 SD):** strong positive effect (≈ +1.1, 80% CrI ≈ 0.9–1.3)
-- **BMI (per 1 SD):** positive association (≈ +0.6, 80% CrI ≈ 0.45–0.75)
+::: {style="font-size: 80%;"}
+
+- **Age (per 1 SD):** 
+  strong positive effect (≈ +1.1, 80% CrI ≈ 0.9–1.3)
+  
+- **BMI (per 1 SD):** 
+  positive association (≈ +0.6, 80% CrI ≈ 0.45–0.75)
 
 - **Female:**  
-  **b = –0.66 (SD = 0.10, 95% CrI: –0.86 to –0.47)** → protective effect
+  b = –0.66 (SD = 0.10, 95% CrI: –0.86 to –0.47) → protective effect
 
 - **Mexican American:**  
-  **b = 0.69 (SD = 0.17, 95% CrI: 0.34 to 1.03)** → increased risk
+  b = 0.69 (SD = 0.17, 95% CrI: 0.34 to 1.03) → increased risk
 
 - **Other Hispanic:**  
-  **b = 0.43 (SD = 0.25, 95% CrI: –0.07 to 0.89)** → uncertain/slightly positive
+  b = 0.43 (SD = 0.25, 95% CrI: –0.07 to 0.89) → uncertain/slightly positive
 
 - **Non-Hispanic Black:**  
-  **b = 0.53 (SD = 0.15, 95% CrI: 0.23 to 0.83)** → clear positive effect
+  b = 0.53 (SD = 0.15, 95% CrI: 0.23 to 0.83) → clear positive effect
 
 - **Other / Multiracial:**  
-  **b = 0.81 (SD = 0.19, 95% CrI: 0.45 to 1.18)** → increased risk
+  b = 0.81 (SD = 0.19, 95% CrI: 0.45 to 1.18) → increased risk
+:::
 :::
 
 ------------------------------------------------------------------------
