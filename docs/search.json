@@ -634,7 +634,7 @@
     "href": "slides.html#aim",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Aim",
-    "text": "Aim\n\nImplement Bayesian logistic regression to predict diabetes risk.\nCompare classical survey-weighted logistic regression with Bayesian logistic regression.\nApply the model to NHANES 2013–2014 adults."
+    "text": "Aim\n\nPredict doctor-diagnosed diabetes in U.S. adults (NHANES 2013–2014).\nEvaluate age, BMI, sex, and race/ethnicity as predictors.\nIncorporate NHANES complex survey design.\nHandle missing data using MICE.\nCompare Bayesian vs survey-weighted logistic regression.\nAssess model stability, interpretability, and predictive performance."
   },
   {
     "objectID": "slides.html#frequentist-methods",
@@ -2006,7 +2006,7 @@
     "href": "slides.html#introduction-aim",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Introduction & Aim",
-    "text": "Introduction & Aim\n\nIntroductionAim\n\n\n\n\nDiabetes is a major U.S. public health concern.\nKey risk factors: age, BMI, sex, race/ethnicity.\nClassical logistic regression struggles with:\n\nmissing data\nquasi-separation\nsmall effective sample sizes (ESS)\n\nBayesian logistic regression helps by:\n\nstabilizing estimates\nincorporating prior information\nquantifying full uncertainty\n\nCommonly applied in diagnostic modeling and NHANES research.\n\n\n\n\n\nPredict doctor-diagnosed diabetes in U.S. adults (NHANES 2013–2014).\nEvaluate age, BMI, sex, and race/ethnicity as predictors.\nIncorporate NHANES complex survey design.\nHandle missing data using MICE.\nCompare Bayesian vs survey-weighted logistic regression.\nAssess model stability, interpretability, and predictive performance."
+    "text": "Introduction & Aim\n\n\nDiabetes is a major U.S. public health concern.\nKey risk factors: age, BMI, sex, race/ethnicity.\n\nAim\n\nPredict doctor-diagnosed diabetes in U.S. adults (NHANES 2013–2014).\nEvaluate age, BMI, sex, and race/ethnicity as predictors.\nIncorporate NHANES complex survey design.\nHandle missing data using MICE.\nCompare Bayesian vs survey-weighted logistic regression.\nAssess model stability, interpretability, and predictive performance."
   },
   {
     "objectID": "slides.html#frequentist-limitations-motivation",

@@ -25,26 +25,7 @@ bibliography: references.bib
 editor: visual
 ---
 
-## Introduction & Aim
-
-:::: panel-tabset
-### Introduction
-
-::: {style="font-size: 90%;"}
--   Diabetes is a major U.S. public health concern.
--   Key risk factors: **age**, **BMI**, **sex**, **race/ethnicity**.
--   Classical logistic regression struggles with:
-    -   missing data
-    -   quasi-separation
-    -   small effective sample sizes (ESS)
--   Bayesian logistic regression helps by:
-    -   stabilizing estimates
-    -   incorporating prior information
-    -   quantifying full uncertainty
--   Commonly applied in diagnostic modeling and NHANES research.
-:::
-
-### Aim
+## Aim
 
 -   Predict **doctor-diagnosed diabetes** in U.S. adults (NHANES 2013–2014).
 -   Evaluate **age, BMI, sex, and race/ethnicity** as predictors.
@@ -52,7 +33,6 @@ editor: visual
 -   Handle missing data using **MICE**.
 -   Compare **Bayesian** vs **survey-weighted** logistic regression.
 -   Assess **model stability**, **interpretability**, and **predictive performance**.
-::::
 
 ------------------------------------------------------------------------
 
