@@ -2020,7 +2020,7 @@
     "href": "slides.html#study-data",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Study Data",
-    "text": "Study Data\n\nNHANES FilesAdult Cohort DefinitionWeighted Sample CharacteristicsVariables & CodingSurvey Design VariablesFinal Analytic Sample\n\n\n\nDEMO_H — demographics\nBMX_H — BMI & anthropometrics\nDIQ_H — diabetes questionnaire\nData from NHANES 2013–2014 (National Center for Health Statistics (NCHS) 2014).\nKey ID: SEQN\nFiles merged on SEQN with harmonized variable types\n\n\n\n\nAdults ≥ 20 years\nFinal analytic sample: 5,769\nOutcome: doctor-diagnosed diabetes (DIQ010)\n\n\n\n\nWeighted mean age: ~47.5 yrs\nWeighted diabetes prevalence: ~8.9%\nDesign effect & effective sample size (ESS) computed\n\n\n\n\nage_c — standardized age\nbmi_c — standardized BMI\nsex — Male / Female\nrace — 5 categories (NH White reference)\nDIQ010 — binary diabetes indicator (0 = No, 1 = Yes)\n\n\n\n\nSDMVSTRA — strata\nSDMVPSU — primary sampling units\nWTMEC2YR — exam weights\n\n\n\n\nCleaned dataset with design variables retained\nReady for:\n\ncomplete-case analysis\nMICE imputation\nBayesian modeling"
+    "text": "Study Data\n\nNHANES FilesAdult Cohort DefinitionWeighted Sample CharacteristicsVariables & CodingSurvey Design Variables\n\n\n\nDEMO_H — demographics\nBMX_H — BMI & anthropometrics\nDIQ_H — diabetes questionnaire\nData from NHANES 2013–2014 (National Center for Health Statistics (NCHS) 2014).\nKey ID: SEQN\nFiles merged on SEQN with harmonized variable types\n\n\n\n\nAdults ≥ 20 years\nFinal analytic sample: 5,769\nOutcome: doctor-diagnosed diabetes (DIQ010)\n\n\n\n\nWeighted mean age: ~47.5 yrs\nWeighted diabetes prevalence: ~8.9%\nDesign effect & effective sample size (ESS) computed\n\n\n\n\nage_c — standardized age\nbmi_c — standardized BMI\nsex — Male / Female\nrace — 5 categories (NH White reference)\nDIQ010 — binary diabetes indicator (0 = No, 1 = Yes)\n\n\n\n\nSDMVSTRA — strata\nSDMVPSU — primary sampling units\nWTMEC2YR — exam weights"
   },
   {
     "objectID": "slides.html#missingness",
@@ -2111,7 +2111,7 @@
     "href": "slides.html#implementing-traditional-logistic-regression",
     "title": "Bayesian Logistic Regression for Predicting Diabetes Risk",
     "section": "Implementing Traditional Logistic Regression",
-    "text": "Implementing Traditional Logistic Regression\n\nComplete-Case SummaryCoefficient Plot\n\n\n\nComplete-case sample: n = 5,348\nSurvey-weighted logistic regression (quasibinomial family)\n\nKey Findings: - Age (per 1 SD ↑): ~3× higher odds of diabetes - BMI (per 1 SD ↑): ~1.9× higher odds - Female: lower odds vs Male - Race: several groups show higher odds vs NH White"
+    "text": "Implementing Traditional Logistic Regression\n\nComplete-Case SummaryCoefficient Plot\n\n\n\nComplete-case sample: n = 5,348\nSurvey-weighted logistic regression (quasibinomial family)\n\nKey Findings:\n- Age (per 1 SD ↑): ~3× higher odds of diabetes\n- BMI (per 1 SD ↑): ~1.9× higher odds\n- Female: lower odds vs Male\n- Race: several groups show higher odds vs NH White"
   },
   {
     "objectID": "slides.html#key-findings",

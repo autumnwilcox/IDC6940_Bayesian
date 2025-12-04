@@ -153,14 +153,6 @@ editor: visual
 -   **SDMVSTRA** — strata
 -   **SDMVPSU** — primary sampling units
 -   **WTMEC2YR** — exam weights
-
-### Final Analytic Sample
-
--   Cleaned dataset with design variables retained
--   Ready for:
-    -   complete-case analysis
-    -   MICE imputation
-    -   Bayesian modeling
 :::
 
 ------------------------------------------------------------------------
@@ -197,10 +189,10 @@ editor: visual
 -   Complete-case sample: **n = 5,348**
 -   Survey-weighted logistic regression (quasibinomial family)
 
-**Key Findings:**
--   **Age (per 1 SD ↑):** \~3× higher odds of diabetes
--   **BMI (per 1 SD ↑):** \~1.9× higher odds
--   **Female:** lower odds vs Male
+**Key Findings:**\
+-   **Age (per 1 SD ↑):** \~3× higher odds of diabetes\
+-   **BMI (per 1 SD ↑):** \~1.9× higher odds\
+-   **Female:** lower odds vs Male\
 -   **Race:** several groups show higher odds vs NH White
 
 ### Coefficient Plot
