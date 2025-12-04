@@ -331,37 +331,33 @@ December 4, 2025</p><p></p>
 <section id="study-data" class="slide level2">
 <h2>Study Data</h2>
 <div class="panel-tabset">
-<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-3-1">NHANES Files</a></li><li><a href="#tabset-3-2">Merge Rules</a></li><li><a href="#tabset-3-3">Adult Cohort Definition</a></li><li><a href="#tabset-3-4">Weighted Sample Characteristics</a></li><li><a href="#tabset-3-5">Variables &amp; Coding</a></li><li><a href="#tabset-3-6">Survey Design Variables</a></li><li><a href="#tabset-3-7">Final Analytic Sample</a></li></ul>
+<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-3-1">NHANES Files</a></li><li><a href="#tabset-3-2">Adult Cohort Definition</a></li><li><a href="#tabset-3-3">Weighted Sample Characteristics</a></li><li><a href="#tabset-3-4">Variables &amp; Coding</a></li><li><a href="#tabset-3-5">Survey Design Variables</a></li><li><a href="#tabset-3-6">Final Analytic Sample</a></li></ul>
 <div class="tab-content">
 <div id="tabset-3-1">
 <ul>
-<li>DEMO_H — demographics</li>
-<li>BMX_H — BMI &amp; anthropometrics</li>
-<li>DIQ_H — diabetes questionnaire<br>
-Data from NHANES 2013–2014 <span class="citation" data-cites="nchs2014">(<a href="#/references" role="doc-biblioref" onclick="">National Center for Health Statistics (NCHS) 2014</a>)</span>.</li>
+<li><p><strong>DEMO_H</strong> — demographics</p></li>
+<li><p><strong>BMX_H</strong> — BMI &amp; anthropometrics</p></li>
+<li><p><strong>DIQ_H</strong> — diabetes questionnaire<br>
+Data from NHANES 2013–2014 <span class="citation" data-cites="nchs2014">(<a href="#/references" role="doc-biblioref" onclick="">National Center for Health Statistics (NCHS) 2014</a>)</span>.</p></li>
+<li><p>Key ID: <strong>SEQN</strong></p></li>
+<li><p>Files merged on SEQN with harmonized variable types</p></li>
 </ul>
 </div>
 <div id="tabset-3-2">
-<ul>
-<li>Key ID: <strong>SEQN</strong></li>
-<li>Files merged on SEQN with harmonized variable types</li>
-</ul>
-</div>
-<div id="tabset-3-3">
 <ul>
 <li>Adults <strong>≥ 20 years</strong></li>
 <li>Final analytic sample: <strong>5,769</strong></li>
 <li>Outcome: <strong>doctor-diagnosed diabetes (DIQ010)</strong></li>
 </ul>
 </div>
-<div id="tabset-3-4">
+<div id="tabset-3-3">
 <ul>
 <li>Weighted mean age: <strong>~47.5 yrs</strong></li>
 <li>Weighted diabetes prevalence: <strong>~8.9%</strong></li>
 <li>Design effect &amp; effective sample size (ESS) computed</li>
 </ul>
 </div>
-<div id="tabset-3-5">
+<div id="tabset-3-4">
 <ul>
 <li><strong>age_c</strong> — standardized age</li>
 <li><strong>bmi_c</strong> — standardized BMI</li>
@@ -370,14 +366,14 @@ Data from NHANES 2013–2014 <span class="citation" data-cites="nchs2014">(<a hr
 <li><strong>DIQ010</strong> — binary diabetes indicator (0 = No, 1 = Yes)</li>
 </ul>
 </div>
-<div id="tabset-3-6">
+<div id="tabset-3-5">
 <ul>
-<li><strong>SDMVPSU</strong> — primary sampling units</li>
 <li><strong>SDMVSTRA</strong> — strata</li>
+<li><strong>SDMVPSU</strong> — primary sampling units</li>
 <li><strong>WTMEC2YR</strong> — exam weights</li>
 </ul>
 </div>
-<div id="tabset-3-7">
+<div id="tabset-3-6">
 <ul>
 <li>Cleaned dataset with design variables retained</li>
 <li>Ready for:
@@ -394,29 +390,21 @@ Data from NHANES 2013–2014 <span class="citation" data-cites="nchs2014">(<a hr
 <section id="missingness" class="slide level2">
 <h2>Missingness</h2>
 <div class="panel-tabset">
-<ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-4-1">Missingness Overview</a></li><li><a href="#tabset-4-2">Key Missing Variables</a></li><li><a href="#tabset-4-3">MAR Definition</a></li><li><a href="#tabset-4-4">Missingness Visualization</a></li></ul>
+<ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-4-1">Missingness Overview</a></li><li><a href="#tabset-4-2">Missingness Visualization</a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1">
 <ul>
-<li>~7% overall missingness</li>
-<li><strong>92.7%</strong> of rows complete</li>
-<li>Minimal structural missingness</li>
+<li><p>~7% overall missingness</p></li>
+<li><p><strong>92.7%</strong> of rows complete</p></li>
+<li><p>Minimal structural missingness</p></li>
+<li><p><strong>BMI:</strong> ~4.3% missing</p></li>
+<li><p><strong>diabetes_dx:</strong> ~3.1% missing</p></li>
+<li><p><strong>Missing At Random (MAR):</strong><br>
+Missingness depends on <strong>observed variables</strong><br>
+(e.g., exam attendance), not on the missing value itself</p></li>
 </ul>
 </div>
 <div id="tabset-4-2">
-<ul>
-<li><strong>BMI:</strong> ~4.3% missing</li>
-<li><strong>diabetes_dx:</strong> ~3.1% missing</li>
-</ul>
-</div>
-<div id="tabset-4-3">
-<ul>
-<li><strong>Missing At Random (MAR):</strong><br>
-Missingness depends on <strong>observed variables</strong><br>
-(e.g., exam attendance), not on the missing value itself</li>
-</ul>
-</div>
-<div id="tabset-4-4">
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><img data-src="figs/missingness.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
@@ -426,26 +414,19 @@ Missingness depends on <strong>observed variables</strong><br>
 </div>
 </div>
 </section>
-<section id="implementing-design-based-logistic-regression" class="slide level2">
-<h2>Implementing Design-Based Logistic Regression</h2>
+<section id="implementing-traditional-logistic-regression" class="slide level2">
+<h2>Implementing Traditional Logistic Regression</h2>
 <div class="panel-tabset">
-<ul id="tabset-5" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-5-1">Complete-Case Summary</a></li><li><a href="#tabset-5-2">Key Findings</a></li><li><a href="#tabset-5-3">Survey-Weighted Coefficient Plot</a></li></ul>
+<ul id="tabset-5" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-5-1">Complete-Case Summary</a></li><li><a href="#tabset-5-2">Coefficient Plot</a></li></ul>
 <div class="tab-content">
 <div id="tabset-5-1">
 <ul>
 <li>Complete-case sample: <strong>n = 5,348</strong></li>
 <li>Survey-weighted logistic regression (quasibinomial family)</li>
 </ul>
+<p><strong>Key Findings:</strong> - <strong>Age (per 1 SD ↑):</strong> ~3× higher odds of diabetes - <strong>BMI (per 1 SD ↑):</strong> ~1.9× higher odds - <strong>Female:</strong> lower odds vs Male - <strong>Race:</strong> several groups show higher odds vs NH White</p>
 </div>
 <div id="tabset-5-2">
-<ul>
-<li><strong>Age (per 1 SD ↑):</strong> ~3× higher odds of diabetes</li>
-<li><strong>BMI (per 1 SD ↑):</strong> ~1.9× higher odds</li>
-<li><strong>Female:</strong> lower odds vs Male</li>
-<li><strong>Race:</strong> several groups show higher odds vs NH White</li>
-</ul>
-</div>
-<div id="tabset-5-3">
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><img data-src="figs/svy_or.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
@@ -1000,14 +981,13 @@ This is an <strong>inverse prediction</strong>—identifying the BMI associated 
 </ul>
 </div>
 </section>
-<section id="key-findings-1" class="slide level2">
+<section id="key-findings" class="slide level2">
 <h2>Key Findings</h2>
 <div style="font-size: 90%;">
 <ul>
 <li><strong>Age and BMI are the strongest predictors</strong> of doctor-diagnosed diabetes across both survey-weighted and Bayesian models.</li>
 <li><strong>Bayesian modeling is stable and well-calibrated</strong>, avoiding quasi-separation and producing uncertainty estimates similar to the classical model.</li>
 <li><strong>Posterior predictive checks support good fit</strong>, accurately reproducing diabetes prevalence and individual-level outcomes.</li>
-<li><strong>Consistent population-level and individual predictions</strong> show that the model supports both broad public health insights and personalized risk assessment.</li>
 </ul>
 </div>
 </section>

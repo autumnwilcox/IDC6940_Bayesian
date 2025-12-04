@@ -120,13 +120,11 @@ editor: visual
 ::: panel-tabset
 ### NHANES Files
 
--   DEMO_H — demographics
--   BMX_H — BMI & anthropometrics
--   DIQ_H — diabetes questionnaire\
+-   **DEMO_H** — demographics
+-   **BMX_H** — BMI & anthropometrics
+-   **DIQ_H** — diabetes questionnaire\
     Data from NHANES 2013–2014 [@nchs2014].
-
-### Merge Rules
-
+    
 -   Key ID: **SEQN**
 -   Files merged on SEQN with harmonized variable types
 
@@ -152,8 +150,8 @@ editor: visual
 
 ### Survey Design Variables
 
--   **SDMVPSU** — primary sampling units
 -   **SDMVSTRA** — strata
+-   **SDMVPSU** — primary sampling units
 -   **WTMEC2YR** — exam weights
 
 ### Final Analytic Sample
@@ -170,18 +168,15 @@ editor: visual
 ## Missingness
 
 ::: panel-tabset
+
 ### Missingness Overview
 
 -   \~7% overall missingness
 -   **92.7%** of rows complete
 -   Minimal structural missingness
 
-### Key Missing Variables
-
 -   **BMI:** \~4.3% missing
 -   **diabetes_dx:** \~3.1% missing
-
-### MAR Definition
 
 -   **Missing At Random (MAR):**\
     Missingness depends on **observed variables**\
@@ -194,7 +189,7 @@ editor: visual
 
 ------------------------------------------------------------------------
 
-## Implementing Design-Based Logistic Regression
+## Implementing Traditional Logistic Regression
 
 ::: panel-tabset
 ### Complete-Case Summary
@@ -202,14 +197,13 @@ editor: visual
 -   Complete-case sample: **n = 5,348**
 -   Survey-weighted logistic regression (quasibinomial family)
 
-### Key Findings
-
+**Key Findings:**
 -   **Age (per 1 SD ↑):** \~3× higher odds of diabetes
 -   **BMI (per 1 SD ↑):** \~1.9× higher odds
 -   **Female:** lower odds vs Male
 -   **Race:** several groups show higher odds vs NH White
 
-### Survey-Weighted Coefficient Plot
+### Coefficient Plot
 
 ![](figs/svy_or.png){fig-align="center" width="55%"}
 :::
@@ -744,7 +738,6 @@ This suggests that **non-BMI factors** (age, sex, race) strongly influence risk 
 -   **Age and BMI are the strongest predictors** of doctor-diagnosed diabetes across both survey-weighted and Bayesian models.
 -   **Bayesian modeling is stable and well-calibrated**, avoiding quasi-separation and producing uncertainty estimates similar to the classical model.
 -   **Posterior predictive checks support good fit**, accurately reproducing diabetes prevalence and individual-level outcomes.
--   **Consistent population-level and individual predictions** show that the model supports both broad public health insights and personalized risk assessment.
 :::
 
 ------------------------------------------------------------------------
