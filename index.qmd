@@ -1782,37 +1782,42 @@ labs(x = "Mean predicted probability", y = "Observed diabetes (0/1)")
 
 ```{r}
 #| label: fig-posterior-prevalence
-#| fig-cap: "Comparison of diabetes prevalence across survey-weighted (NHANES), imputed, and posterior predictive estimates. The posterior predictive mean aligns closely with the observed NHANES prevalence, indicating strong model calibration."
+#| fig-cap: "Comparison of diabetes prevalence across survey-weighted (NHANES) and posterior predictive estimates. The posterior predictive mean aligns closely with the observed NHANES prevalence, indicating strong model calibration."
 #| echo: true
 #| cache: false
 #| include: true
 
 # 1. Survey-weighted prevalence
+
 svy_mean <- svymean(~diabetes_dx, nhanes_design_adult, na.rm = TRUE)
 
 # 2. Posterior predictive prevalence (per draw)
-pp_samples <- brms::posterior_predict(bayes_fit, ndraws = 1000)  # draws x individuals
-pp_proportion <- rowMeans(pp_samples)                            # prevalence per draw
 
-# 3. Build comparison table
+pp_samples <- brms::posterior_predict(bayes_fit, ndraws = 1000)
+pp_proportion <- rowMeans(pp_samples)
+
+# 3. Build comparison table (imputed row removed)
+
 summary_table <- tibble(
-  Method = c("Survey-weighted mean (NHANES)", 
-             "Imputed dataset mean", 
-             "Posterior predictive mean"),
-  diabetes_mean = c(
-    coef(svy_mean),                           # survey-weighted mean
-    mean(adult_imp1$diabetes_dx, na.rm = TRUE),  # imputed dataset
-    mean(pp_proportion)                       # posterior predictive mean
-  ),
-  SE = c(
-    SE(svy_mean),   # survey-weighted SE
-    NA,             # not available for raw mean
-    NA              # not available for posterior predictive mean
-  )
+Method = c(
+"Survey-weighted mean (NHANES)",
+"Posterior predictive mean"
+),
+diabetes_mean = c(
+coef(svy_mean),
+mean(pp_proportion)
+),
+SE = c(
+SE(svy_mean),
+NA
+)
 )
 
-kable(summary_table, digits = 4,
-      caption = "Comparison of Diabetes Prevalence Across Methods")
+kable(
+summary_table,
+digits = 4,
+caption = "Comparison of Diabetes Prevalence Across Methods"
+)
 ```
 
 The posterior predictive distribution of diabetes prevalence closely
