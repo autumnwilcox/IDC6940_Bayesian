@@ -5,7 +5,7 @@ author:
   - "Namita Mishra"
   - "Autumn Wilcox"
 advisor: "Dr. Ashraf Cohen"
-date: "December 4, 2025"
+date: "December 7, 2025"
 course: Capstone Projects in Data Science
 
 execute:
@@ -913,6 +913,8 @@ svy_fit <- survey::svyglm(
   design = nhanes_design_adult,
   family = quasibinomial()
 )
+
+summary(svy_fit)
 
 svy_or <- broom::tidy(svy_fit, conf.int = TRUE) %>%
   dplyr::mutate(
