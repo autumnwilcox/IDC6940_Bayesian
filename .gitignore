@@ -21,3 +21,35 @@ _freeze/
 *.o
 *.so
 *.dylib
+
+# R junk
+.Rhistory
+.RData
+.Rproj.user/
+
+# Knitr/Quarto caches
+*_cache/
+*_files/
+_site/
+docs/*.tex
+docs/*.log
+
+# Latex build artifacts
+*.log
+*.aux
+*.toc
+*.out
+*.tex
+
+# Quarto intermediate build files
+index_files/
+index_cache/
+*.tex
+*.log
+
+# Don't track RStudio project settings
+*.Rproj
+
+# macOS Finder files
+.DS_Store
+

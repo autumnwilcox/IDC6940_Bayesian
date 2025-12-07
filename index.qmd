@@ -1373,6 +1373,58 @@ knitr::kable(vertical_tbl,
 -   All model parameters exhibit well-defined, unimodal posteriors with
     narrow credible intervals.
     
+### Coefficient Comparison Plot
+
+```{r}
+#| label: coef-comparison-plot
+#| echo: true
+#| message: false
+#| warning: false
+#| fig-cap: "Coefficient estimates (log-odds) from survey-weighted and Bayesian logistic regression models for Age and BMI."
+
+library(dplyr)
+library(broom)
+library(broom.mixed)
+library(ggplot2)
+
+# Survey-weighted coefficients
+svy_df <- tidy(svy_fit, conf.int = TRUE) %>%
+  filter(term %in% c("age_c", "bmi_c")) %>%
+  mutate(
+    Method = "Survey-weighted",
+    term = recode(term, "age_c" = "Age (per 1 SD)", "bmi_c" = "BMI (per 1 SD)")
+  )
+
+# Bayesian coefficients
+bayes_df <- tidy(bayes_fit, conf.int = TRUE) %>%
+  filter(term %in% c("age_c", "bmi_c")) %>%
+  mutate(
+    Method = "Bayesian",
+    term = recode(term, "age_c" = "Age (per 1 SD)", "bmi_c" = "BMI (per 1 SD)")
+  )
+
+# Combine
+coef_df <- bind_rows(svy_df, bayes_df) %>%
+  mutate(Method = factor(Method, levels = c("Survey-weighted", "Bayesian")))
+
+# Plot
+ggplot(coef_df, aes(x = term, y = estimate, color = Method)) +
+  geom_point(position = position_dodge(width = 0.5), size = 3) +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high),
+                width = 0.2,
+                position = position_dodge(width = 0.5)) +
+  coord_flip() +
+  labs(
+    x = "",
+    y = "Coefficient Estimate (log-odds)"
+  ) +
+  theme_minimal(base_size = 14) +
+  scale_color_manual(values = c("Survey-weighted" = "steelblue",
+                                "Bayesian" = "darkred"))
+```
+
+The coefficient comparison plot shows that both modeling approaches identify Age and BMI as strong positive predictors of diabetes. The survey-weighted and Bayesian estimates are closely aligned, with overlapping intervals, indicating consistent effect sizes across methods. This agreement supports the robustness of the findings regardless of whether weighting or Bayesian regularization is used.
+
 #### Posterior Coefficients (log-odds scale)
 
 **Intercept**  
