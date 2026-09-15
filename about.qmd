@@ -15,7 +15,7 @@ Dr. Mishra developed the project plan, content draft, analytic coding, and coord
 
 📧 Contact: nmishra\@uwf.edu
 
-<img src="images/autumn.jpeg" alt="Autumn Wilcox" style="width:200px; border-radius:50%; margin-bottom:10px;"/>
+<img src="images/autumn.png" alt="Autumn Wilcox" style="width:200px; border-radius:50%; margin-bottom:10px;"/>
 
 **Autumn S. Wilcox** is a U.S. Navy Disabled Veteran who holds a Master’s degree in Data Science with a specialization in Analytics and Modeling from the University of West Florida. She has over 10 years of experience in Network Operations and Technical Writing, including her current role at Navy Federal Credit Union, where she supports enterprise technology and process documentation initiatives. Autumn also holds certification in Clinical Research Quality Management (CRQM) and has contributed to quality oversight and compliance efforts in clinical research settings.
 
