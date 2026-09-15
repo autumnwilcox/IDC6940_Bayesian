@@ -468,9 +468,7 @@ Three NHANES components were merged to construct the dataset:
 - **BMX_H**: measured height and weight used to calculate BMI  
 - **DIQ_H**: doctor-diagnosed diabetes status  
 
-The combined dataset contained **n = 5,769 adults** after applying inclusion
-criteria and preparing variables for analysis. The primary outcome was
-**doctor-diagnosed diabetes** (`diabetes_dx`). Predictor variables included:
+The merged dataset contained **10,175 participants**. After restricting the sample to adults aged ≥20 years, **5,769 adults** remained. The primary outcome was **doctor-diagnosed diabetes** (`diabetes_dx`). Predictor variables included:
 
 - **Age**, standardized as a z-score for interpretability  
 - **BMI**, standardized as a z-score  
@@ -646,8 +644,7 @@ Table 1a and 1b summarize the analytic variables included in subsequent
 models. Mean age and BMI values indicate an adult cohort spanning a wide
 range of body composition, while categorical summaries confirm balanced
 sex representation and sufficient sample sizes across race/ethnicity
-categories. These variables were standardized and used as predictors in
-all modeling frameworks (analytic cohort N = 5,769 adults ≥ 20 years).
+categories. These variables were standardized and used as predictors in subsequent modeling frameworks. The adult cohort included **5,769 participants aged ≥20 years**, of whom **5,592 had an observed diabetes outcome**.
 
 ```{r}
 #| label: adult-n
@@ -865,8 +862,7 @@ adult_clean <- adult %>%
   )
 ```
 
-Below is a structure of the analytic dataset used for regression
-modeling, showing variable names, types, and sample values (N = 5,349).
+Below is the structure of the **complete-case dataset** used for the survey-weighted frequentist regression analysis, showing variable names, types, and sample values (**N = 5,349**).
 
 ```{r}
 #| label: data-structure
