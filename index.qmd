@@ -314,12 +314,9 @@ knitr::kable(
 
 ### Variable Definitions
 
--   **Response Variable:**\
-    `diabetes_dx` (binary) represents a Type 2 diabetes diagnosis,
-    excluding gestational diabetes. It was derived from `DIQ010`
-    (“Doctor told you have diabetes”), while `DIQ050` (insulin use) was
-    excluded to prevent treatment-related confounding.
-
+- **Response Variable:**  
+  `diabetes_dx` (binary) represents doctor-diagnosed diabetes. It was derived from `DIQ010` ("Doctor told you have diabetes"), with "Yes" coded as 1 and "No" coded as 0. "Borderline," "Refused," "Don't know," and missing responses were treated as missing.
+  
 -   **Predictor Variables:**
 
     -   `BMXBMI` – Body Mass Index (kg/m\^2), treated as continuous and
@@ -336,17 +333,17 @@ knitr::kable(
 
 var_tbl <- tribble(
   ~Variable,   ~Description,                                                                                         ~Type,         ~Origin,
-  "diabetes_dx","Type 2 diabetes diagnosis (1 = Yes, 0 = No) derived from DIQ010; gestational diabetes excluded.",  "Categorical", "Derived from DIQ010",
-  "age",        "Age in years.",                                                                                    "Continuous",  "NHANES RIDAGEYR",
-  "bmi",        "Body Mass Index (kg/m^2) computed from measured height and weight.",                               "Continuous",  "NHANES BMXBMI",
-  "bmi_cat",    "BMI categories: Underweight, Normal, Overweight, Obesity I–III (Normal is reference in models).",  "Categorical", "Derived from bmi",
-  "sex",        "Sex of participant (Male, Female).",                                                               "Categorical", "NHANES RIAGENDR",
-  "race",       "Race/ethnicity collapsed to four levels: White, Black, Hispanic, Other.",                          "Categorical", "Derived from RIDRETH1",
-  "WTMEC2YR",   "Examination sample weight for Mobile Examination Center participants.",                            "Weight",      "NHANES design",
-  "SDMVPSU",    "Primary Sampling Unit used for variance estimation in the complex survey design.",                 "Design",      "NHANES design",
-  "SDMVSTRA",   "Stratum identifier used to define strata for the complex survey design.",                          "Design",      "NHANES design",
-  "age_c",      "Centered and standardized age (z-score).",                                                         "Continuous",  "Derived from age",
-  "bmi_c",      "Centered and standardized BMI (z-score).",                                                         "Continuous",  "Derived from bmi"
+  "diabetes_dx", "Doctor-diagnosed diabetes (1 = Yes, 0 = No); Borderline, Refused, Don't know, and missing responses treated as missing.", "Categorical", "Derived from DIQ010",
+  "age", "Age in years.", "Continuous", "NHANES RIDAGEYR",
+  "bmi", "Body Mass Index (kg/m^2) computed from measured height and weight.",                               "Continuous", "NHANES BMXBMI",
+  "bmi_cat",  "BMI categories: Underweight, Normal, Overweight, Obesity I–III (Normal is reference in models).",  "Categorical", "Derived from bmi",
+  "sex",  "Sex of participant (Male, Female).",                                                               "Categorical", "NHANES RIAGENDR",
+  "race", "Race/ethnicity categorized into five levels: Mexican American, Other Hispanic, Non-Hispanic White, Non-Hispanic Black, and Other/Multi-Racial.", "Categorical", "Derived from RIDRETH1",
+  "WTMEC2YR", "Examination sample weight for Mobile Examination Center participants.",                            "Weight", "NHANES design",
+  "SDMVPSU",  "Primary Sampling Unit used for variance estimation in the complex survey design.",                 "Design", "NHANES design",
+  "SDMVSTRA", "Stratum identifier used to define strata for the complex survey design.",                          "Design", "NHANES design",
+  "age_c", "Centered and standardized age (z-score).",                                                         "Continuous", "Derived from age",
+  "bmi_c", "Centered and standardized BMI (z-score).",                                                         "Continuous",  "Derived from bmi"
 )
 
 kbl(
@@ -377,14 +374,14 @@ applied to adjust for unequal probabilities of selection, nonresponse,
 and oversampling, ensuring valid standard errors, unbiased prevalence
 estimates, and generalizable population-level inference.
 
-A survey-weighted logistic regression (design-based) model was used to evaluate the association between diabetes status (`diabetes_dx`, binary outcome) and key predictors: body mass index (`bmi`), age (`age`), sex (`sex`), and race/ethnicity (`race`). Diabetes was defined using `DIQ010` (“Doctor told you have diabetes”) and coded as 0/1, with `DIQ050` (insulin use) excluded to avoid treatment-related confounding.
+A survey-weighted logistic regression (design-based) model was used to evaluate the association between diabetes status (`diabetes_dx`, binary outcome) and key predictors: body mass index (`bmi`), age (`age`), sex (`sex`), and race/ethnicity (`race`). Diabetes was defined using `DIQ010` (“Doctor told you have diabetes”) and coded as 0/1, with `DIQ010` used to define doctor-diagnosed diabetes; Borderline, Refused, Don't know, and missing responses were treated as missing.
 
 Covariates included:\
 - `age` (continuous; centered as `age_c`, categorized 20–80 years)\
 - `bmi` (continuous; centered as `bmi_c`, and categorized by BMI class
 `bmi_cat`)\
 - `sex` (male, female)\
-- `race` (four ethnicity levels: White, Black, Hispanic, Other)
+- `race` (five race/ethnicity levels: Mexican American, Other Hispanic, Non-Hispanic White, Non-Hispanic Black, Other/Multi-Racial)
 
 This approach accounts for NHANES’ complex sampling design, producing
 unbiased parameter estimates and valid inference for U.S. adults.
@@ -727,10 +724,7 @@ examination component among certain adults.
 
 #### Missing Data
 
-Overall missingness in the analytic variables was low, with approximately
-**3–4%** missing data in age or BMI. This level of missingness supported the use
-of multiple imputation during data preparation and ensured that complete-case
-analyses remained consistent for model comparison.
+Overall missingness in the analytic variables was low, with approximately **3–4%** missing data in the outcome or BMI. Multiple imputation was used to address missing predictor data. Because the diabetes outcome was not imputed, participants with missing outcome data were excluded from outcome modeling.
 
 #### Outcome Distribution
 
@@ -1015,9 +1009,9 @@ Multiple Imputation by Chained Equations (`MICE`) was used to address missing da
 
 As an alternative to full Bayesian joint modeling, `MICE` offers a flexible and robust approach for handling missingness through chained regression equations. For large sample sizes (`n ≥ 400`), even when a single variable contains substantial missingness (up to 75%), `MICE` performs reliably under skewed, multimodal, or heavy-tailed distributions without materially affecting mean-structure estimation [@vanbuuren2012].
 
-In this study, continuous variables were imputed using regression-based methods (`age` via normal linear regression and `BMI` via predictive mean matching to preserve distributional shape). Categorical variables (`sex` and `race`) were imputed using logistic and polytomous regression models. The outcome variable (`diabetes_dx`) was **not** imputed and was used only as a predictor during the imputation process. Twenty imputations were generated to reduce Monte Carlo error and ensure stable variance estimation.
+In this study, Multiple Imputation by Chained Equations (`MICE`) was used to address missing predictor data. The analytic imputation dataset included `diabetes_dx`, age, BMI, sex, race/ethnicity, and the NHANES design variables `WTMEC2YR`, `SDMVPSU`, and `SDMVSTRA`. The outcome variable (`diabetes_dx`) was **not imputed**, but it was retained as a predictor for the imputation of other variables. Age was assigned normal linear regression, BMI predictive mean matching, and sex and race/ethnicity polytomous logistic regression. The NHANES examination weight, PSU, and stratum variables were not imputed but were included as auxiliary predictors. **Five imputed datasets** were generated (`m = 5`).
 
-The chained-equations process demonstrated stable convergence across iterations, supporting reliable estimation of missing `BMI` values (and `age`, where applicable). After imputation, the completed analytic dataset contained **n = 5,592 adults** with all key predictors available for downstream modeling, including the Bayesian logistic regression framework.
+Because `diabetes_dx` was not imputed, participants with missing diabetes outcome data remained unavailable for outcome modeling. This resulted in **5,592 adults with an observed diabetes outcome** from the original adult cohort of 5,769. The original frequentist multiple-imputation analysis fit the logistic regression separately in all five completed datasets and pooled the estimates using Rubin's rules. In contrast, the current Bayesian analysis uses only the **first completed imputed dataset**; therefore, uncertainty across the five imputations is not propagated through the Bayesian model.
 
 ```{r}
 #| label: model-mice
@@ -1040,12 +1034,13 @@ mi_dat <- adult %>%
 meth <- mice::make.method(mi_dat)
 pred <- mice::make.predictorMatrix(mi_dat)
 
-# Do NOT impute the outcome; use it as a predictor only
+# Do NOT impute the outcome; allow it to predict other variables
 meth["diabetes_dx"] <- ""
-pred["diabetes_dx", ] <- 0     # outcome predicts nobody
-pred[, "diabetes_dx"]  <- 1    # but everyone is predicted BY diabetes_dx
+pred["diabetes_dx", ] <- 0     # no predictors used for diabetes_dx
+pred[, "diabetes_dx"] <- 1     # diabetes_dx predicts other variables
+diag(pred) <- 0                 # no variable predicts itself
 
-# Imputation methods (same logic as Namita)
+# Imputation methods 
 meth["age"]  <- "norm"      # age: normal model
 meth["bmi"]  <- "pmm"       # bmi: predictive mean matching
 meth["sex"]  <- "polyreg"   # sex: polytomous logistic
@@ -1248,9 +1243,7 @@ knitr::kable(mi_or, caption = mi_caption)
     survey-weighted logistic regression model, confirming stability across imputation and weighting approaches.
 -->
 
-After applying exclusions and resolving the small amount of missingness
-(≈3–4%), both the survey-weighted and Bayesian models were fit to the
-same complete-case adult dataset (n = 5,769).
+The Bayesian model was fit using the first completed imputed dataset and included 5,592 adults with an observed diabetes outcome. The survey-weighted frequentist analysis used a separate complete-case dataset of 5,349 adults. Therefore, the two models were not fit to the same analytic sample.
 
 #### Fit the Model
 
@@ -1865,12 +1858,7 @@ labs(
 theme_minimal()
 ```
 
-The survey-weighted NHANES diabetes prevalence was approximately
-**8.9%**, whereas the Bayesian model’s posterior predictive mean
-prevalence was also in the **8–9%** range. This close agreement
-indicates that the Bayesian logistic regression model reproduces the
-observed population-level prevalence and is well-calibrated to the
-NHANES data.
+The survey design-based estimate of doctor-diagnosed diabetes prevalence was approximately **8.9%**. In comparison, the Bayesian model produced a mean posterior predictive proportion of approximately **10.95%**. The Bayesian quantity is model-based and should not be interpreted as a design-based estimate of nationally representative prevalence.
 
 ```{r}
 #| label: pop-vs-posterior-bar
